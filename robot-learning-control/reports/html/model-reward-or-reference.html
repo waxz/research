@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Model, Reward, or Reference</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500;75..125,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script>
+  window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+<style>
+/* Layout: a reading column with wide comparison tables and figures; the three paradigms carry one colour each
+   through every table, chip and diagram — indigo = model-based control, amber = self-exploration RL, teal = reference / supervised. */
+:root {
+  --bg: #f4f5f2;
+  --paper: #ffffff;
+  --ink: #1b1f1d;
+  --muted: #5d6661;
+  --rule: #d8ddd8;
+  --mb: #3d4fb0;        /* model-based control */
+  --rl: #b5650d;        /* self-exploration RL */
+  --ref: #0d7a6a;       /* reference / supervised learning */
+  --mb-soft: #e7eaf8; --rl-soft: #f8ecdb; --ref-soft: #dff2ee;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Literata", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111513; --paper: #181e1b; --ink: #e4e9e6; --muted: #98a39d; --rule: #2c3531;
+    --mb: #8f9ff2; --rl: #f0a650; --ref: #4fcdb8;
+    --mb-soft: #1e2444; --rl-soft: #3a2a15; --ref-soft: #133630;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111513; --paper: #181e1b; --ink: #e4e9e6; --muted: #98a39d; --rule: #2c3531;
+  --mb: #8f9ff2; --rl: #f0a650; --ref: #4fcdb8;
+  --mb-soft: #1e2444; --rl-soft: #3a2a15; --ref-soft: #133630;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.62;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+.wrap { max-width: 1000px; margin: 0 auto; }
+.col { max-width: 68ch; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.12; margin: 0; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 800; font-stretch: 85%; letter-spacing: -0.01em; }
+h1 .m { color: var(--mb); } h1 .r { color: var(--rl); } h1 .f { color: var(--ref); }
+h2 { font-size: 1.7rem; font-weight: 800; font-stretch: 90%; margin-top: 3.4rem; margin-bottom: .6rem; }
+h3 { font-size: 1.15rem; font-weight: 500; margin-top: 1.8rem; margin-bottom: .3rem; }
+p { margin: .7rem 0; }
+a { color: var(--ref); text-underline-offset: 2px; }
+a:focus-visible { outline: 2px solid var(--rl); outline-offset: 2px; }
+.eyebrow { font-family: var(--mono); font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.part { font-family: var(--mono); font-size: .78rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; display: block; margin-bottom: .3rem; }
+header { padding-block: 48px 4px; }
+.lede { font-size: 1.14rem; margin-top: 1.1rem; }
+.chip { display: inline-block; font-family: var(--mono); font-size: .74rem; padding: 1px 8px; border-radius: 3px; white-space: nowrap; font-weight: 500; }
+.chip.mb { background: var(--mb-soft); color: var(--mb); }
+.chip.rl { background: var(--rl-soft); color: var(--rl); }
+.chip.ref { background: var(--ref-soft); color: var(--ref); }
+.keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 1.6rem 0 0; }
+.key { background: var(--paper); border: 1px solid var(--rule); border-top: 4px solid; border-radius: 4px; padding: 12px 16px; min-width: 0; font-size: .93rem; line-height: 1.5; }
+.key.mb { border-top-color: var(--mb); } .key.rl { border-top-color: var(--rl); } .key.ref { border-top-color: var(--ref); }
+.key b { font-family: var(--display); font-size: 1.05rem; display: block; margin-bottom: 2px; }
+.key .q { font-style: italic; color: var(--muted); }
+figure { margin: 1.8rem 0; }
+.fig { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 16px; overflow-x: auto; }
+.fig svg { display: block; width: 100%; min-width: 620px; height: auto; }
+figcaption { font-size: .9rem; color: var(--muted); margin-top: .6rem; max-width: 72ch; }
+figcaption b { color: var(--ink); }
+svg text { font-family: var(--mono); fill: var(--ink); }
+svg .tm { fill: var(--muted); } svg .tmb { fill: var(--mb); } svg .trl { fill: var(--rl); } svg .tref { fill: var(--ref); }
+svg .lm { stroke: var(--muted); stroke-width: 1.3; fill: none; }
+svg .lr { stroke: var(--rule); stroke-width: 1; fill: none; }
+svg .body-ln { stroke: var(--ink); stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+svg .joint { fill: var(--paper); stroke: var(--ink); stroke-width: 2; }
+svg .fmb { fill: var(--mb); } svg .frl { fill: var(--rl); } svg .fref { fill: var(--ref); } svg .fm { fill: var(--muted); }
+svg .smb { stroke: var(--mb); } svg .srl { stroke: var(--rl); } svg .sref { stroke: var(--ref); }
+svg .softmb { fill: var(--mb-soft); } svg .softrl { fill: var(--rl-soft); } svg .softref { fill: var(--ref-soft); }
+svg .ground { fill: var(--rule); }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 4px 0; }
+.eq { background: var(--paper); border-left: 3px solid var(--muted); padding: 6px 16px; margin: 1rem 0; border-radius: 0 4px 4px 0; }
+.eq.mb { border-left-color: var(--mb); } .eq.rl { border-left-color: var(--rl); } .eq.ref { border-left-color: var(--ref); }
+.eq .tag { font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+.note { font-size: .92rem; color: var(--muted); }
+.cite { font-family: var(--mono); font-size: .74em; color: var(--muted); white-space: nowrap; }
+.tbl { overflow-x: auto; margin: 1.2rem 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; line-height: 1.42; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+thead th { font-family: var(--mono); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+thead th.mb { color: var(--mb); } thead th.rl { color: var(--rl); } thead th.ref { color: var(--ref); }
+tbody th { font-family: var(--display); font-weight: 500; font-size: .88rem; white-space: nowrap; }
+tr:last-child td, tr:last-child th { border-bottom: 0; }
+.rate { font-family: var(--mono); font-size: .78rem; letter-spacing: 1px; white-space: nowrap; }
+.rate.mb { color: var(--mb); } .rate.rl { color: var(--rl); } .rate.ref { color: var(--ref); }
+/* complexity list */
+.cx { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px; margin: 1.2rem 0; }
+.cx div { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 12px 16px; min-width: 0; font-size: .92rem; line-height: 1.5; }
+.cx b { font-family: var(--display); font-size: 1rem; display: block; }
+.cx .hits { font-family: var(--mono); font-size: .74rem; color: var(--muted); display: block; margin-top: 6px; }
+/* task map grid */
+.map { display: grid; grid-template-columns: 130px repeat(3, minmax(0, 1fr)); gap: 6px; margin: 1.2rem 0; font-size: .86rem; line-height: 1.4; }
+.map .ax { font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .04em; display: flex; align-items: flex-end; padding: 4px; }
+.map .ay { font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .04em; display: flex; align-items: center; padding: 4px; text-transform: uppercase; }
+.map .cell { border-radius: 4px; padding: 10px 12px; min-width: 0; border: 1px solid var(--rule); background: var(--paper); }
+.map .cell b { font-family: var(--display); font-size: .95rem; display: block; margin-bottom: 4px; }
+.map .cell.mb { background: var(--mb-soft); border-color: var(--mb); } .map .cell.mb b { color: var(--mb); }
+.map .cell.rl { background: var(--rl-soft); border-color: var(--rl); } .map .cell.rl b { color: var(--rl); }
+.map .cell.ref { background: var(--ref-soft); border-color: var(--ref); } .map .cell.ref b { color: var(--ref); }
+.map .cell.mix { background: var(--paper); border-style: dashed; }
+.map .cell i { color: var(--muted); font-size: .82rem; display: block; margin-top: 4px; }
+@media (max-width: 720px) {
+  .map { grid-template-columns: 1fr; }
+  .map .ax, .map .corner { display: none; }
+  .map .cell[data-x]::before { content: attr(data-x); display: block; font-family: var(--mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 4px; }
+  .map .ay { padding-top: 14px; }
+}
+.mermaid-box { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 16px; overflow-x: auto; }
+.survey { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin: 1.2rem 0; }
+.survey div { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 12px 14px; min-width: 0; font-size: .88rem; line-height: 1.45; }
+.survey .k { font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; display: block; margin-bottom: 4px; color: var(--muted); }
+.survey .k.mb { color: var(--mb); } .survey .k.rl { color: var(--rl); } .survey .k.ref { color: var(--ref); }
+.survey .why { display: block; color: var(--muted); margin-top: 6px; font-size: .84rem; }
+.reflist { font-size: .86rem; line-height: 1.5; padding-left: 2.6em; }
+.reflist li { margin: .3rem 0; }
+.reflist li::marker { font-family: var(--mono); font-size: .76rem; color: var(--muted); }
+.callout { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 14px 18px; margin: 1.4rem 0; }
+.callout b:first-child { font-family: var(--display); }
+footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .85rem; color: var(--muted); }
+</style>
+
+<div class="wrap">
+<header class="col">
+  <div class="eyebrow">Survey analysis · robot control paradigms · Oct 2026</div>
+  <h1><span class="m">Model</span>, <span class="r">reward</span>, or <span class="f">reference</span>?</h1>
+  <p class="lede">Every robot controller has to get its knowledge of what to do from somewhere. Model-based control gets it from equations of motion and a cost function. Reinforcement learning gets it from a reward and a large amount of trial and error. Supervised and reference-based learning get it from examples of the behavior. This page compares the three families using the main survey and overview papers, explains why robot control is hard, weighs reference-guided RL against free exploration, and maps real tasks to the method that fits them.</p>
+  <div class="keys">
+    <div class="key mb"><b>Model-based control</b><span class="q">“I know the physics; optimize.”</span><br>PID, LQR, trajectory optimization, MPC, whole-body QP control. <span class="chip mb">MB</span></div>
+    <div class="key rl"><b>Self-exploration RL</b><span class="q">“I know what good looks like; search.”</span><br>Policy learned from a task reward alone, usually in simulation with domain randomization. <span class="chip rl">RL</span></div>
+    <div class="key ref"><b>Reference / supervised learning</b><span class="q">“I can show you; copy and refine.”</span><br>Behavior cloning, DAgger, teacher–student distillation, inverse RL, and RL that tracks reference motions. <span class="chip ref">REF</span></div>
+  </div>
+  <p class="note" style="margin-top:1rem">“Supervised RL” isn't a standard term. Here it means every method where the learning signal comes from demonstrations or reference trajectories instead of, or on top of, a task reward. Section 3 splits this into pure imitation and reference-based RL.</p>
+</header>
+
+<!-- ======================= 1. COMPLEXITY ======================= -->
+<section class="col">
+  <h2><span class="part">Part 1</span>Why robot control is hard</h2>
+  <p>Start with the equation every legged or manipulating robot obeys. For a floating-base robot with generalized coordinates \(q\) (6 base DoF plus \(n\) joints; for a Unitree G1, \(n=29\)) <span class="cite">[Featherstone 2008; Wensing 2024]</span>:</p>
+  <div class="eq mb">
+    <span class="tag">Floating-base rigid-body dynamics with contact</span>
+    \[ M(q)\,\ddot q + C(q,\dot q)\,\dot q + g(q) \;=\; S^\top \tau \;+\; \sum_{c\,\in\,\mathcal C(t)} J_c(q)^\top \lambda_c \]
+    \[ 0 \le \lambda_{c,n} \;\perp\; \phi_c(q) \ge 0, \qquad \|\lambda_{c,t}\| \le \mu\,\lambda_{c,n} \]
+  </div>
+  <p>Each term is a separate source of difficulty. \(M, C, g\) are nonlinear in \(q\). The selection matrix \(S\) has no rows for the floating base, so the robot is <b>underactuated</b>: it can only move its torso by pushing on the world. The contact set \(\mathcal C(t)\) switches discretely, and the complementarity condition (\(\perp\): the force is nonzero only when the gap \(\phi\) is zero) makes the dynamics <b>hybrid and non-smooth</b>. The friction cone limits which forces are available at all.</p>
+</section>
+
+<figure class="wrap">
+  <div class="fig">
+  <svg viewBox="0 0 960 400" role="img" aria-labelledby="cxT">
+    <title id="cxT">A humanoid on uneven ground, annotated with the sources of control difficulty</title>
+    <!-- ground -->
+    <path d="M0 330 L300 330 L340 318 L420 318 L440 330 L960 330 L960 345 L0 345 Z" class="ground"/>
+    <!-- stick humanoid centre ~ x=380 -->
+    <circle cx="380" cy="72" r="20" class="joint"/>
+    <path d="M380 92 L380 196" class="body-ln"/>
+    <path d="M380 112 L338 152 L318 204" class="body-ln"/>
+    <path d="M380 112 L428 146 L470 132" class="body-ln"/>
+    <path d="M380 196 L350 258 L346 318" class="body-ln"/>
+    <path d="M380 196 L414 252 L404 318" class="body-ln"/>
+    <path d="M334 318 L362 318" class="body-ln"/>
+    <path d="M394 318 L422 318" class="body-ln"/>
+    <g>
+      <circle cx="380" cy="112" r="5" class="joint"/><circle cx="338" cy="152" r="5" class="joint"/><circle cx="428" cy="146" r="5" class="joint"/>
+      <circle cx="380" cy="196" r="6" class="joint"/><circle cx="350" cy="258" r="5" class="joint"/><circle cx="414" cy="252" r="5" class="joint"/>
+    </g>
+    <!-- object in hand -->
+    <rect x="470" y="118" width="34" height="28" rx="3" class="softrl" stroke="var(--rl)" stroke-width="1.5"/>
+    <!-- friction cones -->
+    <path d="M348 318 L326 270 L370 270 Z" class="softmb" stroke="var(--mb)" stroke-width="1.2" opacity=".9"/>
+    <path d="M408 318 L386 270 L430 270 Z" class="softmb" stroke="var(--mb)" stroke-width="1.2" opacity=".9"/>
+    <!-- base frame -->
+    <path d="M380 160 L410 160" stroke="var(--rl)" stroke-width="2"/><path d="M380 160 L380 130" stroke="var(--rl)" stroke-width="2"/>
+    <text x="414" y="164" font-size="10" class="trl">6 unactuated base DoF</text>
+
+    <!-- callouts left -->
+    <g font-size="12">
+      <text x="20" y="40" font-weight="500">High dimension</text>
+      <text x="20" y="56" font-size="10.5" class="tm">29 joints + 6 base → 70-D state</text>
+      <path d="M180 48 L330 100" class="lm"/>
+
+      <text x="20" y="120" font-weight="500">Underactuation</text>
+      <text x="20" y="136" font-size="10.5" class="tm">torso moves only via contact forces</text>
+      <path d="M220 128 L376 160" class="lm"/>
+
+      <text x="20" y="200" font-weight="500">Hybrid, non-smooth contact</text>
+      <text x="20" y="216" font-size="10.5" class="tm">mode switches each footfall; 0 ≤ λ ⊥ φ ≥ 0</text>
+      <path d="M260 208 L334 300" class="lm"/>
+
+      <text x="20" y="280" font-weight="500">Friction cone</text>
+      <text x="20" y="296" font-size="10.5" class="tm">‖λₜ‖ ≤ μλₙ, μ unknown (0.3–1.2)</text>
+      <path d="M210 288 L326 286" class="lm"/>
+    </g>
+    <!-- callouts right -->
+    <g font-size="12">
+      <text x="600" y="40" font-weight="500">Partial observability</text>
+      <text x="600" y="56" font-size="10.5" class="tm">IMU + encoders; no direct terrain, contact or mass</text>
+      <path d="M596 48 L404 72" class="lm"/>
+
+      <text x="600" y="110" font-weight="500">Unknown payload / object</text>
+      <text x="600" y="126" font-size="10.5" class="tm">mass, inertia, friction change per task</text>
+      <path d="M596 118 L506 128" class="lm"/>
+
+      <text x="600" y="180" font-weight="500">Actuator limits and delay</text>
+      <text x="600" y="196" font-size="10.5" class="tm">torque/velocity saturation, backlash, ~ms latency</text>
+      <path d="M596 188 L420 250" class="lm"/>
+
+      <text x="600" y="250" font-weight="500">Real-time budget</text>
+      <text x="600" y="266" font-size="10.5" class="tm">policy 50 Hz, PD 500–1000 Hz, MPC 30–1000 Hz</text>
+
+      <text x="600" y="306" font-weight="500">Changing, uncertain terrain</text>
+      <text x="600" y="322" font-size="10.5" class="tm">slopes, steps, slip, deformable ground</text>
+      <path d="M596 314 L440 326" class="lm"/>
+    </g>
+    <text x="480" y="378" text-anchor="middle" font-size="11" class="tm">Sim-to-real gap: every parameter above is uncertain, so a controller must work for a family of models, not one.</text>
+  </svg>
+  </div>
+  <figcaption><b>Figure 1. Where the difficulty comes from.</b> Any one of these is manageable. Robots face all of them at once, and the uncertainty compounds through feedback.</figcaption>
+</figure>
+
+<section class="col">
+  <div class="cx">
+    <div><b>Curse of dimensionality</b>Dynamic programming on a grid of a 70-D state is impossible, so every practical method approximates: local linearization (LQR, MPC), templates (LIPM, SRBD), or function approximation (neural policies).<span class="hits">Hits: MB (needs reduced models) · RL (sample cost)</span></div>
+    <div><b>Combinatorial contact schedules</b>Which foot or hand touches what, and when, is a discrete choice. Mixed-integer or contact-implicit optimization is expensive, so most MPC fixes the gait schedule in advance <span class="cite">[Posa 2014; Di Carlo 2018]</span>.<span class="hits">Hits: MB hardest · RL learns it implicitly</span></div>
+    <div><b>Non-smooth gradients</b>Contact makes the dynamics stiff or discontinuous. Gradient-based optimizers and differentiable simulators can get biased or exploding gradients <span class="cite">[Suh 2022]</span>.<span class="hits">Hits: MB, differentiable-sim RL</span></div>
+    <div><b>Model mismatch</b>Real friction, motor dynamics, cable stretch and compliance are not in \(M, C, g\). This drives both MPC robustness work and RL domain randomization <span class="cite">[Tobin 2017; Peng 2018]</span>.<span class="hits">Hits: all</span></div>
+    <div><b>Specifying the goal</b>Writing a cost or reward that yields natural, safe and useful motion is hard. Policies exploit loopholes (reward hacking), which is a main reason references and demonstrations are used.<span class="hits">Hits: RL hardest · REF avoids it</span></div>
+    <div><b>Safety, data and wear</b>Real-world trial and error damages hardware and takes time. Dulac-Arnold et al. list nine such challenges for real-world RL <span class="cite">[Dulac-Arnold 2021]</span>.<span class="hits">Hits: RL on hardware · REF data cost</span></div>
+  </div>
+  <p>The usual decision rule comes from these: <b>model-based control</b> wins when the difficulty can be removed with a good reduced model. <b>RL</b> wins when the difficulty is in contact, uncertainty or dimension but the goal is easy to score. <b>Reference learning</b> wins when the goal itself is the hard part to write down.</p>
+</section>
+
+<!-- ======================= 2. THREE PARADIGMS ======================= -->
+<section class="col">
+  <h2><span class="part">Part 2</span>Three paradigms, side by side</h2>
+
+  <h3><span class="chip mb">MB</span> Model-based optimal control</h3>
+  <p>Write down a model \(f\) and a cost \(\ell\), then solve a finite-horizon optimal control problem online, apply the first input, and repeat (receding horizon):</p>
+  <div class="eq mb">
+    <span class="tag">Model predictive control</span>
+    \[ \min_{u_{0:N-1}} \; \sum_{k=0}^{N-1} \ell(x_k, u_k) + \ell_f(x_N) \quad \text{s.t.}\quad x_{k+1} = f(x_k,u_k),\;\; h(x_k,u_k) \le 0,\;\; x_0 = \hat x(t) \]
+  </div>
+  <p>For legged robots the model is usually reduced (single rigid body, centroidal dynamics) and a whole-body QP maps the MPC plan to joint torques at around 1 kHz <span class="cite">[Kim 2019; Kuindersma 2016]</span>. MPC handles constraints explicitly and its behavior is interpretable and tunable, but solving the full contact-rich problem online is still intractable <span class="cite">[Wensing 2024]</span>.</p>
+
+  <h3><span class="chip rl">RL</span> Self-exploration reinforcement learning</h3>
+  <p>Specify only a reward and let the policy discover behavior. For sim-to-real robustness, optimize across a distribution of randomized simulators \(\xi\):</p>
+  <div class="eq rl">
+    <span class="tag">Domain-randomized RL objective</span>
+    \[ \max_\theta \; \mathbb E_{\xi \sim p(\xi)}\, \mathbb E_{\tau \sim \pi_\theta,\,\xi}\Big[\sum_t \gamma^t r(s_t,a_t)\Big] \]
+  </div>
+  <p>Song et al.'s drone-racing study states the advantage precisely: RL is not better at optimizing, it <b>optimizes a better objective</b>. It can score the task directly (lap time, staying upright) instead of tracking a planned trajectory, and it can be made robust by randomization <span class="cite">[Song 2023]</span>. The cost is sample complexity: millions to billions of simulated steps, an accurate-enough simulator, and reward design.</p>
+
+  <h3><span class="chip ref">REF</span> Supervised and reference-based learning</h3>
+  <p>Learn from examples. The simplest form is behavior cloning, regression from observations to expert actions:</p>
+  <div class="eq ref">
+    <span class="tag">Behavior cloning and its compounding error</span>
+    \[ \min_\theta \; \mathbb E_{(o,a)\sim\mathcal D}\big[-\log \pi_\theta(a\mid o)\big], \qquad J(\hat\pi) \le J(\pi^*) + T^2\epsilon \;\;\text{(BC)} \quad\text{vs.}\quad J(\pi^*) + uT\epsilon \;\;\text{(DAgger)} \]
+  </div>
+  <p>Here \(\epsilon\) is the per-step imitation error and \(T\) the horizon. Because the cloned policy visits states the expert never did, errors compound quadratically. DAgger fixes this by querying the expert on the learner's own states, bringing the bound to linear <span class="cite">[Ross &amp; Bagnell 2010; Ross 2011]</span>. Teacher–student distillation in legged and humanoid robotics is DAgger with an RL-trained, privileged teacher <span class="cite">[Lee 2020]</span>. Inverse RL and GAIL recover a reward from demonstrations instead <span class="cite">[Ng &amp; Russell 2000; Ho &amp; Ermon 2016]</span>.</p>
+</section>
+
+<div class="wrap">
+<div class="tbl"><table>
+  <thead><tr><th>Criterion</th><th class="mb">Model-based control</th><th class="rl">Self-exploration RL</th><th class="ref">Imitation / reference learning</th></tr></thead>
+  <tbody>
+    <tr><th>Knowledge source</th><td>Physics model + cost</td><td>Reward + simulator (or real trials)</td><td>Demonstrations, mocap, teleoperation, expert policy</td></tr>
+    <tr><th>Offline cost</th><td>Low: modeling and tuning by experts</td><td>High: 10⁸–10¹⁰ sim steps, GPU hours, reward engineering</td><td>Data collection (hours of teleop or mocap) + training</td></tr>
+    <tr><th>Online cost</th><td>High: solve an optimization every 1–30 ms</td><td>Very low: one network forward pass</td><td>Low (MLP) to high (large VLA/diffusion models)</td></tr>
+    <tr><th>Constraints and safety</th><td>Explicit, with formal tools (feasibility, stability)</td><td>Implicit, via penalties; no guarantees</td><td>Implicit; inherits the demonstrator's safety</td></tr>
+    <tr><th>Model mismatch</th><td>Sensitive; needs robust or adaptive MPC</td><td>Robust if trained over randomized dynamics</td><td>Sensitive to distribution shift (covariate shift)</td></tr>
+    <tr><th>Contact-rich, high-DoF</th><td>Hard: reduced models, fixed contact schedules</td><td>Strong: contacts learned implicitly</td><td>Good if data covers it; force rarely observed</td></tr>
+    <tr><th>Behavior quality</th><td>Optimal for the stated cost; can look robotic</td><td>Can be novel and very agile; can be unnatural or exploit the reward</td><td>Natural, human-like; capped by the data</td></tr>
+    <tr><th>Generalization</th><td>Good within the model's validity; re-plans for new goals</td><td>Within the training distribution</td><td>Within the demonstration distribution; large data/VLA models stretch this</td></tr>
+    <tr><th>Interpretability</th><td>High</td><td>Low</td><td>Low</td></tr>
+    <tr><th>Best evidence</th><td>Atlas, MIT Cheetah, industrial arms, process control</td><td>ANYmal, drone racing (Swift), Rubik's cube hand, parkour</td><td>Diffusion Policy, ALOHA/ACT, π0; humanoid mocap trackers</td></tr>
+  </tbody>
+</table></div>
+</div>
+
+<section class="col">
+  <div class="callout"><b>The surveys agree that hybrids are winning.</b> Reiter et al. classify MPC–RL combinations and argue the two differ mainly in how they treat the model, which makes them complementary <span class="cite">[Reiter 2026]</span>. Ha et al. describe learning-based legged locomotion as complementing, not replacing, model-based control <span class="cite">[Ha 2025]</span>. Hewing et al. review learning-based MPC <span class="cite">[Hewing 2020]</span>. Examples: RL tracking MPC/TO plans (DTC, <span class="cite">[Jenelten 2024]</span>), residual RL on top of classical controllers <span class="cite">[Johannink 2019]</span>, and learned world models used for planning or gradients (TD-MPC, SuperMimic).</div>
+</section>
+
+<!-- ======================= 3. REF vs EXPLORATION ======================= -->
+<section class="col">
+  <h2><span class="part">Part 3</span>Reference-based RL vs self-exploration RL</h2>
+  <p>Both run RL, usually PPO in simulation. They differ in the reward. Self-exploration RL scores the task and lets the policy discover how. Reference-based RL scores closeness to a given motion and lets the policy discover only how to make that motion physically feasible.</p>
+  <div class="eq rl">
+    <span class="tag">Self-exploration: task reward + shaping + regularizers (typical locomotion)</span>
+    \[ r_t = \underbrace{w_v\, e^{-\|v^{\text{cmd}}_{xy} - v_{xy}\|^2/\sigma^2}}_{\text{task}} \;-\; \underbrace{w_\tau \|\tau\|^2 - w_a\|a_t-a_{t-1}\|^2 - w_o \|\omega_{xy}\|^2}_{\text{regularizers}} \;+\; \underbrace{w_f\, r_{\text{feet-air-time}} + \dots}_{\text{hand-tuned shaping}} \]
+  </div>
+  <div class="eq ref">
+    <span class="tag">Reference-based: imitation reward (DeepMimic family), optionally plus a task term</span>
+    \[ r_t = w^I\, \underbrace{\sum_k w_k \exp\!\big(-\|x^{\text{ref}}_{k,t} - x_{k,t}\|^2/\sigma_k^2\big)}_{\text{track reference poses, velocities, end-effectors}} \;+\; w^G\, r^{\text{goal}}_t \]
+  </div>
+  <p>Reference-based RL also changes exploration. Episodes start at random points of the reference (reference-state initialization) and end early when the robot drifts away, so the policy never wastes samples on states unrelated to the motion <span class="cite">[Peng 2018]</span>. A middle ground replaces exact tracking with a learned <b>style prior</b>. AMP trains a discriminator \(D\) on motion clips and rewards the policy for looking like the data, \(r^{\text{style}} = \max[0,\,1 - 0.25(D(s,s')-1)^2]\), without tracking any one clip <span class="cite">[Peng 2021; Escontrela 2022]</span>.</p>
+</section>
+
+<figure class="wrap">
+  <div class="fig">
+  <svg viewBox="0 0 960 250" role="img" aria-labelledby="spT">
+    <title id="spT">Spectrum from pure reference tracking to sparse task reward, with trends in naturalness and novelty</title>
+    <defs>
+      <linearGradient id="gSp" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="var(--ref)"/><stop offset="1" stop-color="var(--rl)"/>
+      </linearGradient>
+      <marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" class="fm"/></marker>
+    </defs>
+    <rect x="40" y="60" width="880" height="10" rx="5" fill="url(#gSp)"/>
+    <g font-size="11.5" text-anchor="middle">
+      <circle cx="80" cy="65" r="9" class="fref"/><text x="80" y="38" font-weight="500" class="tref">Behavior cloning</text><text x="80" y="96" class="tm" font-size="10">BC, ACT, π0</text>
+      <circle cx="260" cy="65" r="9" class="fref"/><text x="260" y="38" font-weight="500" class="tref">Reference tracking RL</text><text x="260" y="96" class="tm" font-size="10">DeepMimic, BeyondMimic,</text><text x="260" y="109" class="tm" font-size="10">SONIC, SuperMimic</text>
+      <circle cx="460" cy="65" r="9" fill="var(--muted)"/><text x="460" y="38" font-weight="500">Style prior / demo-guided</text><text x="460" y="96" class="tm" font-size="10">AMP, DAPG, RL + demos,</text><text x="460" y="109" class="tm" font-size="10">residual RL</text>
+      <circle cx="660" cy="65" r="9" class="frl"/><text x="660" y="38" font-weight="500" class="trl">Shaped task reward</text><text x="660" y="96" class="tm" font-size="10">legged_gym locomotion,</text><text x="660" y="109" class="tm" font-size="10">ANYmal, parkour</text>
+      <circle cx="880" cy="65" r="9" class="frl"/><text x="880" y="38" font-weight="500" class="trl">Sparse task reward</text><text x="880" y="96" class="tm" font-size="10">goal reached / win;</text><text x="880" y="109" class="tm" font-size="10">needs curiosity, curricula</text>
+    </g>
+    <!-- trend arrows -->
+    <g font-size="11">
+      <path d="M880 150 L80 150" class="lm" marker-end="url(#am)"/>
+      <text x="480" y="143" text-anchor="middle" class="tref">more natural, predictable, faster to train, easier to specify a style</text>
+      <path d="M80 190 L880 190" class="lm" marker-end="url(#am)"/>
+      <text x="480" y="183" text-anchor="middle" class="trl">more novel strategies, less data needed, harder exploration and reward design</text>
+      <text x="480" y="228" text-anchor="middle" class="tm" font-size="10.5">Performance ceiling: left side is capped by the reference/demo quality · right side by exploration and the reward's fidelity to intent</text>
+    </g>
+  </svg>
+  </div>
+  <figcaption><b>Figure 2. One axis, many methods.</b> In practice the line is crossed constantly. DeepMimic adds goal terms to tracking, legged locomotion adds AMP style terms, and teacher–student pipelines use an exploring teacher and an imitating student.</figcaption>
+</figure>
+
+<div class="wrap">
+<div class="tbl"><table>
+  <thead><tr><th>Dimension</th><th class="ref">Reference-based RL</th><th class="rl">Self-exploration RL</th></tr></thead>
+  <tbody>
+    <tr><th>Reward design</th><td><b>Benefit:</b> one generic tracking reward works for thousands of clips; no per-skill tuning</td><td><b>Cost:</b> many hand-tuned shaping and regularization terms per skill; prone to reward hacking</td></tr>
+    <tr><th>Exploration</th><td><b>Benefit:</b> reference states guide search; dense reward every step; flips and cartwheels become learnable</td><td><b>Cost:</b> hard for long-horizon or acrobatic skills; may need curricula, curiosity or demos</td></tr>
+    <tr><th>Data</th><td><b>Cost:</b> needs mocap or video, retargeting to robot morphology, filtering of infeasible clips (~9% of BONES-SEED dropped for SuperMimic)</td><td><b>Benefit:</b> no motion data needed, only a simulator and a reward</td></tr>
+    <tr><th>Motion quality</th><td><b>Benefit:</b> human-like, legible motion, which matters for humanoids around people</td><td><b>Cost:</b> often jittery, asymmetric or odd gaits without strong regularization <span class="cite">[Heess 2017]</span></td></tr>
+    <tr><th>Performance ceiling</th><td><b>Cost:</b> bounded by the human reference; human motion isn't optimal for a robot's actuators or mass distribution</td><td><b>Benefit:</b> can exceed human or engineered solutions (Swift beat human drone champions <span class="cite">[Kaufmann 2023]</span>)</td></tr>
+    <tr><th>Task generality</th><td><b>Cost:</b> a tracker reproduces motions, so it needs an extra layer (planner, diffusion, encoder, teleop) to solve tasks</td><td><b>Benefit:</b> the policy directly solves the scored task</td></tr>
+    <tr><th>Compute</th><td>Scales with the library: SONIC ~21k GPU-h; SuperMimic cuts this to ~3 GPU-h with a learned world model</td><td>Per skill: minutes to hours on one GPU for locomotion <span class="cite">[Rudin 2022]</span>; much more for dexterity <span class="cite">[OpenAI 2019]</span></td></tr>
+    <tr><th>Sim-to-real</th><td>Similar: both need domain randomization and observation noise. Feasibility of references matters (retargeting artifacts break transfer)</td><td>Similar; exploitation of simulator bugs is a common risk</td></tr>
+  </tbody>
+</table></div>
+</div>
+
+<section class="col">
+  <p><b>The practical synthesis.</b> Use references to set what the motion looks like and rewards to set what the motion achieves. Current humanoid stacks train a general reference tracker first (BeyondMimic, SONIC, SuperMimic), then put a task layer on top, trained by distillation, diffusion guidance or task RL through the same model. SuperMimic's small study found task RL through the world model beat distillation for velocity commands on 650 of 672 test commands.</p>
+</section>
+
+<!-- ======================= 4. TASKS ======================= -->
+<section class="col">
+  <h2><span class="part">Part 4</span>Which method for which real-world task</h2>
+  <p>Two questions cover most of the decision. Can you model or simulate the system faithfully? Is the desired behavior easier to score or to show? The map below places common tasks on those two axes.</p>
+</section>
+
+<div class="wrap">
+<div class="map" role="table" aria-label="Task map: model fidelity versus how the behavior is specified">
+  <div class="corner"></div>
+  <div class="ax" role="columnheader">Tractable model<br>(few contacts, low DoF, known params)</div>
+  <div class="ax" role="columnheader">Simulatable, but too complex to optimize online</div>
+  <div class="ax" role="columnheader">Hard to simulate<br>(deformables, fluids, food, people)</div>
+
+  <div class="ay" role="rowheader">Behavior easy to score</div>
+  <div class="cell mb" data-x="Tractable model"><b>Model-based control</b>Industrial arm trajectories, CNC, spacecraft and satellite attitude, flat-ground quadruped trotting (convex MPC), process control, drone trajectory tracking.<i>Why: guarantees, constraints, no data needed.</i></div>
+  <div class="cell rl" data-x="Simulatable, complex"><b>Self-exploration RL + domain randomization</b>Rough-terrain and stair locomotion, parkour, drone racing, in-hand reorientation, fall recovery, dynamic jumping.<i>Why: contacts and uncertainty are learned; the goal is easy to score.</i></div>
+  <div class="cell mix" data-x="Hard to simulate"><b>Real-world / offline RL (niche)</b>Large-scale learned grasping (QT-Opt), fine-tuning on hardware, industrial insertion with residual RL.<i>Why: no faithful sim; data is expensive, so usually paired with demos.</i></div>
+
+  <div class="ay" role="rowheader">Behavior easier to show</div>
+  <div class="cell mix" data-x="Tractable model"><b>Learning from demonstration + model-based execution</b>Kinesthetic teaching of welding or painting paths, movement primitives (DMP/ProMP), surgical-motion replay with safety constraints.<i>Why: demo gives the path; the controller guarantees execution.</i></div>
+  <div class="cell ref" data-x="Simulatable, complex"><b>Reference-based RL</b>Humanoid whole-body tracking, dance and expressive motion, teleoperation, animation-driven robots, natural-gait locomotion (AMP).<i>Why: style is easier to capture than to write; physics is simulatable.</i></div>
+  <div class="cell ref" data-x="Hard to simulate"><b>Imitation learning / VLA</b>Cloth folding, cooking, tidying, cable routing, general household mobile manipulation.<i>Why: no reward or sim is practical; teleop demos are the data.</i></div>
+</div>
+</div>
+
+<section class="col">
+  <h3>Task-by-task analysis</h3>
+</section>
+<div class="wrap">
+<div class="tbl"><table>
+  <thead><tr><th>Task</th><th>Main difficulty</th><th>Best-suited approach</th><th>Fit: MB · RL · REF</th><th>Representative work</th></tr></thead>
+  <tbody>
+    <tr><th>Industrial pick-and-place, welding</th><td>Precision, cycle time, certification</td><td><span class="chip mb">MB</span> motion planning + PID/impedance; demos for programming</td><td><span class="rate mb">●●●</span> <span class="rate rl">○</span> <span class="rate ref">●</span></td><td>Standard industrial practice</td></tr>
+    <tr><th>Quadruped, flat and moderate terrain</th><td>Underactuation, gait timing</td><td><span class="chip mb">MB</span> convex MPC + WBC, or <span class="chip rl">RL</span></td><td><span class="rate mb">●●●</span> <span class="rate rl">●●●</span> <span class="rate ref">○</span></td><td>Di Carlo 2018; Kim 2019; Rudin 2022</td></tr>
+    <tr><th>Quadruped, rough terrain and parkour</th><td>Contact uncertainty, perception, agility</td><td><span class="chip rl">RL</span> + DR + teacher–student <span class="chip ref">REF</span> distillation</td><td><span class="rate mb">●</span> <span class="rate rl">●●●</span> <span class="rate ref">●●</span></td><td>Lee 2020; Miki 2022; Cheng 2024; Zhuang 2023</td></tr>
+    <tr><th>Humanoid robust locomotion</th><td>Balance, push recovery, sim-to-real</td><td><span class="chip rl">RL</span>, often with a human-gait style prior</td><td><span class="rate mb">●●</span> <span class="rate rl">●●●</span> <span class="rate ref">●●</span></td><td>Radosavovic 2024; Kuindersma 2016 (MB)</td></tr>
+    <tr><th>Humanoid expressive whole-body motion, teleop</th><td>Specifying natural motion; many skills in one policy</td><td><span class="chip ref">REF</span> reference-tracking RL at scale</td><td><span class="rate mb">○</span> <span class="rate rl">●</span> <span class="rate ref">●●●</span></td><td>He 2024 (H2O); Liao 2026 (BeyondMimic); Luo 2026 (SONIC); SuperMimic</td></tr>
+    <tr><th>Dexterous in-hand manipulation</th><td>Many contacts, 20+ DoF hands, hidden object state</td><td><span class="chip rl">RL</span> in sim with heavy DR; demos speed it up</td><td><span class="rate mb">●</span> <span class="rate rl">●●●</span> <span class="rate ref">●●</span></td><td>OpenAI 2019; Rajeswaran 2018 (DAPG)</td></tr>
+    <tr><th>Contact-rich assembly (peg-in-hole, connectors)</th><td>Tight tolerances, force sensing</td><td><span class="chip mb">MB</span> impedance control + residual <span class="chip rl">RL</span> or demos</td><td><span class="rate mb">●●</span> <span class="rate rl">●●</span> <span class="rate ref">●●</span></td><td>Johannink 2019; tactile VLA work (2025)</td></tr>
+    <tr><th>Household manipulation, deformables</th><td>No sim, no reward, long horizon, semantics</td><td><span class="chip ref">REF</span> imitation (diffusion policy, VLA)</td><td><span class="rate mb">○</span> <span class="rate rl">●</span> <span class="rate ref">●●●</span></td><td>Chi 2023; Zhao 2023 (ALOHA); Black 2024 (π0)</td></tr>
+    <tr><th>Drone racing, agile flight</th><td>Aerodynamics, actuator limits, minimum time</td><td><span class="chip rl">RL</span>; <span class="chip mb">MB</span> for known trajectories</td><td><span class="rate mb">●●</span> <span class="rate rl">●●●</span> <span class="rate ref">○</span></td><td>Kaufmann 2023; Song 2023</td></tr>
+    <tr><th>Autonomous driving</th><td>Multi-agent interaction, safety, rare events</td><td><span class="chip ref">REF</span> large-scale imitation + <span class="chip mb">MB</span> planning and safety layers</td><td><span class="rate mb">●●</span> <span class="rate rl">●</span> <span class="rate ref">●●●</span></td><td>Industry practice; IL surveys [S6, S7]</td></tr>
+    <tr><th>Surgical and medical robots</th><td>Safety, regulation, tissue variability</td><td><span class="chip mb">MB</span> + teleoperation; <span class="chip ref">REF</span> for sub-tasks</td><td><span class="rate mb">●●●</span> <span class="rate rl">○</span> <span class="rate ref">●●</span></td><td>Safe-learning review [S10]</td></tr>
+    <tr><th>Process and energy systems</th><td>Constraints, slow dynamics, economics</td><td><span class="chip mb">MB</span> MPC, with RL for tuning</td><td><span class="rate mb">●●●</span> <span class="rate rl">●</span> <span class="rate ref">○</span></td><td>Reiter 2026; Hewing 2020</td></tr>
+  </tbody>
+</table></div>
+<p class="note">Fit ratings (●●● strong, ●● viable, ● niche, ○ rarely used) are this page's synthesis of the cited surveys and results, not measured scores.</p>
+</div>
+
+<section class="col">
+  <h3>Decision flow</h3>
+</section>
+<div class="col">
+<div class="mermaid-box">
+<pre class="mermaid">
+flowchart TD
+  A[New control task] --> B{Need formal safety or constraint guarantees?}
+  B -- yes --> MB1[Model-based control: MPC or WBC, optionally with learned residuals]
+  B -- no --> C{Can you write a tractable model and solve it in real time?}
+  C -- yes --> MB2[Model-based control first; add RL only for the hard parts]
+  C -- no --> D{Can you simulate it faithfully?}
+  D -- no --> E[Imitation learning from teleop demos: diffusion policy or VLA; fine-tune with real RL if needed]
+  D -- yes --> F{Is the behavior easier to score than to show?}
+  F -- score --> G[Self-exploration RL with domain randomization; distill to a deployable student]
+  F -- show --> H[Reference-based RL: tracking reward or AMP style prior; add a task layer on top]
+  G --> I{Motion looks unnatural or reward-hacks?}
+  I -- yes --> H
+</pre>
+</div>
+</div>
+
+<!-- ======================= 5. SURVEYS ======================= -->
+<section class="col">
+  <h2><span class="part">Part 5</span>Survey and overview papers</h2>
+  <p>These are grouped by the question each one answers best. The legged-locomotion surveys are the best match for comparing model-based control and RL. The MPC–RL survey covers how to combine them.</p>
+</section>
+<div class="wrap">
+<div class="survey">
+  <div><span class="k mb">Model-based legged control</span>[S1] P. M. Wensing, M. Posa, Y. Hu, A. Escande, N. Mansard, A. Del Prete. “Optimization-based control for dynamic legged robots.” <i>IEEE Transactions on Robotics</i>, 2024. <a href="https://arxiv.org/abs/2211.11644">arXiv:2211.11644</a><span class="why">The reference for MPC, WBC and trajectory optimization, and why the full problem is still intractable online.</span></div>
+  <div><span class="k rl">Learning-based locomotion</span>[S2] S. Ha, J. Lee, M. van de Panne, Z. Xie, W. Yu, M. Khadiv. “Learning-based legged locomotion: State of the art and future perspectives.” <i>IJRR</i>, 2025. <a href="https://arxiv.org/abs/2406.01152">arXiv:2406.01152</a><span class="why">Covers RL and imitation for legs, and how they complement model-based methods.</span></div>
+  <div><span class="k">MPC + RL</span>[S3] R. Reiter, J. Hoffmann et al. “Synthesis of model predictive control and reinforcement learning: Survey and classification.” <i>Annual Reviews in Control</i>, 2026. <a href="https://arxiv.org/abs/2502.02133">arXiv:2502.02133</a><span class="why">Taxonomy of hybrid architectures; argues the fields differ mainly in model treatment.</span></div>
+  <div><span class="k">Control vs RL, conceptually</span>[S4] B. Recht. “A tour of reinforcement learning: The view from continuous control.” <i>Annual Review of Control, Robotics, and Autonomous Systems</i>, 2019.<span class="why">Compares RL to LQR and MPC on equal terms, with a focus on sample complexity.</span></div>
+  <div><span class="k">Control vs RL, empirically</span>[S5] Y. Song, A. Romero, M. Müller, V. Koltun, D. Scaramuzza. “Reaching the limit in autonomous racing: Optimal control versus reinforcement learning.” <i>Science Robotics</i> 8(82), 2023. <a href="https://arxiv.org/abs/2310.10943">arXiv:2310.10943</a><span class="why">Head-to-head result: RL wins by optimizing a better objective.</span></div>
+  <div><span class="k ref">Imitation learning</span>[S6] T. Osa, J. Pajarinen, G. Neumann, J. A. Bagnell, P. Abbeel, J. Peters. “An algorithmic perspective on imitation learning.” <i>Foundations and Trends in Robotics</i>, 2018. <a href="https://arxiv.org/abs/1811.06711">arXiv:1811.06711</a><span class="why">BC vs inverse RL, and the robotics-specific issues of each.</span></div>
+  <div><span class="k ref">Imitation, recent</span>[S7] M. Zare, P. M. Kebria, A. Khosravi, S. Nahavandi. “A survey of imitation learning: Algorithms, recent developments, and challenges.” 2023. <a href="https://arxiv.org/abs/2309.02473">arXiv:2309.02473</a><span class="why">Covers adversarial imitation and newer methods.</span></div>
+  <div><span class="k rl">Exploration</span>[S8] P. Ladosz, L. Weng, M. Kim, H. Oh. “Exploration in deep reinforcement learning: A survey.” <i>Information Fusion</i>, 2022. <a href="https://arxiv.org/abs/2205.00824">arXiv:2205.00824</a> · T. Yang et al., <a href="https://arxiv.org/abs/2109.06668">arXiv:2109.06668</a><span class="why">The cost side of self-exploration: sparse rewards, novelty, imitation-based exploration.</span></div>
+  <div><span class="k rl">Real-world RL</span>[S9] G. Dulac-Arnold et al. “Challenges of real-world reinforcement learning: Definitions, benchmarks and analysis.” <i>Machine Learning</i> 110, 2021.<span class="why">Nine deployment challenges: safety, delays, constraints, limited samples.</span></div>
+  <div><span class="k">Safety</span>[S10] L. Brunke, M. Greeff, A. W. Hall, Z. Yuan, S. Zhou, J. Panerati, A. P. Schoellig. “Safe learning in robotics: From learning-based control to safe reinforcement learning.” <i>Annual Review of Control, Robotics, and Autonomous Systems</i>, 2022.<span class="why">Links control-theoretic guarantees with learning methods.</span></div>
+  <div><span class="k mb">Learning-based MPC</span>[S11] L. Hewing, K. P. Wabersich, M. Menner, M. N. Zeilinger. “Learning-based model predictive control: Toward safe learning in control.” <i>Annual Review of Control, Robotics, and Autonomous Systems</i>, 2020.<span class="why">Learning the model, the cost, or a safety filter inside MPC.</span></div>
+  <div><span class="k">Robot RL overviews</span>[S12] J. Kober, J. A. Bagnell, J. Peters, <i>IJRR</i> 2013 · C. Tang et al., “Deep RL for robotics: A survey of real-world successes,” <i>Annu. Rev. Control Robot. Auton. Syst.</i> 2025 · W. Zhao et al., sim-to-real survey, <i>IEEE SSCI</i> 2020.<span class="why">Where RL has actually worked on hardware, and how sim-to-real is done.</span></div>
+  <div><span class="k">Humanoids</span>[S13] Z. Gu et al. “Humanoid locomotion and manipulation: Current progress and challenges in control, planning, and learning.” 2025. <a href="https://arxiv.org/abs/2501.02116">arXiv:2501.02116</a> · Behavior-foundation-model survey, <a href="https://arxiv.org/abs/2506.20487">arXiv:2506.20487</a><span class="why">Model-based and learning-based humanoid control in one place.</span></div>
+  <div><span class="k ref">Foundation models</span>[S14] “Survey of vision-language-action models for embodied manipulation.” 2025. <a href="https://arxiv.org/abs/2508.15201">arXiv:2508.15201</a> · R. Firoozi et al., “Foundation models in robotics,” <i>IJRR</i> 2025.<span class="why">Large-scale imitation as the default for open-ended manipulation.</span></div>
+  <div><span class="k">Textbooks</span>[S15] D. Bertsekas, <i>Reinforcement Learning and Optimal Control</i>, Athena Scientific 2019 · R. Sutton &amp; A. Barto, <i>Reinforcement Learning</i>, 2nd ed., 2018 · R. Featherstone, <i>Rigid Body Dynamics Algorithms</i>, 2008.<span class="why">One shared vocabulary for control and RL.</span></div>
+  <div><span class="k">Benchmark</span>[S16] S. Akki, T. Chen. “Benchmarking model predictive control and reinforcement learning based control for legged robot locomotion in MuJoCo simulation.” 2025. <a href="https://arxiv.org/abs/2501.16590">arXiv:2501.16590</a><span class="why">Direct MPC vs RL comparison on a Go1 on disturbance rejection, energy and terrain.</span></div>
+</div>
+</div>
+
+<section class="col">
+  <h2><span class="part">Part 6</span>Primary works cited</h2>
+  <ol class="reflist">
+    <li>J. Black et al. π0: A vision-language-action flow model for general robot control. arXiv:2410.24164, 2024.</li>
+    <li>X. Cheng, K. Shi, A. Agarwal, D. Pathak. Extreme parkour with legged robots. <i>ICRA</i>, 2024.</li>
+    <li>C. Chi et al. Diffusion policy: Visuomotor policy learning via action diffusion. <i>RSS</i>, 2023.</li>
+    <li>J. Di Carlo, P. M. Wensing, B. Katz, G. Bledt, S. Kim. Dynamic locomotion in the MIT Cheetah 3 through convex model-predictive control. <i>IROS</i>, 2018.</li>
+    <li>A. Escontrela et al. Adversarial motion priors make good substitutes for complex reward functions. <i>IROS</i>, 2022.</li>
+    <li>N. Heess et al. Emergence of locomotion behaviours in rich environments. arXiv:1707.02286, 2017.</li>
+    <li>J. Ho, S. Ermon. Generative adversarial imitation learning. <i>NeurIPS</i>, 2016.</li>
+    <li>F. Jenelten, J. He, F. Farshidian, M. Hutter. DTC: Deep tracking control. <i>Science Robotics</i>, 2024.</li>
+    <li>T. Johannink et al. Residual reinforcement learning for robot control. <i>ICRA</i>, 2019.</li>
+    <li>D. Kalashnikov et al. QT-Opt: Scalable deep RL for vision-based robotic manipulation. <i>CoRL</i>, 2018.</li>
+    <li>E. Kaufmann et al. Champion-level drone racing using deep reinforcement learning. <i>Nature</i> 620, 2023.</li>
+    <li>D. Kim, J. Di Carlo, B. Katz, G. Bledt, S. Kim. Highly dynamic quadruped locomotion via whole-body impulse control and model predictive control. arXiv:1909.06586, 2019.</li>
+    <li>S. Kuindersma et al. Optimization-based locomotion planning, estimation, and control design for the Atlas humanoid robot. <i>Autonomous Robots</i> 40, 2016.</li>
+    <li>J. Lee, J. Hwangbo, L. Wellhausen, V. Koltun, M. Hutter. Learning quadrupedal locomotion over challenging terrain. <i>Science Robotics</i> 5(47), 2020.</li>
+    <li>T. Miki et al. Learning robust perceptive locomotion for quadrupedal robots in the wild. <i>Science Robotics</i> 7(62), 2022.</li>
+    <li>A. Y. Ng, S. Russell. Algorithms for inverse reinforcement learning. <i>ICML</i>, 2000.</li>
+    <li>OpenAI et al. Solving Rubik's cube with a robot hand. arXiv:1910.07113, 2019.</li>
+    <li>X. B. Peng, P. Abbeel, S. Levine, M. van de Panne. DeepMimic. <i>ACM TOG</i> 37(4), 2018.</li>
+    <li>X. B. Peng, M. Andrychowicz, W. Zaremba, P. Abbeel. Sim-to-real transfer of robotic control with dynamics randomization. <i>ICRA</i>, 2018.</li>
+    <li>X. B. Peng, Z. Ma, P. Abbeel, S. Levine, A. Kanazawa. AMP: Adversarial motion priors. <i>ACM TOG</i> 40(4), 2021.</li>
+    <li>M. Posa, C. Cantu, R. Tedrake. A direct method for trajectory optimization of rigid bodies through contact. <i>IJRR</i> 33(1), 2014.</li>
+    <li>I. Radosavovic et al. Real-world humanoid locomotion with reinforcement learning. <i>Science Robotics</i> 9(89), 2024.</li>
+    <li>A. Rajeswaran et al. Learning complex dexterous manipulation with deep RL and demonstrations (DAPG). <i>RSS</i>, 2018.</li>
+    <li>S. Ross, J. A. Bagnell. Efficient reductions for imitation learning. <i>AISTATS</i>, 2010.</li>
+    <li>S. Ross, G. Gordon, J. A. Bagnell. A reduction of imitation learning and structured prediction to no-regret online learning (DAgger). <i>AISTATS</i>, 2011.</li>
+    <li>N. Rudin, D. Hoeller, P. Reist, M. Hutter. Learning to walk in minutes using massively parallel deep RL. <i>CoRL</i>, 2022.</li>
+    <li>H. J. T. Suh, M. Simchowitz, K. Zhang, R. Tedrake. Do differentiable simulators give better policy gradients? <i>ICML</i>, 2022.</li>
+    <li>J. Tobin et al. Domain randomization for transferring deep neural networks from simulation to the real world. <i>IROS</i>, 2017.</li>
+    <li>T. Z. Zhao, V. Kumar, S. Levine, C. Finn. Learning fine-grained bimanual manipulation with low-cost hardware (ALOHA/ACT). <i>RSS</i>, 2023.</li>
+    <li>Z. Zhuang et al. Robot parkour learning. <i>CoRL</i>, 2023.</li>
+    <li>Humanoid tracking: T. He et al., H2O, <i>IROS</i> 2024 · Q. Liao et al., BeyondMimic, <i>Science Robotics</i> 2026 · Z. Luo et al., SONIC, <i>Science Robotics</i> 2026 · Q. Liao et al., SuperMimic, <i>CoRL</i> 2026, <a href="https://arxiv.org/abs/2610.28480">arXiv:2610.28480</a>.</li>
+  </ol>
+  <footer>The task map, fit ratings and decision flow are this page's synthesis of the surveys above, not results from any single paper. Bibliographic details for well-established works were not individually re-verified; check venues before formal citation.</footer>
+</section>
+</div>
+
+</html>

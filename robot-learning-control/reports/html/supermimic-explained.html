@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SuperMimic, Explained</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<script>
+  window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+<style>
+/* Layout: one reading column (~68ch) with wide figures that break out to 960px; a lab-notebook feel —
+   forward pass drawn in teal, gradients drawn in amber, everywhere on the page. */
+:root {
+  --bg: #f3f5f7;
+  --paper: #ffffff;
+  --ink: #17212b;
+  --muted: #5a6876;
+  --rule: #d5dde4;
+  --fwd: #0f7c80;      /* forward pass / data */
+  --grad: #b8650a;     /* gradients */
+  --sim: #4b5fa8;      /* simulator / ground truth */
+  --soft-fwd: #e1f1f1;
+  --soft-grad: #f8ecdc;
+  --soft-sim: #e6e9f6;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f151b; --paper: #161e26; --ink: #e3e9ee; --muted: #94a3b1; --rule: #2a3742;
+    --fwd: #4cc3c6; --grad: #f0a54a; --sim: #8f9ff0;
+    --soft-fwd: #133236; --soft-grad: #3a2a14; --soft-sim: #1f2645;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f151b; --paper: #161e26; --ink: #e3e9ee; --muted: #94a3b1; --rule: #2a3742;
+  --fwd: #4cc3c6; --grad: #f0a54a; --sim: #8f9ff0;
+  --soft-fwd: #133236; --soft-grad: #3a2a14; --soft-sim: #1f2645;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.62;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+.wrap { max-width: 960px; margin: 0 auto; }
+.col { max-width: 68ch; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.2rem); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.65rem; font-weight: 700; margin-top: 3.2rem; margin-bottom: .6rem; }
+h3 { font-size: 1.18rem; font-weight: 500; margin-top: 1.8rem; margin-bottom: .3rem; }
+p { margin: .7rem 0; }
+a { color: var(--fwd); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--grad); outline-offset: 2px; }
+.eyebrow { font-family: var(--mono); font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.sec-no { font-family: var(--mono); font-size: .8rem; color: var(--grad); letter-spacing: .06em; display: block; margin-bottom: .25rem; }
+header { padding-block: 48px 8px; }
+.byline { color: var(--muted); font-size: .95rem; margin-top: .8rem; }
+.lede { font-size: 1.15rem; margin-top: 1.2rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-family: var(--mono); font-size: .78rem; color: var(--muted); margin-top: 1rem; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 22px; height: 0; border-top: 2.5px solid; display: inline-block; }
+.sw.f { border-color: var(--fwd); } .sw.g { border-color: var(--grad); border-top-style: dashed; } .sw.s { border-color: var(--sim); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin: 1.6rem 0 0; }
+.facts div { background: var(--paper); padding: 14px 16px; min-width: 0; }
+.facts b { display: block; font-family: var(--display); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.facts small { color: var(--muted); font-size: .85rem; line-height: 1.35; display: block; }
+figure { margin: 1.8rem 0; }
+.fig { background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 16px; overflow-x: auto; }
+.fig svg { display: block; width: 100%; min-width: 640px; height: auto; }
+.fig svg.narrow-ok { min-width: 0; }
+figcaption { font-size: .9rem; color: var(--muted); margin-top: .6rem; max-width: 68ch; }
+figcaption b { color: var(--ink); }
+svg text { font-family: var(--mono); fill: var(--ink); }
+svg .t-muted { fill: var(--muted); }
+svg .t-fwd { fill: var(--fwd); } svg .t-grad { fill: var(--grad); } svg .t-sim { fill: var(--sim); }
+svg .box { fill: var(--paper); stroke: var(--rule); stroke-width: 1.5; }
+svg .box-f { fill: var(--soft-fwd); stroke: var(--fwd); stroke-width: 1.5; }
+svg .box-g { fill: var(--soft-grad); stroke: var(--grad); stroke-width: 1.5; }
+svg .box-s { fill: var(--soft-sim); stroke: var(--sim); stroke-width: 1.5; }
+svg .ln-f { stroke: var(--fwd); stroke-width: 2; fill: none; }
+svg .ln-g { stroke: var(--grad); stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+svg .ln-s { stroke: var(--sim); stroke-width: 2; fill: none; }
+svg .ln-m { stroke: var(--muted); stroke-width: 1.2; fill: none; }
+svg .fill-f { fill: var(--fwd); } svg .fill-g { fill: var(--grad); } svg .fill-s { fill: var(--sim); } svg .fill-m { fill: var(--muted); }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 4px 0; }
+.eq { background: var(--paper); border-left: 3px solid var(--fwd); padding: 6px 16px; margin: 1rem 0; border-radius: 0 4px 4px 0; }
+.eq.g { border-left-color: var(--grad); }
+.eq.s { border-left-color: var(--sim); }
+.eq .tag { font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+.note { font-size: .92rem; color: var(--muted); }
+.tbl { overflow-x: auto; margin: 1.2rem 0; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; line-height: 1.4; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: .84rem; white-space: nowrap; }
+tr.hl td { background: var(--soft-fwd); }
+ol.algo { font-family: var(--mono); font-size: .84rem; line-height: 1.6; background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 16px 14px 44px; overflow-x: auto; }
+ol.algo li { padding-left: 4px; }
+ol.algo .c { color: var(--muted); }
+/* Timeline */
+.timeline { position: relative; margin: 1.6rem 0; display: grid; gap: 18px; }
+.era { display: grid; grid-template-columns: 112px 1fr; gap: 18px; align-items: start; }
+.era .yr { font-family: var(--mono); font-size: .82rem; color: var(--grad); padding-top: 4px; text-align: right; border-right: 2px solid var(--rule); padding-right: 14px; min-height: 100%; }
+.era .body { min-width: 0; background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 18px; }
+.era .body h3 { margin-top: 0; }
+.era .body p { font-size: .96rem; }
+.era .refs { font-family: var(--mono); font-size: .76rem; color: var(--muted); margin-top: .4rem; }
+.era.now .body { border-color: var(--fwd); box-shadow: 0 0 0 1px var(--fwd) inset; }
+@media (max-width: 560px) {
+  .era { grid-template-columns: 1fr; gap: 6px; }
+  .era .yr { text-align: left; border-right: 0; border-bottom: 2px solid var(--rule); padding: 0 0 4px; }
+}
+.reflist { font-size: .88rem; line-height: 1.5; padding-left: 2.6em; }
+.reflist li { margin: .3rem 0; }
+.reflist li::marker { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
+.survey { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin: 1.2rem 0; }
+.survey div { background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; min-width: 0; font-size: .9rem; line-height: 1.45; }
+.survey .k { font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--grad); display: block; margin-bottom: 4px; }
+.cite { font-family: var(--mono); font-size: .76em; color: var(--muted); white-space: nowrap; }
+footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .85rem; color: var(--muted); }
+</style>
+
+<div class="wrap">
+<header class="col">
+  <div class="eyebrow">Paper explainer · CoRL 2026 oral · arXiv 2610.28480</div>
+  <h1>SuperMimic, explained</h1>
+  <p class="byline">On <i>SuperMimic: Scaling Humanoid Whole-Body Control with One Differentiable World Model</i> by Q. Liao, Y. Shao, J. Long, K. Zakka, R. Horowitz, P. Abbeel, K. Sreenath (UC Berkeley, Oct 2026), and the line of work that led to it.</p>
+  <p class="lede">SuperMimic trains a single humanoid motion tracker for an entire motion-capture library on one GPU. Instead of PPO in a simulator, it learns a differentiable neural model of the robot's dynamics and pushes exact gradients of the tracking return back through short imagined rollouts. This page walks through the math, the training loop, and the forty years of reinforcement learning that make the idea work.</p>
+  <div class="legend" aria-label="Diagram legend">
+    <span><i class="sw f"></i>forward pass (learned model)</span>
+    <span><i class="sw g"></i>gradient</span>
+    <span><i class="sw s"></i>simulator / ground truth</span>
+  </div>
+  <div class="facts">
+    <div><b>3 GPU-h</b><small>to pass SONIC's normalized return of 0.90 (one H100)</small></div>
+    <div><b>≈21,000 GPU-h</b><small>SONIC: 128 L40 GPUs for 7 days</small></div>
+    <div><b>25 / 129,514</b><small>failed motions at 3 h; SONIC fails 179; 0 after 9.8 h on 2 GPUs</small></div>
+    <div><b>H = 32</b><small>imagined steps per rollout (0.64 s at 50 Hz), plus a critic beyond</small></div>
+  </div>
+</header>
+
+<!-- ============================ PART I ============================ -->
+<section class="col">
+  <h2><span class="sec-no">1 · The problem</span>Track every motion in a library with one policy</h2>
+  <p>The task is <b>physics-based motion tracking</b>. A reference clip (retargeted human mocap) says where every body of a Unitree G1 should be at each instant. The policy outputs joint set-points so that the simulated, and later the real, robot reproduces the clip without falling. Train one policy across thousands of clips and you get a general whole-body controller that other interfaces (velocity commands, VR teleoperation, text-to-motion) can drive.</p>
+  <p>The paper formalizes this as a goal-conditioned POMDP. The policy is <b>deterministic</b>, which matters later because there is no action log-probability to differentiate:</p>
+  <div class="eq">
+    <span class="tag">Policy, observation, action</span>
+    \[ a_t = \pi_\theta(o_t, g_t), \qquad o_t = \bar o_t + \eta_t,\;\; \eta_t \sim \rho_\eta, \qquad q^{\text{sp}} = \alpha\,a_t + q^0 \]
+  </div>
+  <p>Here \(o_t\) is proprioception (joint positions and velocities, IMU angular velocity, projected gravity, previous action, history of 10 frames), \(g_t\) is the next \(K=10\) reference frames, and the action is a normalized PD set-point around the default pose \(q^0\). Because the PD gains are low, the set-point acts like a torque command.</p>
+  <p>Instead of hard episode ends, returns are weighted by a <b>survival weight</b> \(c_t\) that drops to zero after termination. In imagination the model predicts a termination <i>probability</i> \(\hat d_t\in[0,1]\), so the weight stays differentiable:</p>
+  <div class="eq">
+    <span class="tag">Objective with soft survival</span>
+    \[ c_0 = 1,\quad c_{t+1} = c_t\,(1-d_{t+1}), \qquad J(\theta) = \mathbb{E}\Big[\sum_{t\ge 0} \gamma^t\, c_t\, r_{t+1}\Big] \]
+  </div>
+  <p>The reward is BeyondMimic's tracking reward <span class="cite">[30]</span>: a sum of Gaussian kernels on body positions, orientations, and velocities, plus small regularizers.</p>
+  <div class="eq s">
+    <span class="tag">Tracking reward (tracked body set 𝒯)</span>
+    \[ r = \sum_{k} w_k \exp\!\Big(-\tfrac{1}{|\mathcal T|}\sum_{b\in\mathcal T} \tfrac{\|e_{k,b}\|^2}{\sigma_k^2}\Big) \;-\; 0.1\,\|a_t-a_{t-1}\|^2 \;-\; 2\sum_j \big[\max(0,q_j-q_j^{\max})+\max(0,q_j^{\min}-q_j)\big] \]
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Term \(e_{k,b}\)</th><th>σ</th><th>Weight</th></tr></thead>
+    <tbody>
+      <tr><td>Body position \(p_b^{\text{des}}-p_b\)</td><td class="num">0.3 m</td><td class="num">1.0</td></tr>
+      <tr><td>Body orientation \(\log(R_b^{\text{des}}R_b^\top)\)</td><td class="num">0.4 rad</td><td class="num">1.0</td></tr>
+      <tr><td>Body linear velocity</td><td class="num">1.0 m/s</td><td class="num">1.0</td></tr>
+      <tr><td>Body angular velocity</td><td class="num">3.14 rad/s</td><td class="num">1.0</td></tr>
+      <tr><td>Root position / orientation (single body)</td><td class="num">0.3 / 0.4</td><td class="num">0.5 each</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">The self-collision penalty from BeyondMimic is removed. It existed to stop a stochastic policy from pressing limbs together to suppress action noise, an exploit a deterministic policy cannot use.</p>
+</section>
+
+<!-- Training loop figure -->
+<figure class="wrap">
+  <div class="fig">
+  <svg viewBox="0 0 920 360" role="img" aria-labelledby="loopT">
+    <title id="loopT">SuperMimic training loop: collect data in the simulator, fit the world model, improve the policy through imagined rollouts</title>
+    <defs>
+      <marker id="aF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" class="fill-f"/></marker>
+      <marker id="aG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" class="fill-g"/></marker>
+      <marker id="aS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" class="fill-s"/></marker>
+      <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" class="fill-m"/></marker>
+    </defs>
+    <!-- panel titles -->
+    <text x="140" y="26" text-anchor="middle" font-size="14" font-weight="500">① Collect</text>
+    <text x="460" y="26" text-anchor="middle" font-size="14" font-weight="500">② Fit world model</text>
+    <text x="780" y="26" text-anchor="middle" font-size="14" font-weight="500">③ Improve policy</text>
+    <text x="140" y="44" text-anchor="middle" font-size="11" class="t-muted">MuJoCo Warp, 4096 envs/GPU</text>
+    <text x="460" y="44" text-anchor="middle" font-size="11" class="t-muted">8-step autoregressive windows</text>
+    <text x="780" y="44" text-anchor="middle" font-size="11" class="t-muted">BPTT over H = 32 imagined steps</text>
+
+    <!-- Panel 1 -->
+    <rect x="30" y="66" width="220" height="190" rx="8" class="box"/>
+    <rect x="80" y="84" width="120" height="40" rx="6" class="box-f"/>
+    <text x="140" y="109" text-anchor="middle" font-size="13">policy π<tspan font-size="10" dy="3">θ</tspan></text>
+    <rect x="80" y="190" width="120" height="44" rx="6" class="box-s"/>
+    <text x="140" y="217" text-anchor="middle" font-size="13" class="t-sim">simulator</text>
+    <path d="M120 124 V186" class="ln-f" marker-end="url(#aF)"/>
+    <text x="62" y="160" font-size="11" class="t-fwd">a + ε</text>
+    <path d="M160 190 V128" class="ln-s" marker-end="url(#aS)"/>
+    <text x="168" y="160" font-size="11" class="t-sim">o, r, d</text>
+    <text x="140" y="74" text-anchor="middle" font-size="10" class="t-muted">g from reference clip</text>
+
+    <!-- Replay buffer -->
+    <rect x="130" y="296" width="660" height="46" rx="8" class="box-s"/>
+    <text x="460" y="318" text-anchor="middle" font-size="13" class="t-sim">replay buffer 𝓑 (FIFO, 1000 steps / env)</text>
+    <text x="460" y="334" text-anchor="middle" font-size="10.5" class="t-muted">stores (s, a + ε, r, d, ξ) ; ξ = friction, joint offsets, torso CoM</text>
+    <path d="M140 256 V292" class="ln-s" marker-end="url(#aS)"/>
+
+    <!-- Panel 2 -->
+    <rect x="350" y="66" width="220" height="190" rx="8" class="box"/>
+    <rect x="400" y="96" width="120" height="44" rx="6" class="box-f"/>
+    <text x="460" y="116" text-anchor="middle" font-size="13" class="t-fwd">world model</text>
+    <text x="460" y="132" text-anchor="middle" font-size="11" class="t-fwd">f<tspan font-size="9" dy="3">ω</tspan><tspan dy="-3">, r</tspan><tspan font-size="9" dy="3">ω</tspan><tspan dy="-3">, d</tspan><tspan font-size="9" dy="3">ω</tspan></text>
+    <rect x="400" y="186" width="120" height="40" rx="6" class="box-g"/>
+    <text x="460" y="211" text-anchor="middle" font-size="12" class="t-grad">ℒ_WM (Eq. 1)</text>
+    <path d="M440 140 V182" class="ln-f" marker-end="url(#aF)"/>
+    <path d="M480 186 V144" class="ln-g" marker-end="url(#aG)"/>
+    <text x="490" y="168" font-size="11" class="t-grad">∇ω</text>
+    <path d="M440 292 C 440 270, 440 250, 440 232" class="ln-s" marker-end="url(#aS)"/>
+    <text x="378" y="276" font-size="10.5" class="t-sim">k-step windows</text>
+
+    <!-- Panel 3 -->
+    <rect x="670" y="66" width="220" height="190" rx="8" class="box"/>
+    <rect x="690" y="84" width="84" height="38" rx="6" class="box-f"/>
+    <text x="732" y="108" text-anchor="middle" font-size="12">π<tspan font-size="9" dy="3">θ</tspan></text>
+    <rect x="790" y="84" width="84" height="38" rx="6" class="box"/>
+    <text x="832" y="102" text-anchor="middle" font-size="11" class="t-muted">f<tspan font-size="8" dy="3">ω</tspan></text>
+    <text x="832" y="115" text-anchor="middle" font-size="9" class="t-muted">frozen</text>
+    <path d="M774 103 H786" class="ln-f" marker-end="url(#aF)"/>
+    <path d="M832 122 C 832 150, 732 150, 732 126" class="ln-f" marker-end="url(#aF)"/>
+    <text x="782" y="160" text-anchor="middle" font-size="10" class="t-fwd">ŝ → ô + η → a</text>
+    <rect x="700" y="186" width="160" height="40" rx="6" class="box-g"/>
+    <text x="780" y="204" text-anchor="middle" font-size="11.5" class="t-grad">Ĵ(θ) (Eq. 2) + V<tspan font-size="9" dy="3">ψ</tspan></text>
+    <text x="780" y="219" text-anchor="middle" font-size="9.5" class="t-muted">critic fit with Eq. 3</text>
+    <path d="M712 186 V128" class="ln-g" marker-end="url(#aG)"/>
+    <text x="682" y="162" font-size="11" class="t-grad">∇θ</text>
+    <path d="M760 292 C 760 270, 760 250, 760 232" class="ln-s" marker-end="url(#aS)"/>
+    <text x="770" y="276" font-size="10.5" class="t-sim">start states s₀, ξ</text>
+
+    <!-- loop arrows -->
+    <path d="M250 160 H346" class="ln-m" marker-end="url(#aM)"/>
+    <path d="M570 160 H666" class="ln-m" marker-end="url(#aM)"/>
+    <path d="M890 160 C 912 160, 912 56, 860 56 L 120 56 C 60 56, 30 60, 30 66" class="ln-m" stroke-dasharray="2 4"/>
+    <text x="460" y="62" text-anchor="middle" font-size="10" class="t-muted">next iteration (320k iterations total)</text>
+  </svg>
+  </div>
+  <figcaption><b>Figure 1. One loop, three phases.</b> All three run every iteration, so the model is always fit to the states the current policy visits. Old transitions stay useful for fitting the model because the physics doesn't depend on which policy collected them. Gradients never pass through the simulator. Redrawn from Fig. 2 of the paper.</figcaption>
+</figure>
+
+<section class="col">
+  <h2><span class="sec-no">2 · World model</span>A deterministic, differentiable stand-in for MuJoCo</h2>
+  <p>The simulator knows the physics but doesn't give gradients (MuJoCo Warp contacts are non-smooth, and the code isn't written to be differentiated). SuperMimic therefore learns a surrogate. All of the simulator's randomness comes from known sources (domain-randomization context \(\xi\) and sensor noise \(\eta\)), so the model can be <b>deterministic</b>: it conditions on \(\xi\) and predicts the noise-free observation, and noise is added outside.</p>
+  <div class="eq">
+    <span class="tag">World model heads</span>
+    \[ \hat s_{t+1} = f_\omega(\hat s_t, a_t, \xi), \quad \hat r_{t+1} = r_\omega(\hat s_t, a_t, g_t), \quad \hat{\bar o}_t = g_\omega(\hat s_t, \xi), \quad \hat d_t = d_\omega(\hat s_t, g_t) \]
+  </div>
+  <p>The dynamics net \(f_\omega\) is a 3 × 2048 MLP. Any head that can be computed analytically from the state (the reward, for example, is a known function of body poses) skips its loss term. The model is trained on <b>multi-step autoregressive windows</b> (\(k=8\)): seed it with a logged state, then feed it its own predictions along the logged actions.</p>
+  <div class="eq g">
+    <span class="tag">Eq. 1 · World-model loss</span>
+    \[ \mathcal{L}_{\text{WM}}(\omega) = \mathbb{E}_{\mathcal B}\Big[\sum_{j=1}^{k} \|\hat s_j - s_j\|^2 + (\hat r_j - r_j)^2 + \|\hat{\bar o}_j - \bar o_j\|^2 + \mathrm{BCE}(\hat d_j, d_j)\Big], \qquad \hat s_0 = s_0 \]
+  </div>
+  <p>Training on its own rolled-out predictions teaches the model to correct its own drift. The authors report it stays stable well past 8 steps, which is why 32-step imagination works. The 8-step prediction error stays between 0.007 and 0.011 (normalized) as the data grows from 1 to 264 hours. Every clip is the same robot with the same contacts, so more clips mean more evidence about one shared system, not more to memorize.</p>
+  <p>The model also runs fast. On an H100 it takes more than 10× as many steps per second as MuJoCo Warp at 2k–16k parallel environments, and 62× at 64k.</p>
+</section>
+
+<section class="col">
+  <h2><span class="sec-no">3 · Policy learning</span>Back-propagate the return through imagination</h2>
+  <p>With \(\omega\) frozen, each update samples 4096 start states \(s_0\) (with their recorded \(\xi\)) from the buffer and rolls the policy forward for \(H=32\) steps inside the model. A critic \(V_\psi\) scores whatever lies beyond the horizon.</p>
+  <div class="eq">
+    <span class="tag">Eq. 2 · Imagined objective</span>
+    \[ \hat J(\theta) = \mathbb{E}_{s_0\sim\rho_0}\Big[\sum_{t=0}^{H-1} \gamma^t \hat c_t\, \hat r_{t+1} \;+\; \gamma^H \hat c_H\, V_\psi(\hat s_H, g_H, \xi)\Big], \qquad a_t = \pi_\theta(\hat{\bar o}_t + \eta_t,\, g_t) \]
+  </div>
+</section>
+
+<!-- BPTT figure -->
+<figure class="wrap">
+  <div class="fig">
+  <svg viewBox="0 0 920 270" role="img" aria-labelledby="bpttT">
+    <title id="bpttT">An imagined rollout: the forward pass runs left to right through the world model, gradients flow right to left back into the policy parameters</title>
+    <defs>
+      <marker id="bF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" class="fill-f"/></marker>
+      <marker id="bG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" class="fill-g"/></marker>
+    </defs>
+    <!-- states row -->
+    <g font-size="13">
+      <circle cx="70" cy="150" r="26" class="box-s"/><text x="70" y="155" text-anchor="middle" class="t-sim">s₀</text>
+      <circle cx="250" cy="150" r="26" class="box-f"/><text x="250" y="155" text-anchor="middle">ŝ₁</text>
+      <circle cx="430" cy="150" r="26" class="box-f"/><text x="430" y="155" text-anchor="middle">ŝ₂</text>
+      <text x="565" y="155" text-anchor="middle" class="t-muted">· · ·</text>
+      <circle cx="700" cy="150" r="26" class="box-f"/><text x="700" y="155" text-anchor="middle">ŝ_H</text>
+      <rect x="790" y="128" width="100" height="44" rx="6" class="box-g"/><text x="840" y="148" text-anchor="middle" class="t-grad">V<tspan font-size="10" dy="3">ψ</tspan><tspan dy="-3">(ŝ_H)</tspan></text>
+      <text x="840" y="164" text-anchor="middle" font-size="10" class="t-muted">tail of return</text>
+    </g>
+    <!-- policy boxes -->
+    <g font-size="12">
+      <rect x="130" y="40" width="80" height="34" rx="6" class="box"/><text x="170" y="62" text-anchor="middle">π<tspan font-size="9" dy="3">θ</tspan></text>
+      <rect x="310" y="40" width="80" height="34" rx="6" class="box"/><text x="350" y="62" text-anchor="middle">π<tspan font-size="9" dy="3">θ</tspan></text>
+      <rect x="580" y="40" width="80" height="34" rx="6" class="box"/><text x="620" y="62" text-anchor="middle">π<tspan font-size="9" dy="3">θ</tspan></text>
+    </g>
+    <!-- forward arrows -->
+    <path d="M96 150 H220" class="ln-f" marker-end="url(#bF)"/>
+    <path d="M276 150 H400" class="ln-f" marker-end="url(#bF)"/>
+    <path d="M456 150 H530" class="ln-f"/>
+    <path d="M600 150 H670" class="ln-f" marker-end="url(#bF)"/>
+    <path d="M726 150 H786" class="ln-f" marker-end="url(#bF)"/>
+    <text x="158" y="142" text-anchor="middle" font-size="11" class="t-fwd">f<tspan font-size="8" dy="3">ω</tspan></text>
+    <text x="338" y="142" text-anchor="middle" font-size="11" class="t-fwd">f<tspan font-size="8" dy="3">ω</tspan></text>
+    <text x="636" y="142" text-anchor="middle" font-size="11" class="t-fwd">f<tspan font-size="8" dy="3">ω</tspan></text>
+    <!-- obs -> policy -> action -->
+    <path d="M84 128 L140 78" class="ln-f" marker-end="url(#bF)"/>
+    <path d="M190 74 L158 140" class="ln-f" marker-end="url(#bF)"/>
+    <path d="M264 128 L320 78" class="ln-f" marker-end="url(#bF)"/>
+    <path d="M370 74 L338 140" class="ln-f" marker-end="url(#bF)"/>
+    <path d="M560 128 L594 78" class="ln-f" marker-end="url(#bF)"/>
+    <path d="M640 74 L636 140" class="ln-f" marker-end="url(#bF)"/>
+    <text x="92" y="96" font-size="10" class="t-muted">ô+η</text>
+    <text x="186" y="112" font-size="10" class="t-fwd">a₀</text>
+    <text x="366" y="112" font-size="10" class="t-fwd">a₁</text>
+    <!-- rewards -->
+    <g font-size="11" class="t-grad">
+      <text x="250" y="200" text-anchor="middle">γ⁰ĉ₀ r̂₁</text>
+      <text x="430" y="200" text-anchor="middle">γ¹ĉ₁ r̂₂</text>
+      <text x="700" y="200" text-anchor="middle">γ^{H-1}ĉ r̂_H</text>
+    </g>
+    <!-- gradient return path -->
+    <path d="M820 186 C 820 240, 700 240, 700 232 L 120 232" class="ln-g" marker-end="url(#bG)"/>
+    <text x="460" y="254" text-anchor="middle" font-size="11" class="t-grad">∂Ĵ/∂θ flows back through every ∂f/∂ŝ and ∂f/∂a (BPTT), and into each π_θ</text>
+    <path d="M170 228 L170 80" class="ln-g" marker-end="url(#bG)"/>
+    <path d="M350 228 L350 80" class="ln-g" marker-end="url(#bG)"/>
+    <path d="M620 228 L620 80" class="ln-g" marker-end="url(#bG)"/>
+    <text x="70" y="200" text-anchor="middle" font-size="10" class="t-muted">from 𝓑</text>
+    <text x="460" y="24" text-anchor="middle" font-size="11" class="t-muted">one network π_θ shared across all steps, unrolled H = 32 times</text>
+  </svg>
+  </div>
+  <figcaption><b>Figure 2. Analytic policy gradient.</b> The model is differentiable, so autodiff computes \(\nabla_\theta \hat J\) exactly through the Jacobians of \(f_\omega\) with respect to state and action. The critic closes the horizon. Without it, short horizons only see 0.64 s ahead and cannot learn recovery that pays off later.</figcaption>
+</figure>
+
+<section class="col">
+  <h3>Why this gradient is better than PPO's</h3>
+  <p>PPO treats the dynamics as a black box. It samples actions from a stochastic policy and estimates the gradient by the <b>likelihood-ratio</b> (score-function) trick:</p>
+  <div class="eq s">
+    <span class="tag">Zeroth-order: likelihood-ratio estimator (REINFORCE / PPO)</span>
+    \[ \nabla_\theta J \approx \frac{1}{N}\sum_{i,t} \nabla_\theta \log \pi_\theta(a_t^{i}\mid s_t^{i})\, \hat A_t^{i} \]
+  </div>
+  <p>This only says “that action was better than average,” so a 29-dimensional action space needs a huge number of samples to average out the noise. BPTT instead differentiates the return with respect to each action directly, using the chain rule through the model. One way to write it, with \(\lambda_t = \partial \hat J / \partial \hat s_t\) as the adjoint and the critic term at \(t=H\):</p>
+  <div class="eq g">
+    <span class="tag">First-order: pathwise / reparameterized gradient (illustrative expansion)</span>
+    \[ \nabla_\theta \hat J = \sum_{t=0}^{H-1}\Big(\gamma^t \hat c_t\,\frac{\partial \hat r_{t+1}}{\partial a_t} + \lambda_{t+1}\,\frac{\partial f_\omega}{\partial a_t}\Big)\frac{\partial \pi_\theta}{\partial \theta}, \qquad \lambda_t = \gamma^t\hat c_t\frac{\partial \hat r_{t+1}}{\partial \hat s_t} + \lambda_{t+1}\Big(\frac{\partial f_\omega}{\partial \hat s_t} + \frac{\partial f_\omega}{\partial a_t}\frac{\partial \pi_\theta}{\partial o}\frac{\partial g_\omega}{\partial \hat s_t}\Big) \]
+  </div>
+  <p class="note">The paper writes only “BPTT through the Jacobians”. The recursion above is the standard adjoint form of that, added here to show what autodiff computes. Termination-probability terms through \(\hat c_t\) are omitted for clarity.</p>
+  <p>Two things keep this from blowing up the way gradients through a real differentiable simulator can <span class="cite">[23]</span>. First, the learned model is smooth, so stiff contacts don't produce exploding or misleading Jacobians. Second, the horizon is short, so products of Jacobians stay well-conditioned. The paper's ablation isolates the effect. Run PPO inside the <i>same</i> world model (PPO-WM), and SuperMimic still reaches PPO-WM's best return with <b>about 64× fewer imagined steps</b>. The speedup isn't only from fast rollouts.</p>
+
+  <h3>The critic</h3>
+  <p>The critic is fit to λ-returns computed backward over each imagined rollout, starting from its own estimate at the horizon:</p>
+  <div class="eq">
+    <span class="tag">Eq. 3 · Critic targets and loss</span>
+    \[ \hat R_t = \hat r_{t+1} + \gamma\,(1-\hat d_{t+1})\big[(1-\lambda)V_{t+1} + \lambda \hat R_{t+1}\big], \quad \hat R_H = V_H, \qquad \mathcal L_V(\psi) = \mathbb E\Big[\sum_{t=0}^{H-1}\big(V_t - \hat R_t\big)^2\Big] \]
+  </div>
+  <p>Together these form a short-horizon actor-critic in the style of SHAC <span class="cite">[22]</span>, with two changes: a soft survival weight instead of hard resets, and no target network. The horizon sweep on LAFAN1 shows why the critic is needed:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Horizon H</th><th>No critic</th><th>With critic</th></tr></thead>
+    <tbody>
+      <tr><td class="num">8</td><td>never reaches return 0.82</td><td>never reaches 0.82</td></tr>
+      <tr><td class="num">16</td><td>never reaches 0.82</td><td>matches no-critic H = 32</td></tr>
+      <tr class="hl"><td class="num">32 (default)</td><td>reaches 0.82</td><td>fastest to 0.82</td></tr>
+      <tr><td class="num">64 → 128</td><td colspan="2">time to 0.82 nearly triples; final return drops (exploding/vanishing BPTT, memory)</td></tr>
+    </tbody>
+  </table></div>
+  <p>At equal nominal return, the critic changes behavior. Push the robot at 0.5–4 m/s while it holds a T-pose: the critic policy settles in 0.5–2.4 s, while the critic-free policy keeps stumbling and falls at 4 m/s.</p>
+
+  <h3>Algorithm</h3>
+  <ol class="algo">
+    <li><span class="c">for each iteration (320k) do</span></li>
+    <li>Roll out π<sub>θ</sub> with noise ε ~ 𝒩(0, 0.1²) in 4096 sim envs; push to 𝓑 (FIFO).</li>
+    <li>Reset envs by <b>return-based sampling</b>: 50 % uniform over 1-s bins, 40 % softmax(−25·G<sub>b</sub>/G<sub>max</sub>), 10 % historical weight.</li>
+    <li>Sample 8-step windows from 𝓑; roll f<sub>ω</sub> on logged actions; ω ← ω − α∇<sub>ω</sub>ℒ<sub>WM</sub>.</li>
+    <li>Sample 4096 start states + ξ from 𝓑; imagine H = 32 steps with frozen f<sub>ω</sub>.</li>
+    <li>θ ← θ + α∇<sub>θ</sub>Ĵ (Adam, β = (0.9, 0.95); clip global norm 1.0, then element-wise 0.1).</li>
+    <li>Fit V<sub>ψ</sub> to λ-returns (γ = 0.99, λ = 0.95), 5 epochs × 4 minibatches.</li>
+    <li><span class="c">end for</span> <span class="c">· update-to-data ratio 0.4 · one policy update per model update</span></li>
+  </ol>
+
+  <h3>Downstream interfaces through the same model</h3>
+  <p>The policy is split into goal encoders and a shared decoder, \(z = \mathrm{enc}_{\theta,i}(g)\), \(a = \mathrm{dec}_\theta(z, o)\), with a 32-dimensional tanh-bounded latent. Any new interface \(i\) (velocity commands, end-effector targets) trains through the same frozen-physics model with the lifted objective \(\max_\theta \mathbb E_{i\sim p(\mathcal I)}[\hat J_i(\theta)]\). A velocity encoder trained on its own velocity reward (RL) beat a distillation baseline on 650 of 672 step commands, and only the distilled encoder fell, on fast turns with almost no mocap data. The authors call this preliminary.</p>
+</section>
+
+<!-- compute chart -->
+<figure class="wrap">
+  <div class="fig">
+  <svg viewBox="0 0 900 200" role="img" aria-labelledby="cmpT" class="narrow-ok" style="min-width:520px">
+    <title id="cmpT">GPU-hours on a log scale: SuperMimic 3, SuperMimic two-GPU zero-failure run about 19.6, SONIC about 21,500</title>
+    <!-- axis: log10 from 0 (1) to 5 (100000); x = 220 + v*130 -->
+    <g class="ln-m">
+      <line x1="220" y1="160" x2="870" y2="160"/>
+    </g>
+    <g font-size="11" class="t-muted" text-anchor="middle">
+      <line x1="220" y1="40" x2="220" y2="160" stroke="var(--rule)"/><text x="220" y="178">1</text>
+      <line x1="350" y1="40" x2="350" y2="160" stroke="var(--rule)"/><text x="350" y="178">10</text>
+      <line x1="480" y1="40" x2="480" y2="160" stroke="var(--rule)"/><text x="480" y="178">100</text>
+      <line x1="610" y1="40" x2="610" y2="160" stroke="var(--rule)"/><text x="610" y="178">1,000</text>
+      <line x1="740" y1="40" x2="740" y2="160" stroke="var(--rule)"/><text x="740" y="178">10,000</text>
+      <line x1="870" y1="40" x2="870" y2="160" stroke="var(--rule)"/><text x="870" y="178">100,000</text>
+      <text x="545" y="196">GPU-hours (log scale)</text>
+    </g>
+    <!-- bars: SuperMimic 3 -> log10 3 = .477 -> 282 ; 2x9.8=19.6 -> 1.292 -> 388 ; SONIC 21,504 -> 4.332 -> 783 -->
+    <text x="210" y="62" text-anchor="end" font-size="12">SuperMimic, 1×H100</text>
+    <rect x="220" y="50" width="62" height="18" class="fill-f"/>
+    <text x="290" y="64" font-size="11" class="t-fwd">3 h → passes SONIC return</text>
+    <text x="210" y="96" text-anchor="end" font-size="12">SuperMimic, 2×H100</text>
+    <rect x="220" y="84" width="168" height="18" class="fill-f" opacity=".6"/>
+    <text x="396" y="98" font-size="11" class="t-fwd">19.6 GPU-h → 0 failed motions</text>
+    <text x="210" y="130" text-anchor="end" font-size="12">SONIC, 128×L40</text>
+    <rect x="220" y="118" width="563" height="18" class="fill-s"/>
+    <text x="790" y="132" font-size="11" class="t-sim">≈21,500</text>
+  </svg>
+  </div>
+  <figcaption><b>Figure 3. Compute to SONIC-level tracking.</b> 168 h × 128 GPUs ≈ 21,500 GPU-hours versus 3. The hardware differs (H100 vs L40) and SuperMimic trained on 264.56 h of public BONES-SEED data versus SONIC's 611 h; the authors argue these factors (≤ 5.5× and 2.3×) cannot explain a > 1000× gap. In a controlled same-setup test on LAFAN1, SuperMimic reached 0.82 return in 1.2 h on one GPU, and PPO in the simulator ended at 0.60 / 0.70 / 0.72 on 1 / 4 / 8 GPUs after 18 h.</figcaption>
+</figure>
+
+<!-- ============================ PART II ============================ -->
+<section class="col">
+  <h2><span class="sec-no">4 · How we got here</span>From Bellman to one-GPU humanoids</h2>
+  <p>SuperMimic combines two lines of research that grew up separately. One is <b>physics-based motion imitation</b>, mostly driven by model-free RL. The other is <b>model-based RL with learned or differentiable dynamics</b>. The timeline shows where each idea entered.</p>
+</section>
+
+<div class="col">
+<div class="timeline">
+  <div class="era">
+    <div class="yr">1957–1992</div>
+    <div class="body">
+      <h3>Foundations: value functions, models, policy gradients</h3>
+      <p>Dynamic programming gives the Bellman optimality equation. Dyna (Sutton, 1991) already uses a learned model to generate imagined experience for the learner; SuperMimic calls its own loop “Dyna-style”. REINFORCE gives the likelihood-ratio gradient that PPO still uses.</p>
+      <div class="eq s">\[ Q^*(s,a) = \mathbb E\big[r + \gamma \max_{a'} Q^*(s',a')\big], \qquad \nabla_\theta J = \mathbb E\big[\textstyle\sum_t \nabla_\theta\log\pi_\theta(a_t|s_t)\,G_t\big] \]</div>
+      <div class="refs">Bellman 1957 · Sutton 1991 [1] · Williams 1992 [2] · Sutton &amp; Barto 2018 [S1]</div>
+    </div>
+  </div>
+  <div class="era">
+    <div class="yr">2011–2015</div>
+    <div class="body">
+      <h3>Analytic gradients through models</h3>
+      <p>PILCO fits a Gaussian-process dynamics model and differentiates long-horizon expected cost analytically, which is extremely data-efficient on small systems. Stochastic Value Gradients (SVG) bring pathwise gradients through learned neural models together with a critic. Its SVG(0) variant later trains the NPMP humanoid controller. This is the direct ancestor of Eq. 2.</p>
+      <div class="refs">Deisenroth &amp; Rasmussen 2011 [3] · Heess et al. 2015 [4]</div>
+    </div>
+  </div>
+  <div class="era">
+    <div class="yr">2015–2018</div>
+    <div class="body">
+      <h3>Deep model-free RL</h3>
+      <p>DQN and then continuous-control methods (TRPO, DDPG, GAE, PPO, SAC) scale RL with neural networks. PPO's clipped surrogate becomes the default for simulated robots because it is stable and parallelizes well:</p>
+      <div class="eq s">\[ L^{\text{CLIP}}(\theta) = \mathbb E_t\Big[\min\big(\rho_t \hat A_t,\; \mathrm{clip}(\rho_t, 1-\epsilon, 1+\epsilon)\hat A_t\big)\Big], \quad \rho_t = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)} \]</div>
+      <div class="refs">Mnih 2015 [5] · Schulman 2015 TRPO [6] · Lillicrap 2016 [7] · Schulman 2016 GAE [8] · Schulman 2017 PPO [9] · Haarnoja 2018 SAC [10]</div>
+    </div>
+  </div>
+  <div class="era">
+    <div class="yr">2018–2021</div>
+    <div class="body">
+      <h3>Motion imitation for simulated characters</h3>
+      <p>DeepMimic shows that PPO with a pose-matching reward and reference-state initialization reproduces flips and kicks. Its reward is the template that BeyondMimic and SuperMimic still use:</p>
+      <div class="eq">\[ r_t = 0.65\,r^p + 0.1\,r^v + 0.15\,r^e + 0.1\,r^c, \qquad r^p = \exp\Big[-2\textstyle\sum_j \|\hat q_j \ominus q_j\|^2\Big] \]</div>
+      <p>AMP replaces hand-made tracking terms with an adversarial style reward. NPMP distills many experts into one latent motor primitive. SuperTrack (2021) is the first to train a tracker <i>through a learned world model</i> with BPTT, but on animated characters only.</p>
+      <div class="refs">Peng et al. 2018 [11] · Merel et al. 2019 [12] · Peng et al. 2021 AMP [13] · Fussell et al. 2021 SuperTrack [14]</div>
+    </div>
+  </div>
+  <div class="era">
+    <div class="yr">2018–2022</div>
+    <div class="body">
+      <h3>Latent imagination and sim-to-real legged robots</h3>
+      <p>On the model-based side, World Models, PlaNet, Dreamer and MBPO train behaviors inside learned models. Dreamer back-propagates λ-returns through latent imagination, close in spirit to SuperMimic. On the robotics side, domain randomization and massively parallel GPU simulation (Isaac Gym, legged_gym) make PPO-trained legged controllers transfer to hardware.</p>
+      <div class="refs">Tobin 2017 [15] · Peng 2018 dyn. rand. [16] · Ha &amp; Schmidhuber 2018 [17] · Janner 2019 MBPO [18] · Hwangbo 2019 [19] · Hafner 2020 Dreamer [20] · Makoviychuk 2021 [21] · Rudin 2022 [24]</div>
+    </div>
+  </div>
+  <div class="era">
+    <div class="yr">2022–2025</div>
+    <div class="body">
+      <h3>Differentiable simulation meets actor-critic</h3>
+      <p>SHAC differentiates through a parallel differentiable simulator over short windows with a critic at the end, which is exactly the shape of SuperMimic's Eq. 2–3. Suh et al. show the catch: through stiff contacts, analytic gradients can be biased or have high variance. That motivates learning a smooth surrogate instead. ControlVAE, MoConVQ and SuperDyno scale learned-dynamics character control. Song et al. train real quadrupeds with differentiable simulation, and RWM trains real robots with PPO in a learned neural simulator.</p>
+      <div class="eq g">\[ \mathcal L_{\text{SHAC}}(\theta) = -\frac{1}{Nh}\sum_{i=1}^{N}\Big[\sum_{t=t_0}^{t_0+h-1}\gamma^{t-t_0} r(s_t^i,a_t^i) + \gamma^{h} V_\phi(s_{t_0+h}^i)\Big] \]</div>
+      <div class="refs">Xu 2022 SHAC [22] · Suh 2022 [23] · Yao 2022 ControlVAE [25] · Hansen 2022 TD-MPC [26] · Wu 2023 DayDreamer [27] · Yao 2024 MoConVQ [28] · Lei 2025 SuperDyno [29] · Song 2025 [31] · Li 2025 RWM [32] · Hafner 2025 DreamerV3 [33]</div>
+    </div>
+  </div>
+  <div class="era">
+    <div class="yr">2023–2026</div>
+    <div class="body">
+      <h3>Humanoid whole-body tracking at scale</h3>
+      <p>PHC tracks almost all of AMASS in simulation. H2O/OmniH2O, ExBody, HumanPlus and ASAP bring mocap tracking to real humanoids, usually as a PPO teacher with privileged state distilled (DAgger) into a deployable student:</p>
+      <div class="eq s">\[ \min_{\phi}\; \mathbb E_{s\sim d^{\pi_\phi}}\big\|\pi_\phi(o) - \pi^{\text{teacher}}(s)\big\|^2 \]</div>
+      <p>BeyondMimic (same first author as SuperMimic) gives a clean, transferable PPO tracking recipe plus guided diffusion for tasks. SONIC scales a single PPO tracker to about 600 hours of motion on a 128-GPU cluster. The common bottleneck is compute.</p>
+      <div class="refs">Luo 2023 PHC [34] · He 2024 H2O/OmniH2O [35,36] · Cheng 2024 ExBody [37] · Fu 2024 HumanPlus [38] · Luo 2024 PULSE [39] · He 2025 ASAP [40] · Liao 2026 BeyondMimic [30] · Luo 2026 SONIC [41]</div>
+    </div>
+  </div>
+  <div class="era now">
+    <div class="yr">Oct 2026</div>
+    <div class="body">
+      <h3>SuperMimic</h3>
+      <p>SuperMimic combines both lines: the SuperTrack/SHAC idea of BPTT through a learned model with a critic, applied to the BeyondMimic/SONIC humanoid tracking problem, with domain-randomization context \(\xi\) and sensor noise handled explicitly so the result deploys on a real G1. One world model shared across all 129,514 clips, trained online, cuts compute by more than three orders of magnitude.</p>
+      <div class="refs">Liao, Shao, Long, Zakka, Horowitz, Abbeel, Sreenath 2026 [42]</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<section class="col">
+  <h2><span class="sec-no">5 · Comparison</span>Where SuperMimic sits among training strategies</h2>
+</section>
+<div class="wrap">
+<div class="tbl"><table>
+  <thead><tr><th>Strategy</th><th>Gradient signal</th><th>Dynamics</th><th>Data / compute</th><th>Strength</th><th>Main failure mode</th></tr></thead>
+  <tbody>
+    <tr><td><b>Model-free on-policy</b> (PPO; DeepMimic, PHC, BeyondMimic, SONIC)</td><td>Likelihood-ratio, zeroth order</td><td>Black-box simulator</td><td>Very high; ~21k GPU-h for SONIC</td><td>Robust, simple, handles contacts</td><td>Variance grows with action dim and motion count; scale = more GPUs</td></tr>
+    <tr><td><b>Teacher–student distillation</b> (H2O, OmniH2O, BeyondMimic, PULSE)</td><td>Supervised regression to expert actions</td><td>None (experts hold it)</td><td>High: many experts plus distillation</td><td>Removes privileged info for deployment</td><td>Lossy merge of experts; capped by teachers</td></tr>
+    <tr><td><b>Offline behavior cloning</b> (NPMP-style, GBC)</td><td>Supervised on fixed rollouts</td><td>None</td><td>Low training cost, needs expert data</td><td>Simple, stable</td><td>Compounding error off the data distribution</td></tr>
+    <tr><td><b>MBRL with model-free optimizer</b> (MBPO, RWM, PPO-WM)</td><td>Likelihood-ratio on imagined data</td><td>Learned model</td><td>Lower sim cost</td><td>Cheap rollouts</td><td>Still noisy gradients; ~64× more imagined steps than BPTT in SuperMimic's ablation</td></tr>
+    <tr><td><b>Differentiable simulation</b> (SHAC, Song et al. 2025)</td><td>Analytic, first order</td><td>Hand-written differentiable sim</td><td>Low</td><td>Exact physics gradients</td><td>Contact gradients biased or exploding; needs a differentiable simulator</td></tr>
+    <tr class="hl"><td><b>SuperMimic</b></td><td>Analytic BPTT through learned model + critic</td><td>Learned, deterministic, conditioned on ξ, fit online</td><td>3 GPU-h to SONIC-level</td><td>Low-variance gradients, fast rollouts, one model amortized across all clips</td><td>Bounded by model accuracy; flat ground only; sim-only data; needs critic and H ≤ 64</td></tr>
+  </tbody>
+</table></div>
+</div>
+
+<section class="col">
+  <h2><span class="sec-no">6 · Open problems</span>What the paper leaves open</h2>
+  <p><b>Model fidelity is the ceiling.</b> The policy optimizes the model's return, not the simulator's. A deterministic model cannot represent state jumps, so BeyondMimic's random root-velocity pushes were removed from training, and push robustness comes only from the critic.</p>
+  <p><b>Scope.</b> Training is flat ground only, with no stairs, objects, or terrain. About 12,700 of the 142,220 BONES-SEED clips were filtered out because they involve stairs, boxes or chairs, or have retargeting artifacts. Extending the model to scene contact is listed as ongoing work.</p>
+  <p><b>Simulator-only data.</b> The model never sees real robot transitions. The authors suggest real data could refine it and that its differentiability could support system identification, which would bring it closer to DayDreamer-style learning on hardware.</p>
+  <p><b>Fair scaling comparisons.</b> The headline ratio mixes GPU types and dataset sizes, and the benchmark motions are training motions, so failure counts measure coverage, not generalization. The controlled LAFAN1 comparison is the cleanest evidence.</p>
+  <p><b>Long horizons.</b> Beyond H = 64, BPTT gets slower and worse. Longer-horizon credit assignment is still the critic's job.</p>
+  <p><b>Scaling laws.</b> The paper's main promise is that one-GPU runs make it affordable to measure scaling laws for motion tracking (data hours × model size × return). That study hasn't been done yet.</p>
+</section>
+
+<section class="col">
+  <h2><span class="sec-no">7 · Reading list</span>Surveys and overview papers</h2>
+  <p>To get the background behind each part of SuperMimic, start with these.</p>
+</section>
+<div class="wrap">
+<div class="survey">
+  <div><span class="k">RL foundations</span>[S1] R. S. Sutton, A. G. Barto. <i>Reinforcement Learning: An Introduction</i>, 2nd ed. MIT Press, 2018.</div>
+  <div><span class="k">Deep RL overview</span>[S2] K. Arulkumaran, M. P. Deisenroth, M. Brundage, A. A. Bharath. “Deep reinforcement learning: A brief survey.” <i>IEEE Signal Processing Magazine</i> 34(6), 2017.</div>
+  <div><span class="k">RL in robotics</span>[S3] J. Kober, J. A. Bagnell, J. Peters. “Reinforcement learning in robotics: A survey.” <i>IJRR</i> 32(11), 2013.</div>
+  <div><span class="k">Real-world deep RL</span>[S4] C. Tang, B. Abbatematteo, J. Hu, R. Chandra, R. Martín-Martín, P. Stone. “Deep reinforcement learning for robotics: A survey of real-world successes.” <i>Annual Review of Control, Robotics, and Autonomous Systems</i>, 2025.</div>
+  <div><span class="k">Model-based RL</span>[S5] T. M. Moerland, J. Broekens, A. Plaat, C. M. Jonker. “Model-based reinforcement learning: A survey.” <i>Foundations and Trends in Machine Learning</i> 16(1), 2023.</div>
+  <div><span class="k">Differentiable simulation</span>[S6] R. Newbury et al. “A review of differentiable simulators.” <i>IEEE Access</i>, 2024. <a href="https://arxiv.org/abs/2407.05560">arXiv:2407.05560</a></div>
+  <div><span class="k">Sim-to-real</span>[S7] W. Zhao, J. P. Queralta, T. Westerlund. “Sim-to-real transfer in deep reinforcement learning for robotics: A survey.” <i>IEEE SSCI</i>, 2020.</div>
+  <div><span class="k">Humanoids</span>[S8] Z. Gu et al. “Humanoid locomotion and manipulation: Current progress and challenges in control, planning, and learning.” 2025. <a href="https://arxiv.org/abs/2501.02116">arXiv:2501.02116</a></div>
+  <div><span class="k">Humanoid whole-body control</span>[S9] “A survey of behavior foundation model: Next-generation whole-body control system of humanoid robots.” 2025. <a href="https://arxiv.org/abs/2506.20487">arXiv:2506.20487</a></div>
+</div>
+</div>
+
+<section class="col">
+  <h2><span class="sec-no">8 · References</span>Works cited</h2>
+  <ol class="reflist">
+    <li>R. S. Sutton. Dyna, an integrated architecture for learning, planning, and reacting. <i>ACM SIGART Bulletin</i> 2(4), 1991.</li>
+    <li>R. J. Williams. Simple statistical gradient-following algorithms for connectionist reinforcement learning. <i>Machine Learning</i> 8, 1992.</li>
+    <li>M. P. Deisenroth, C. E. Rasmussen. PILCO: A model-based and data-efficient approach to policy search. <i>ICML</i>, 2011.</li>
+    <li>N. Heess, G. Wayne, D. Silver, T. Lillicrap, Y. Tassa, T. Erez. Learning continuous control policies by stochastic value gradients. <i>NeurIPS</i>, 2015.</li>
+    <li>V. Mnih et al. Human-level control through deep reinforcement learning. <i>Nature</i> 518, 2015.</li>
+    <li>J. Schulman, S. Levine, P. Moritz, M. Jordan, P. Abbeel. Trust region policy optimization. <i>ICML</i>, 2015.</li>
+    <li>T. Lillicrap et al. Continuous control with deep reinforcement learning. <i>ICLR</i>, 2016.</li>
+    <li>J. Schulman, P. Moritz, S. Levine, M. Jordan, P. Abbeel. High-dimensional continuous control using generalized advantage estimation. <i>ICLR</i>, 2016.</li>
+    <li>J. Schulman, F. Wolski, P. Dhariwal, A. Radford, O. Klimov. Proximal policy optimization algorithms. arXiv:1707.06347, 2017.</li>
+    <li>T. Haarnoja, A. Zhou, P. Abbeel, S. Levine. Soft actor-critic. <i>ICML</i>, 2018.</li>
+    <li>X. B. Peng, P. Abbeel, S. Levine, M. van de Panne. DeepMimic: Example-guided deep RL of physics-based character skills. <i>ACM TOG</i> 37(4), 2018.</li>
+    <li>J. Merel et al. Neural probabilistic motor primitives for humanoid control. <i>ICLR</i>, 2019.</li>
+    <li>X. B. Peng, Z. Ma, P. Abbeel, S. Levine, A. Kanazawa. AMP: Adversarial motion priors for stylized physics-based character control. <i>ACM TOG</i> 40(4), 2021.</li>
+    <li>L. Fussell, K. Bergamin, D. Holden. SuperTrack: Motion tracking for physically simulated characters using supervised learning. <i>ACM TOG</i> 40(6), 2021.</li>
+    <li>J. Tobin et al. Domain randomization for transferring deep neural networks from simulation to the real world. <i>IROS</i>, 2017.</li>
+    <li>X. B. Peng, M. Andrychowicz, W. Zaremba, P. Abbeel. Sim-to-real transfer of robotic control with dynamics randomization. <i>ICRA</i>, 2018.</li>
+    <li>D. Ha, J. Schmidhuber. World models / Recurrent world models facilitate policy evolution. <i>NeurIPS</i>, 2018.</li>
+    <li>M. Janner, J. Fu, M. Zhang, S. Levine. When to trust your model: Model-based policy optimization. <i>NeurIPS</i>, 2019.</li>
+    <li>J. Hwangbo et al. Learning agile and dynamic motor skills for legged robots. <i>Science Robotics</i> 4(26), 2019.</li>
+    <li>D. Hafner, T. Lillicrap, J. Ba, M. Norouzi. Dream to control: Learning behaviors by latent imagination. <i>ICLR</i>, 2020.</li>
+    <li>V. Makoviychuk et al. Isaac Gym: High performance GPU-based physics simulation for robot learning. <i>NeurIPS Datasets &amp; Benchmarks</i>, 2021.</li>
+    <li>J. Xu, V. Makoviychuk, Y. Narang, F. Ramos, W. Matusik, A. Garg, M. Macklin. Accelerated policy learning with parallel differentiable simulation (SHAC). <i>ICLR</i>, 2022.</li>
+    <li>H. J. T. Suh, M. Simchowitz, K. Zhang, R. Tedrake. Do differentiable simulators give better policy gradients? <i>ICML</i>, 2022.</li>
+    <li>N. Rudin, D. Hoeller, P. Reist, M. Hutter. Learning to walk in minutes using massively parallel deep RL. <i>CoRL</i>, 2022.</li>
+    <li>H. Yao, Z. Song, B. Chen, L. Liu. ControlVAE: Model-based learning of generative controllers for physics-based characters. <i>ACM TOG</i> 41(6), 2022.</li>
+    <li>N. Hansen, X. Wang, H. Su. Temporal difference learning for model predictive control. <i>ICML</i>, 2022.</li>
+    <li>P. Wu, A. Escontrela, D. Hafner, K. Goldberg, P. Abbeel. DayDreamer: World models for physical robot learning. <i>CoRL</i>, 2023.</li>
+    <li>H. Yao et al. MoConVQ: Unified physics-based motion control via scalable discrete representations. <i>ACM TOG</i> 43(4), 2024.</li>
+    <li>Y. Lei, Z. Luo, T. He, J. Cao, G. Shi, K. Kitani. Scalable humanoid whole-body control via differentiable neural network dynamics (SuperDyno). <i>ICLR Workshop on World Models</i>, 2025.</li>
+    <li>Q. Liao, T. E. Truong, X. Huang, Y. Gao, G. Tevet, K. Sreenath, C. K. Liu. BeyondMimic: From motion tracking to versatile humanoid control via guided diffusion. <i>Science Robotics</i> 11(117), 2026.</li>
+    <li>Y. Song, S. Kim, D. Scaramuzza. Learning quadruped locomotion using differentiable simulation. <i>CoRL</i>, 2024 (PMLR 270, 2025).</li>
+    <li>C. Li, A. Krause, M. Hutter. Robotic world model: A neural network simulator for robust policy optimization in robotics. arXiv:2501.10100, 2025.</li>
+    <li>D. Hafner, J. Pasukonis, J. Ba, T. Lillicrap. Mastering diverse control tasks through world models (DreamerV3). <i>Nature</i> 640, 2025.</li>
+    <li>Z. Luo, J. Cao, A. Winkler, K. Kitani, W. Xu. Perpetual humanoid control for real-time simulated avatars (PHC). <i>ICCV</i>, 2023.</li>
+    <li>T. He et al. Learning human-to-humanoid real-time whole-body teleoperation (H2O). <i>IROS</i>, 2024.</li>
+    <li>T. He et al. OmniH2O: Universal and dexterous human-to-humanoid whole-body teleoperation and learning. <i>CoRL</i>, 2024.</li>
+    <li>X. Cheng, Y. Ji, J. Chen, R. Yang, G. Yang, X. Wang. Expressive whole-body control for humanoid robots (ExBody). <i>RSS</i>, 2024.</li>
+    <li>Z. Fu, Q. Zhao, Q. Wu, G. Wetzstein, C. Finn. HumanPlus: Humanoid shadowing and imitation from humans. <i>CoRL</i>, 2024.</li>
+    <li>Z. Luo et al. Universal humanoid motion representations for physics-based control (PULSE). <i>ICLR</i>, 2024.</li>
+    <li>T. He et al. ASAP: Aligning simulation and real-world physics for learning agile humanoid whole-body skills. <i>RSS</i>, 2025.</li>
+    <li>Z. Luo et al. SONIC: Supersizing motion tracking for natural humanoid whole-body control. <i>Science Robotics</i> 11(117), 2026.</li>
+    <li>Q. Liao, Y. Shao, J. Long, K. Zakka, R. Horowitz, P. Abbeel, K. Sreenath. SuperMimic: Scaling humanoid whole-body control with one differentiable world model. <i>CoRL</i>, 2026. <a href="https://arxiv.org/abs/2610.28480">arXiv:2610.28480</a> · <a href="https://supermimic.github.io/">project page</a></li>
+  </ol>
+  <footer>Method equations (Eq. 1–3), hyperparameters, and results come from the SuperMimic paper (arXiv:2610.28480v1). The adjoint expansion of the BPTT gradient and the redrawn diagrams are this page's own. Numbers are the authors' and haven't been independently reproduced.</footer>
+</section>
+</div>
+
+</html>
