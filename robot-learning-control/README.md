@@ -10,6 +10,7 @@ A research collection on **SuperMimic** (CoRL 2026) and on how model-based contr
 | [reports/02-supermimic-method-and-history.md](reports/02-supermimic-method-and-history.md) | The method with all equations (world model, BPTT objective, critic), training loop, and a timeline from classic RL to 2026 |
 | [reports/03-model-reward-or-reference.md](reports/03-model-reward-or-reference.md) | Why robot control is hard; model-based vs RL vs imitation; reference-based vs self-exploration RL; which method fits which task |
 | [reports/04-breakthrough-timeline.md](reports/04-breakthrough-timeline.md) | One breakthrough per year, 2010–2026: the bottleneck it solved, the experiment that proved it, and its real-world reach |
+| [cookbook/COOKBOOK.md](cookbook/COOKBOOK.md) | The math behind all of it, in 39 self-contained recipes: linear algebra and optimization, classical control (PID, LQR, Kalman, MPC, whole-body QP, LIPM), ML, deep learning, RL (Bellman to PPO, world models, analytic gradients, imitation, sim-to-real) and motion tracking. Every worked example is reproduced by `cookbook/examples.py` |
 | [CATALOG.md](CATALOG.md) | Every paper, grouped by topic, with year, venue, links, local PDF and a one-line reason it matters |
 
 The HTML pages in [reports/html/](reports/html/) are the illustrated versions, with diagrams, rendered equations and a decision flowchart. GitHub shows HTML as source, so download them and open them in a browser. The equations load MathJax from a CDN, so they need an internet connection.
@@ -37,6 +38,11 @@ robot-learning-control/
 │   ├── 04-differentiable-simulation/  3   SVG, SHAC, Suh et al.
 │   ├── 05-character-motion-imitation/ 2   DeepMimic, AMP
 │   └── 09-imitation-learning/         1   DAgger
+├── cookbook/
+│   ├── COOKBOOK.md           the math cookbook (source)
+│   ├── examples.py           runnable worked examples, NumPy only (python3 examples.py r08)
+│   ├── build_html.py         renders COOKBOOK.md into cookbook.html
+│   └── cookbook.html         rendered version with equations, diagrams and a recipe index
 └── tools/
     └── build_catalog.py      regenerates CATALOG.md / catalog.csv and downloads PDFs
 ```
