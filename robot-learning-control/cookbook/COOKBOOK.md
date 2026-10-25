@@ -12,6 +12,16 @@ This cookbook is written to be read on its own. Every symbol is defined where it
 
 Prerequisites: high-school algebra and the idea of a derivative. Everything else is built up here.
 
+**Minimum quick-start path.** If you only have time for one resource per part, use these (all free):
+1. *Math:* [Mathematics for Machine Learning](https://mml-book.github.io/), chapters 2, 5, 6 and 7.
+2. *Control:* [Underactuated Robotics](https://underactuated.mit.edu/), the LQR and trajectory-optimization chapters.
+3. *Machine learning:* [Probabilistic Machine Learning: An Introduction](https://probml.github.io/pml-book/book1.html), the regression and classification chapters.
+4. *Deep learning:* [Dive into Deep Learning](https://d2l.ai/), the MLP and optimization chapters.
+5. *Reinforcement learning:* [Spinning Up](https://spinningup.openai.com/) for practice, and [Sutton & Barto](http://incompleteideas.net/book/the-book-2nd.html) chapters 3–6 and 13 for theory.
+6. *Locomotion:* [Modern Robotics](https://hades.mech.northwestern.edu/index.php/Modern_Robotics) chapters 3–6, then train a G1 tracker in [mjlab](https://github.com/mujocolab/mjlab).
+
+Each Part below opens with a longer quick-start table that maps each resource to the recipes it covers.
+
 ```mermaid
 flowchart LR
   T[Part 1<br/>Math toolkit] --> C[Part 2<br/>Dynamics and control]
@@ -37,6 +47,16 @@ flowchart LR
 ---
 
 # Part 1 · Math toolkit
+
+**Quick start.** Read these first if the math in this part is new to you.
+
+| Resource | Access | Start with | Covers |
+|---|---|---|---|
+| [Mathematics for Machine Learning](https://mml-book.github.io/), Deisenroth, Faisal & Ong (2020) | Free PDF | Chapters on linear algebra, vector calculus, probability, continuous optimization | R1–R4 |
+| [Essence of Linear Algebra](https://www.3blue1brown.com/topics/linear-algebra), 3Blue1Brown | Free videos | The whole series (about 3 hours) for geometric intuition | R1 |
+| [MIT 18.06 Linear Algebra](https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/), Gilbert Strang | Free course | Lectures on eigenvalues and positive-definite matrices | R1, R6 |
+| [Convex Optimization](https://web.stanford.edu/~boyd/cvxbook/), Boyd & Vandenberghe (2004) | Free PDF | The duality chapter (Lagrangians, KKT conditions) | R4, R12 |
+| [The Matrix Cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf), Petersen & Pedersen | Free PDF | Look up matrix derivatives as you need them | R2, R18 |
 
 ## R1. Linear algebra for robots
 
@@ -110,6 +130,19 @@ flowchart LR
 ---
 
 # Part 2 · Dynamics and classical control
+
+**Quick start.**
+
+| Resource | Access | Start with | Covers |
+|---|---|---|---|
+| [Underactuated Robotics](https://underactuated.mit.edu/), Russ Tedrake (MIT course notes) | Free, with runnable code | Chapters "Linear Quadratic Regulators", "Trajectory Optimization" and "Simple Models of Walking and Running" | R6, R8, R11, R13 |
+| [Feedback Systems](https://fbswiki.org/), Åström & Murray | Free PDF | Chapters on state feedback and on PID control | R5–R7 |
+| [Modern Robotics](https://hades.mech.northwestern.edu/index.php/Modern_Robotics), Lynch & Park (2017) | Free PDF + video lectures | Chapters on dynamics of open chains and on robot control | R10, R12 |
+| [Kalman and Bayesian Filters in Python](https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python), Roger Labbe | Free Jupyter book | From the start through the multivariate Kalman filter | R9 |
+| [Model Predictive Control: Theory, Computation, and Design](https://sites.engineering.ucsb.edu/~jbraw/mpc/), Rawlings, Mayne & Diehl (2nd ed.) | Free PDF | Chapter 1, getting started with MPC | R11 |
+| *Rigid Body Dynamics Algorithms*, Featherstone (Springer, 2008) | Book | Reference for the algorithms inside simulators | R10 |
+| *Introduction to Humanoid Robotics*, Kajita et al. (Springer, 2014) | Book | ZMP and linear inverted pendulum chapters | R13 |
+| *Probabilistic Robotics*, Thrun, Burgard & Fox (MIT Press, 2005) | Book | Gaussian filters chapter | R9 |
 
 ## R5. State-space models and discretization
 
@@ -318,6 +351,14 @@ The filter is Bayes' rule (R3) for Gaussians. The extended Kalman filter (EKF) l
 
 # Part 3 · Machine learning
 
+**Quick start.**
+
+| Resource | Access | Start with | Covers |
+|---|---|---|---|
+| [Probabilistic Machine Learning: An Introduction](https://probml.github.io/pml-book/book1.html), Kevin Murphy (2022) | Free PDF | Chapters on linear regression, logistic regression and information theory | R14, R15, R17 |
+| [Pattern Recognition and Machine Learning](https://www.microsoft.com/en-us/research/publication/pattern-recognition-machine-learning/), Christopher Bishop (2006) | Free PDF | Chapter 3 (linear models for regression) and chapter 4 (classification) | R14, R15 |
+| [Gaussian Processes for Machine Learning](https://gaussianprocess.org/gpml/), Rasmussen & Williams (2006) | Free PDF | Chapter 2 (regression) | R16 |
+
 ## R14. Regression and maximum likelihood
 
 **Problem.** Fit a function to data: an actuator model, a dynamics model, a value function.
@@ -400,6 +441,17 @@ Confident mistakes are punished hardest.
 ---
 
 # Part 4 · Deep learning
+
+**Quick start.**
+
+| Resource | Access | Start with | Covers |
+|---|---|---|---|
+| [Dive into Deep Learning](https://d2l.ai/), Zhang, Lipton, Li & Smola | Free, runnable code | Chapters on MLPs, optimization algorithms, RNNs and attention | R18–R21 |
+| [Understanding Deep Learning](https://udlbook.github.io/udlbook/), Simon Prince (2023) | Free PDF + notebooks | Chapters on backpropagation, fitting models and diffusion | R18, R19, R22 |
+| [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html), Andrej Karpathy | Free videos | The first lecture, backpropagation from scratch | R18 |
+| [Deep Learning](https://www.deeplearningbook.org/), Goodfellow, Bengio & Courville (2016) | Free online | Chapters 6 (deep feedforward networks), 8 (optimization) and 10 (sequence modeling) | R18–R21 |
+| [Deep Learning: Foundations and Concepts](https://www.bishopbook.com/), Bishop & Bishop (2024) | Free online | Chapters on generative models | R22 |
+| [What are Diffusion Models?](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/), Lilian Weng | Free blog post | The whole post | R22 |
 
 ## R18. Neural networks and backpropagation
 
@@ -511,6 +563,19 @@ Confident mistakes are punished hardest.
 ---
 
 # Part 5 · Reinforcement learning
+
+**Quick start.**
+
+| Resource | Access | Start with | Covers |
+|---|---|---|---|
+| [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book-2nd.html), Sutton & Barto (2nd ed., 2018) | Free PDF | Chapters 3 (finite MDPs), 4 (dynamic programming), 6 (TD learning), 12 (eligibility traces / λ-returns), 13 (policy gradients) | R23–R27 |
+| [Spinning Up in Deep RL](https://spinningup.openai.com/), OpenAI | Free, with code | "Introduction to RL" parts 1–3, then the VPG, PPO, DDPG and SAC algorithm pages | R26–R29 |
+| [CS 285: Deep Reinforcement Learning](https://rail.eecs.berkeley.edu/deeprlcourse/), Sergey Levine (UC Berkeley) | Free lectures | Lectures on imitation, policy gradients, actor-critic and model-based RL | R26–R32 |
+| [Policy Gradient Algorithms](https://lilianweng.github.io/posts/2018-04-08-policy-gradient/), Lilian Weng | Free blog post | One-page derivations from REINFORCE to PPO and SAC | R26–R29 |
+| [Hugging Face Deep RL Course](https://huggingface.co/learn/deep-rl-course) | Free, hands-on | Units on Q-learning, DQN, policy gradients and PPO | R25–R28 |
+| [RL lectures](https://www.davidsilver.uk/teaching/), David Silver (UCL) | Free lectures | Lectures 1–7 | R23–R26 |
+| [Reinforcement Learning and Optimal Control](https://web.mit.edu/dimitrib/www/RLbook.html), Dimitri Bertsekas (2019) | Book + free slides | The exact dynamic programming chapter; links RL to LQR and MPC | R8, R24 |
+| Surveys in this collection: [model-based RL](../papers/01-surveys/moerland2023mbrl.pdf), [imitation learning](../papers/01-surveys/osa2018algorithmic.pdf), [sim-to-real](../papers/01-surveys/zhao2020sim2real.pdf) | Local PDFs | Introductions and taxonomies | R30, R32, R33 |
 
 ## R23. MDPs, POMDPs and returns
 
@@ -767,6 +832,28 @@ This is why pure cloning fails on long tasks without corrective data or action c
 
 # Part 6 · Locomotion and motion imitation
 
+**Quick start.**
+
+| Resource | Access | Start with | Covers |
+|---|---|---|---|
+| [Modern Robotics](https://hades.mech.northwestern.edu/index.php/Modern_Robotics), Lynch & Park (2017) | Free PDF + video lectures | Chapters 3 (rigid-body motions), 4 (forward kinematics), 5 (velocity kinematics), 6 (inverse kinematics) | R34, R35 |
+| [A Micro Lie Theory for State Estimation in Robotics](https://arxiv.org/abs/1812.01537), Solà, Deray & Atchuthan (2018) | Free paper | The sections on SO(3) and the exp/log maps | R35 |
+| [Quaternion Kinematics for the Error-State Kalman Filter](https://arxiv.org/abs/1711.02508), Joan Solà (2017) | Free paper | The quaternion chapters | R35 |
+| [Underactuated Robotics](https://underactuated.mit.edu/), Tedrake | Free | Walking and running chapters | R13, R37 |
+| [Learning-based legged locomotion survey](../papers/01-surveys/ha2025learning.pdf), Ha et al. (2025) | Local PDF | Sections on reward design, sim-to-real and imitation | R33, R36, R37 |
+
+**Hands-on code.** Each of these runs a recipe from this part end to end.
+
+| Code | What it gives you | Covers |
+|---|---|---|
+| [MuJoCo documentation](https://mujoco.readthedocs.io/) | The simulator behind SuperMimic's data; its computation chapter explains how contact is solved | R10 |
+| [MuJoCo Playground](https://playground.mujoco.org/) | GPU-parallel locomotion and manipulation environments with PPO training | R28, R33, R37 |
+| [legged_gym](https://github.com/leggedrobotics/legged_gym) | Massively parallel PPO locomotion with a terrain curriculum (Rudin et al. 2022) | R28, R37 |
+| [Isaac Lab](https://isaac-sim.github.io/IsaacLab/) | NVIDIA's robot-learning framework used by most humanoid trackers | R28, R33 |
+| [mjlab](https://github.com/mujocolab/mjlab) | Isaac Lab API on MuJoCo Warp, with a Unitree G1 motion-tracking task; where BeyondMimic's code now continues | R34–R38 |
+| [whole_body_tracking](https://github.com/HybridRobotics/whole_body_tracking) | BeyondMimic's motion-tracking code (retired, read-only) | R36, R38 |
+| [MimicKit](https://github.com/xbpeng/MimicKit) | Peng's motion-imitation suite, successor to [DeepMimic](https://github.com/xbpeng/DeepMimic) | R32, R36, R38 |
+
 ## R34. Kinematics, Jacobians, inverse kinematics, retargeting
 
 **Problem.** Map joint angles to body poses and back, and convert human motion capture into robot joint trajectories.
@@ -963,7 +1050,7 @@ Every ingredient of [arXiv:2610.28480](https://arxiv.org/abs/2610.28480) appears
 
 # Appendix D · Further reading
 
-These works are all in [`../CATALOG.md`](../CATALOG.md), most with local PDFs.
+Textbooks and tutorials for a quick start are listed at the top of each Part. The surveys below go deeper; they are all in [`../CATALOG.md`](../CATALOG.md), most with local PDFs.
 
 - **Control:** Wensing et al. 2024 (optimization-based legged control); Hewing et al. 2020 (learning-based MPC); Recht 2019 (RL from the view of continuous control).
 - **RL:** Sutton & Barto 2018; Bertsekas 2019; Moerland et al. 2023 (model-based RL).
