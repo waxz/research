@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Robot Learning Breakthroughs, 2010–2026</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500;75..125,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a year-by-year ledger. Each year is one row: the bottleneck it inherited, the breakthrough, the experiment that proved it,
+   and where it reached the real world. Colour marks the paradigm (indigo model-based, amber self-exploration RL, teal reference/imitation). */
+:root {
+  --bg: #f4f5f2; --paper: #ffffff; --ink: #1b1f1d; --muted: #5d6661; --rule: #d8ddd8;
+  --mb: #3d4fb0; --rl: #b5650d; --ref: #0d7a6a;
+  --mb-soft: #e7eaf8; --rl-soft: #f8ecdb; --ref-soft: #dff2ee;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Literata", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111513; --paper: #181e1b; --ink: #e4e9e6; --muted: #98a39d; --rule: #2c3531;
+    --mb: #8f9ff2; --rl: #f0a650; --ref: #4fcdb8;
+    --mb-soft: #1e2444; --rl-soft: #3a2a15; --ref-soft: #133630;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111513; --paper: #181e1b; --ink: #e4e9e6; --muted: #98a39d; --rule: #2c3531;
+  --mb: #8f9ff2; --rl: #f0a650; --ref: #4fcdb8;
+  --mb-soft: #1e2444; --rl-soft: #3a2a15; --ref-soft: #133630;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+.wrap { max-width: 1100px; margin: 0 auto; }
+.col { max-width: 70ch; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.12; margin: 0; }
+h1 { font-size: clamp(2.1rem, 5.6vw, 3.4rem); font-weight: 800; font-stretch: 85%; }
+h2 { font-size: 1.65rem; font-weight: 800; font-stretch: 90%; margin-top: 3.2rem; margin-bottom: .6rem; }
+h3 { font-size: 1.1rem; font-weight: 500; margin-top: 1.6rem; margin-bottom: .3rem; }
+p { margin: .7rem 0; }
+a { color: var(--ref); text-underline-offset: 2px; }
+a:focus-visible { outline: 2px solid var(--rl); outline-offset: 2px; }
+.eyebrow { font-family: var(--mono); font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+header { padding-block: 48px 4px; }
+.lede { font-size: 1.12rem; margin-top: 1rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 1rem; font-size: .86rem; color: var(--muted); }
+.chip { display: inline-block; font-family: var(--mono); font-size: .72rem; padding: 1px 7px; border-radius: 3px; white-space: nowrap; font-weight: 500; }
+.chip.mb { background: var(--mb-soft); color: var(--mb); }
+.chip.rl { background: var(--rl-soft); color: var(--rl); }
+.chip.ref { background: var(--ref-soft); color: var(--ref); }
+.cite { font-family: var(--mono); font-size: .74em; color: var(--muted); }
+.note { font-size: .9rem; color: var(--muted); }
+
+/* strip */
+.strip { display: grid; grid-template-columns: repeat(17, minmax(0, 1fr)); gap: 3px; margin: 1.6rem 0 .4rem; }
+.strip div { min-width: 0; border-radius: 3px; padding: 6px 0 4px; text-align: center; font-family: var(--mono); font-size: .68rem; color: var(--ink); border-top: 5px solid; background: var(--paper); }
+.strip .mb { border-top-color: var(--mb); } .strip .rl { border-top-color: var(--rl); } .strip .ref { border-top-color: var(--ref); }
+.strip .mix { border-image: linear-gradient(90deg, var(--rl) 50%, var(--ref) 50%) 1; border-top-width: 5px; border-top-style: solid; }
+.strip .mix2 { border-image: linear-gradient(90deg, var(--mb) 50%, var(--rl) 50%) 1; border-top-width: 5px; border-top-style: solid; }
+.strip a { color: inherit; text-decoration: none; display: block; }
+@media (max-width: 640px) { .strip { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+/* ledger */
+.ledger { display: grid; gap: 10px; margin: 1.4rem 0; }
+.yr { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 0; background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; scroll-margin-top: 16px; }
+.yr .y { font-family: var(--display); font-weight: 800; font-stretch: 85%; font-size: 1.5rem; padding: 14px 12px; border-right: 4px solid var(--rule); font-variant-numeric: tabular-nums; }
+.yr.mb .y { border-right-color: var(--mb); color: var(--mb); }
+.yr.rl .y { border-right-color: var(--rl); color: var(--rl); }
+.yr.ref .y { border-right-color: var(--ref); color: var(--ref); }
+.yr .c { padding: 14px 18px 16px; min-width: 0; }
+.yr h3 { margin: 0 0 .5rem; font-size: 1.15rem; font-weight: 800; font-stretch: 92%; }
+.yr h3 .chip { margin-left: 6px; vertical-align: 2px; }
+.cells { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; font-size: .88rem; line-height: 1.48; }
+.cells > div { min-width: 0; }
+.cells b { display: block; font-family: var(--mono); font-size: .66rem; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 500; margin-bottom: 3px; }
+.cells .num { font-family: var(--mono); font-size: .84rem; font-variant-numeric: tabular-nums; }
+.yr .also { font-size: .82rem; color: var(--muted); margin-top: 10px; border-top: 1px dashed var(--rule); padding-top: 8px; }
+@media (max-width: 860px) { .cells { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .cells { grid-template-columns: 1fr; } .yr { grid-template-columns: 1fr; } .yr .y { border-right: 0; border-bottom: 4px solid var(--rule); padding: 8px 14px; } .yr.mb .y { border-bottom-color: var(--mb); } .yr.rl .y { border-bottom-color: var(--rl); } .yr.ref .y { border-bottom-color: var(--ref); } }
+
+.tbl { overflow-x: auto; margin: 1.2rem 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); }
+table { border-collapse: collapse; width: 100%; font-size: .87rem; line-height: 1.42; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+thead th { font-family: var(--mono); font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+tbody th { font-family: var(--mono); font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
+tr:last-child td, tr:last-child th { border-bottom: 0; }
+
+/* logic chain */
+.chain { display: grid; gap: 0; margin: 1.2rem 0; counter-reset: step; }
+.chain div { display: grid; grid-template-columns: 1fr 32px 1fr; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: .9rem; }
+.chain div:last-child { border-bottom: 0; }
+.chain .q { color: var(--muted); }
+.chain .arrow { font-family: var(--mono); color: var(--muted); text-align: center; }
+.chain .a b { font-family: var(--display); font-weight: 500; }
+@media (max-width: 560px) { .chain div { grid-template-columns: 1fr; gap: 2px; } .chain .arrow { text-align: left; } }
+.reflist { font-size: .85rem; line-height: 1.5; padding-left: 2.4em; }
+.reflist li { margin: .25rem 0; }
+footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .85rem; color: var(--muted); }
+</style>
+
+<div class="wrap">
+<header class="col">
+  <div class="eyebrow">Chronology · robot learning and control · evidence-checked Oct 2026</div>
+  <h1>Robot learning breakthroughs, 2010–2026</h1>
+  <p class="lede">One breakthrough per year, chosen for how much it changed what robots could do next. Each entry gives the bottleneck it inherited, the experiment that proved it worked, and where it reached real machines. Read in order, each year answers the limitation exposed by the one before.</p>
+  <div class="legend">
+    <span><span class="chip mb">MB</span> model-based control / simulation</span>
+    <span><span class="chip rl">RL</span> self-exploration reinforcement learning</span>
+    <span><span class="chip ref">REF</span> imitation, demonstrations, reference motion</span>
+  </div>
+</header>
+
+<div class="strip" aria-label="Paradigm of each year's breakthrough">
+  <div class="ref"><a href="#y2010">2010</a></div><div class="mb"><a href="#y2011">2011</a></div><div class="mb"><a href="#y2012">2012</a></div><div class="rl"><a href="#y2013">2013</a></div><div class="mb"><a href="#y2014">2014</a></div><div class="mix2"><a href="#y2015">2015</a></div><div class="rl"><a href="#y2016">2016</a></div><div class="rl"><a href="#y2017">2017</a></div><div class="rl"><a href="#y2018">2018</a></div><div class="rl"><a href="#y2019">2019</a></div><div class="rl"><a href="#y2020">2020</a></div><div class="rl"><a href="#y2021">2021</a></div><div class="rl"><a href="#y2022">2022</a></div><div class="mix"><a href="#y2023">2023</a></div><div class="ref"><a href="#y2024">2024</a></div><div class="ref"><a href="#y2025">2025</a></div><div class="mix"><a href="#y2026">2026</a></div>
+</div>
+<p class="note col" style="text-align:center">Model-based control held the hardware until about 2015. Simulation-trained RL took over locomotion and dexterity from 2017 to 2022. Imitation and reference motion took over manipulation and humanoids from 2023. 2026 joins RL and reference motion through a learned model.</p>
+
+<section class="col">
+  <h2>Roots before 2010</h2>
+</section>
+<div class="wrap"><div class="tbl"><table>
+  <thead><tr><th>Year</th><th>Milestone</th><th>Why it matters later</th></tr></thead>
+  <tbody>
+    <tr><th>1957–60</th><td>Bellman's dynamic programming; Kalman filter and LQR</td><td>The math every later method approximates: value functions, optimal feedback, state estimation.</td></tr>
+    <tr><th>1986</th><td>Raibert, <i>Legged Robots That Balance</i> (MIT hopping robots) <span class="chip mb">MB</span></td><td>Showed dynamic balance from simple decomposed controllers; lineage of BigDog, Spot and Atlas.</td></tr>
+    <tr><th>1989–92</th><td>Q-learning (Watkins); REINFORCE (Williams); TD-Gammon (Tesauro) <span class="chip rl">RL</span></td><td>Value-based and policy-gradient RL; first evidence that self-play RL can reach expert level.</td></tr>
+    <tr><th>2000</th><td>Honda ASIMO, ZMP-based walking <span class="chip mb">MB</span></td><td>Humanoid walking from a precise model, but slow, flat-ground and brittle.</td></tr>
+    <tr><th>2004</th><td>Kohl &amp; Stone: policy-gradient learning of a fast Aibo gait <span class="chip rl">RL</span></td><td>Early proof that RL on real hardware can beat hand-tuned gaits.</td></tr>
+    <tr><th>2004–06</th><td>Ng et al.: autonomous inverted helicopter flight via RL</td><td>RL in a learned model producing control humans found hard.</td></tr>
+    <tr><th>2005</th><td>Stanley wins the DARPA Grand Challenge</td><td>Learning-based perception plus classical planning and control in a deployed vehicle.</td></tr>
+    <tr><th>2008</th><td>Boston Dynamics BigDog <span class="chip mb">MB</span></td><td>Rough-terrain quadruped from hand-designed model-based control: the bar RL later had to clear.</td></tr>
+  </tbody>
+</table></div></div>
+
+<section class="col">
+  <h2>Year by year</h2>
+</section>
+
+<div class="wrap"><div class="ledger">
+
+  <article class="yr ref" id="y2010"><div class="y">2010</div><div class="c">
+    <h3>Apprenticeship learning flies helicopter aerobatics <span class="chip ref">REF</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Hand-designing controllers for maneuvers at the edge of the flight envelope was infeasible.</div>
+      <div><b>Breakthrough</b>Learn the target trajectory and a dynamics model from several expert demonstrations, then control with model-based optimal control.</div>
+      <div><b>Evidence</b>Abbeel, Coates &amp; Ng (IJRR 2010): autonomous aerobatics such as flips, rolls, tic-tocs and chaos, at expert-pilot level and in some cases better.</div>
+      <div><b>Real-world reach</b>Established learning from demonstration for agile vehicles; the demo-plus-model pattern returns in 2023–26.</div>
+    </div>
+    <div class="also">Also: Ross &amp; Bagnell prove that behavior cloning's error compounds with the square of the horizon, which motivates DAgger in 2011.</div>
+  </div></article>
+
+  <article class="yr mb" id="y2011"><div class="y">2011</div><div class="c">
+    <h3>PILCO: data-efficient learning with a probabilistic model <span class="chip mb">MB</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Model-free RL needed far too many real trials; learned models introduced bias that broke policies.</div>
+      <div><b>Breakthrough</b>A Gaussian-process dynamics model that tracks its own uncertainty, with analytic policy gradients through it.</div>
+      <div><b>Evidence</b>Deisenroth &amp; Rasmussen (ICML 2011): a real cart-pole learned swing-up and balance from seconds of interaction, orders of magnitude fewer trials than model-free methods.</div>
+      <div><b>Real-world reach</b>Small real systems (cart-pole, low-cost arms). GPs didn't scale to high dimensions; neural models replaced them later.</div>
+    </div>
+    <div class="also">Also: DAgger (Ross, Gordon &amp; Bagnell) reduces imitation error growth to linear by querying the expert on the learner's own states. It became the basis of every later teacher–student pipeline.</div>
+  </div></article>
+
+  <article class="yr mb" id="y2012"><div class="y">2012</div><div class="c">
+    <h3>MuJoCo and online trajectory optimization <span class="chip mb">MB</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Simulators were too slow and contact-inaccurate for optimization or learning loops.</div>
+      <div><b>Breakthrough</b>MuJoCo (Todorov, Erez &amp; Tassa, IROS 2012): fast, stable contact dynamics designed for control. The same group ran MPC on full humanoid models in simulation.</div>
+      <div><b>Evidence</b>Tassa et al. (IROS 2012) synthesized getting up, balancing and walking for a simulated humanoid by trajectory optimization in near real time.</div>
+      <div><b>Real-world reach</b>MuJoCo became the standard RL benchmark engine. Its GPU successor MuJoCo Warp trains SuperMimic in 2026.</div>
+    </div>
+    <div class="also">Also: AlexNet's ImageNet win makes deep networks a viable function approximator for perception and, soon, control.</div>
+  </div></article>
+
+  <article class="yr rl" id="y2013"><div class="y">2013</div><div class="c">
+    <h3>Deep Q-Network learns control from pixels <span class="chip rl">RL</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>RL relied on hand-crafted state features and couldn't use raw sensors.</div>
+      <div><b>Breakthrough</b>A convolutional Q-network trained end-to-end from pixels with experience replay.</div>
+      <div><b>Evidence</b>Mnih et al. (arXiv 1312.5602): on seven Atari games it beat all previous approaches on six and a human expert on three, with one architecture.</div>
+      <div><b>Real-world reach</b>None directly, but it started deep RL and the investment that funded robot RL labs.</div>
+    </div>
+    <div class="also">Also: Kober, Bagnell &amp; Peters publish the standard survey of RL in robotics, showing how few real-robot successes existed before deep learning.</div>
+  </div></article>
+
+  <article class="yr mb" id="y2014"><div class="y">2014</div><div class="c">
+    <h3>Trajectory optimization through contact becomes a teacher <span class="chip mb">MB</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Deep RL was sample-hungry. Optimal control was efficient but produced trajectories, not reusable policies, and needed contact schedules fixed in advance.</div>
+      <div><b>Breakthrough</b>Contact-implicit trajectory optimization (Posa, Cantu &amp; Tedrake, IJRR 2014) lets the optimizer choose contacts. Guided policy search (Levine &amp; Abbeel, NeurIPS 2014) uses local trajectory optimizers to supervise a neural policy.</div>
+      <div><b>Evidence</b>Guided policy search trained neural policies for simulated swimming, hopping and walking, and for real manipulation, with far fewer samples than model-free RL.</div>
+      <div><b>Real-world reach</b>Set up the 2015–16 visuomotor robot results. The optimizer-as-teacher pattern returns in DTC (2024) and in distillation pipelines.</div>
+    </div>
+  </div></article>
+
+  <article class="yr mb" id="y2015"><div class="y">2015</div><div class="c">
+    <h3>Two worlds: deep RL masters simulation; model-based humanoids struggle at the DARPA Robotics Challenge <span class="chip mb">MB</span> <span class="chip rl">RL</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Deep RL worked for discrete Atari actions, not continuous high-DoF control. Real humanoids still ran hand-built model-based stacks.</div>
+      <div><b>Breakthrough</b>TRPO, GAE and DDPG bring stable deep RL to continuous control. DQN is published in <i>Nature</i>.</div>
+      <div><b>Evidence</b>DQN reached human-professional level on about half of 49 Atari games. TRPO/GAE learned 3-D simulated humanoid running from scratch. At the DRC Finals (June 2015), KAIST's DRC-HUBO won with model-based control, and many entrants fell.</div>
+      <div><b>Real-world reach</b>The DRC falls showed that model-based humanoids were brittle outside the conditions they were tuned for, which made simulation-trained learned controllers worth pursuing.</div>
+    </div>
+  </div></article>
+
+  <article class="yr rl" id="y2016"><div class="y">2016</div><div class="c">
+    <h3>Learning on real robots at scale: end-to-end visuomotor control and the grasping farm <span class="chip rl">RL</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Perception and control were engineered separately, and deep RL had barely touched real hardware.</div>
+      <div><b>Breakthrough</b>Neural policies that map camera pixels directly to motor torques. A fleet of robots collects self-supervised grasping data.</div>
+      <div class="num"><b>Evidence</b>Levine, Finn et al. (JMLR 2016): a 92k-parameter CNN policy screwed caps onto bottles from raw images. Levine et al. 2016: over 800,000 grasp attempts over two months, on 6–14 robots at a time, produced a grasping network that grasps novel objects and corrects its own mistakes.</div>
+      <div><b>Real-world reach</b>Showed robot learning is limited by data, which led to sim-to-real and later to large demonstration datasets.</div>
+    </div>
+    <div class="also">Also: AlphaGo beats Lee Sedol 4–1, and Kuindersma et al. publish the model-based Atlas stack from the DRC.</div>
+  </div></article>
+
+  <article class="yr rl" id="y2017"><div class="y">2017</div><div class="c">
+    <h3>Domain randomization and PPO make simulation transferable <span class="chip rl">RL</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Real-world data was slow and costly to collect, and simulation-trained policies failed on hardware because of the reality gap.</div>
+      <div><b>Breakthrough</b>Randomize the simulator's visuals and physics so that reality looks like one more variation. PPO gives a simple, stable, parallel optimizer.</div>
+      <div class="num"><b>Evidence</b>Tobin et al. (IROS 2017): an object detector trained only on randomly textured simulated images was accurate to 1.5 cm on real images and supported grasping in clutter. Heess et al. showed rich locomotion emerging from simple rewards, though with unnatural gaits.</div>
+      <div><b>Real-world reach</b>Domain randomization and PPO became the default sim-to-real recipe for the next decade.</div>
+    </div>
+  </div></article>
+
+  <article class="yr rl" id="y2018"><div class="y">2018</div><div class="c">
+    <h3>Dactyl: dexterous in-hand manipulation learned entirely in simulation <span class="chip rl">RL</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Multi-fingered manipulation (24 DoF, hidden contacts) was beyond both model-based control and real-world RL.</div>
+      <div><b>Breakthrough</b>Massive distributed PPO with heavy physics and visual randomization, trained with no demonstrations.</div>
+      <div class="num"><b>Evidence</b>OpenAI (arXiv 1808.00177): a Shadow hand reoriented a block from vision, with up to 50 consecutive successes in tests. Training collected about 100 years of simulated experience in 50 hours on 6,144 CPU cores and 8 GPUs. Finger gaiting emerged without being programmed.</div>
+      <div><b>Real-world reach</b>Proved sim-only RL can transfer contact-rich skills, at very high compute cost.</div>
+    </div>
+    <div class="also">Also: DeepMimic (reference-tracking RL for flips and kicks, in simulation), QT-Opt (96% real grasp success on unseen objects from 580k real attempts), and MIT Cheetah 3 convex MPC.</div>
+  </div></article>
+
+  <article class="yr rl" id="y2019"><div class="y">2019</div><div class="c">
+    <h3>Sim-to-real RL beats model-based control on a real quadruped <span class="chip rl">RL</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Sim-to-real worked for arms and hands but not for dynamically balancing legged robots, where motor dynamics dominate.</div>
+      <div><b>Breakthrough</b>A neural actuator model learned from real motor data and inserted into the simulator, followed by RL in simulation and zero-shot deployment.</div>
+      <div><b>Evidence</b>Hwangbo et al. (<i>Science Robotics</i> 2019): ANYmal followed velocity commands more precisely and energy-efficiently than before, ran faster than its previous controller, and recovered from falls in complex configurations.</div>
+      <div><b>Real-world reach</b>Started the field's move from MPC to simulation-trained RL for legged robots.</div>
+    </div>
+    <div class="also">Also: OpenAI solves a Rubik's cube with a robot hand using automatic domain randomization (about 60% success on moderately scrambled cubes, 20% on the hardest).</div>
+  </div></article>
+
+  <article class="yr rl" id="y2020"><div class="y">2020</div><div class="c">
+    <h3>Privileged teacher, proprioceptive student: zero-shot rough terrain <span class="chip rl">RL</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>2019 policies worked on lab floors. Natural terrain is unseen in training and unobservable without perception.</div>
+      <div><b>Breakthrough</b>Train an RL teacher with privileged terrain information, then distill it (DAgger) into a student that uses only joint and IMU history, with a terrain curriculum.</div>
+      <div><b>Evidence</b>Lee et al. (<i>Science Robotics</i> 2020): two generations of ANYmal walked zero-shot on mud, snow, rubble, thick vegetation and flowing water, none of which appeared in training.</div>
+      <div><b>Real-world reach</b>The same ETH group and ANYmal platform were part of team CERBERUS, which won the DARPA Subterranean Challenge Final in 2021.</div>
+    </div>
+    <div class="also">Also: Dreamer learns behaviors by backpropagating through a learned latent world model, the method family SuperMimic later scales.</div>
+  </div></article>
+
+  <article class="yr rl" id="y2021"><div class="y">2021</div><div class="c">
+    <h3>Massively parallel GPU simulation: learn to walk in minutes <span class="chip rl">RL</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Each policy took days on CPU clusters, so iteration was slow and labs needed large budgets.</div>
+      <div><b>Breakthrough</b>Isaac Gym runs thousands of robots on one GPU. legged_gym adds a game-style terrain curriculum and tuned PPO.</div>
+      <div class="num"><b>Evidence</b>Rudin et al. (CoRL 2022, arXiv 2021): ANYmal policies for flat terrain in under 4 minutes and for rough terrain in 20 minutes on one workstation GPU, transferred to the real robot, orders of magnitude faster than earlier work.</div>
+      <div><b>Real-world reach</b>Made learned locomotion standard on Unitree, ANYmal and university robots. RMA (Kumar et al., RSS 2021) added fast online adaptation on a low-cost A1.</div>
+    </div>
+    <div class="also">Also: AMP replaces hand-tuned style rewards with a motion-data discriminator, and CERBERUS wins the DARPA SubT Final.</div>
+  </div></article>
+
+  <article class="yr rl" id="y2022"><div class="y">2022</div><div class="c">
+    <h3>Perceptive locomotion in the wild <span class="chip rl">RL</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Proprioceptive policies walked blind; they could not plan foot placement on stairs or gaps.</div>
+      <div><b>Breakthrough</b>A belief encoder that fuses height-map perception with proprioception and learns when to distrust vision (tall grass, snow, reflections).</div>
+      <div class="num"><b>Evidence</b>Miki et al. (<i>Science Robotics</i> 2022): ANYmal hiked a 2.2 km Alpine trail on Mt. Etzel with 120 m of climb, reached the summit in 31 minutes against a 35-minute human signpost estimate, and finished the loop in 78 minutes with no falls.</div>
+      <div><b>Real-world reach</b>Brought learned locomotion close to the reliability that industrial inspection quadrupeds working in plants, mines and outdoor sites need.</div>
+    </div>
+    <div class="also">Also: SHAC (short-horizon analytic gradients through differentiable simulation) and DayDreamer (world models learning to walk directly on a real robot).</div>
+  </div></article>
+
+  <article class="yr rl" id="y2023"><div class="y">2023</div><div class="c">
+    <h3>RL beats human champions in the physical world; imitation learning wins manipulation <span class="chip rl">RL</span> <span class="chip ref">REF</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Would learned control match the best humans at a real competitive task? And how do robots get manipulation skills that have no simulator or reward?</div>
+      <div><b>Breakthrough</b>Swift: RL with an empirically fitted model of the drone's perception and dynamics. Diffusion Policy and ACT: expressive generative models over action sequences, trained on teleoperated demonstrations.</div>
+      <div class="num"><b>Evidence</b>Kaufmann et al. (<i>Nature</i> 2023): Swift won 15 of 25 races against three world-champion pilots and set the fastest lap, half a second ahead of the best human. Diffusion Policy improved on prior state of the art by 46.9% on average across 12 tasks. ACT learned six fine bimanual tasks at 80–90% success from 10 minutes of demonstrations on low-cost hardware.</div>
+      <div><b>Real-world reach</b>Split the field: RL where the task can be scored and simulated, imitation where it can be demonstrated (household, kitchen, deformables).</div>
+    </div>
+    <div class="also">Limits: Swift failed under lighting conditions it wasn't trained for, where human pilots adapted.</div>
+  </div></article>
+
+  <article class="yr ref" id="y2024"><div class="y">2024</div><div class="c">
+    <h3>Learned humanoid control and generalist robot policies reach hardware <span class="chip ref">REF</span> <span class="chip rl">RL</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Humanoids still relied on model-based stacks; manipulation policies were single-task.</div>
+      <div><b>Breakthrough</b>Transformer RL policies for humanoid walking. Mocap retargeting plus teacher–student tracking for teleoperation (H2O, OmniH2O, HumanPlus). Vision-language-action models trained on multi-robot data (π0).</div>
+      <div><b>Evidence</b>Radosavovic et al. (<i>Science Robotics</i> 2024): a fully learned controller walked a real humanoid over varied outdoor terrain, zero-shot from simulation, and adapted in context. π0 folded laundry, cleared tables and assembled boxes, and could be fine-tuned to new skills.</div>
+      <div><b>Real-world reach</b>Humanoid companies (Unitree, Figure, Agility, Boston Dynamics' electric Atlas) moved toward learned whole-body control and demonstration-trained manipulation.</div>
+    </div>
+  </div></article>
+
+  <article class="yr ref" id="y2025"><div class="y">2025</div><div class="c">
+    <h3>General humanoid motion trackers and humanoids in public events <span class="chip ref">REF</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>Each humanoid skill needed its own reward and policy, and sim-to-real broke on agile motions.</div>
+      <div><b>Breakthrough</b>One reference-tracking policy for a whole motion library (BeyondMimic), with ASAP's learned correction for the sim-to-real gap, and guided diffusion to turn tracking into tasks.</div>
+      <div><b>Evidence</b>BeyondMimic deployed diverse, highly dynamic human motions on a real Unitree G1 from one tracking recipe, and steered them to tasks with guided diffusion. At the Beijing humanoid half-marathon on 19 April 2025, Tiangong Ultra finished in 2:40:42, guided by a human pacer; the other robots took over 3 hours.</div>
+      <div><b>Real-world reach</b>Entertainment, teleoperation and data collection with humanoids. Public demos showed what still needs human help (pacers, remote control, battery swaps).</div>
+    </div>
+    <div class="also">Also: DreamerV3 published in <i>Nature</i>; RWM trains real-robot policies inside a learned neural simulator.</div>
+  </div></article>
+
+  <article class="yr ref" id="y2026"><div class="y">2026</div><div class="c">
+    <h3>Scaling motion tracking: SONIC at cluster scale, SuperMimic on one GPU <span class="chip ref">REF</span> <span class="chip rl">RL</span> <span class="chip mb">MB</span></h3>
+    <div class="cells">
+      <div><b>Bottleneck inherited</b>General trackers improve with more motion data, but PPO training cost grows with the library: SONIC needed ~21,000 GPU-hours.</div>
+      <div><b>Breakthrough</b>SONIC (<i>Science Robotics</i>) shows that more data, capacity and compute give natural general humanoid control. SuperMimic replaces PPO with backpropagation through one learned differentiable world model.</div>
+      <div class="num"><b>Evidence</b>SuperMimic (CoRL 2026, preprint): beat SONIC's return in 3 h on one H100 (&gt;1000× fewer GPU-hours). It failed 25 of 129,514 motions versus 179 for SONIC, and 0 after 9.8 h on two GPUs. Deployed on a real G1 with flips and side rolls. Not yet independently reproduced.</div>
+      <div><b>Real-world reach</b>If it holds up, scaling-law studies of whole-body control become affordable for any lab. Flat ground only so far.</div>
+    </div>
+  </div></article>
+
+</div></div>
+
+<section class="col">
+  <h2>The logic of the sequence</h2>
+  <p>Each step came from a specific failure of the step before it.</p>
+</section>
+<div class="col"><div class="chain">
+  <div><span class="q">Hand-designed control can't do edge-of-envelope maneuvers</span><span class="arrow">→</span><span class="a"><b>Learn from demonstrations</b> (2010)</span></div>
+  <div><span class="q">Real trials are expensive</span><span class="arrow">→</span><span class="a"><b>Learn a model, optimize inside it</b> (2011)</span></div>
+  <div><span class="q">Learning loops need fast contact physics</span><span class="arrow">→</span><span class="a"><b>MuJoCo</b> (2012)</span></div>
+  <div><span class="q">RL needs hand-made features</span><span class="arrow">→</span><span class="a"><b>Deep networks, end-to-end</b> (2013–15)</span></div>
+  <div><span class="q">Model-based humanoids are brittle (DRC 2015)</span><span class="arrow">→</span><span class="a"><b>Learned controllers on real robots</b> (2016)</span></div>
+  <div><span class="q">Real data doesn't scale</span><span class="arrow">→</span><span class="a"><b>Simulation + domain randomization</b> (2017–18)</span></div>
+  <div><span class="q">Legged dynamics break sim-to-real</span><span class="arrow">→</span><span class="a"><b>Learned actuator models</b> (2019)</span></div>
+  <div><span class="q">Unseen terrain, no perception</span><span class="arrow">→</span><span class="a"><b>Privileged teacher → student</b> (2020), <b>perception fusion</b> (2022)</span></div>
+  <div><span class="q">Training takes days</span><span class="arrow">→</span><span class="a"><b>GPU-parallel simulation</b>, minutes (2021)</span></div>
+  <div><span class="q">No simulator or reward for household tasks</span><span class="arrow">→</span><span class="a"><b>Generative imitation, VLAs</b> (2023–24)</span></div>
+  <div><span class="q">RL motion looks unnatural; one policy per skill</span><span class="arrow">→</span><span class="a"><b>Reference-tracking at library scale</b> (2025–26)</span></div>
+  <div><span class="q">Library-scale PPO costs ~21k GPU-hours</span><span class="arrow">→</span><span class="a"><b>Analytic gradients through a learned world model</b> (2026)</span></div>
+</div></div>
+
+<section class="col">
+  <h2>What the record shows</h2>
+  <p><b>Model-based ideas never left. They moved inside learning.</b> PILCO's learned model (2011), guided policy search's optimizer-as-teacher (2014), Hwangbo's learned actuator model (2019) and SuperMimic's world model (2026) all put a model at the center of a learning system.</p>
+  <p><b>Compute and data, not algorithms, set the pace from 2016 to 2023.</b> 800k real grasps (2016), 100 simulated years for Dactyl (2018), then 20 minutes on one GPU for locomotion (2021). Each jump in data throughput opened a new class of tasks.</p>
+  <p><b>Specifying behavior has become the new bottleneck.</b> Once training became cheap, the hard part was saying what to do. That pushed the field to demonstrations (2023), motion libraries (2025) and language (VLAs).</p>
+  <p><b>Real-world results remain narrower than demos suggest.</b> Swift failed under unfamiliar lighting, the marathon winner needed a pacer, and SuperMimic is flat-ground only. Each year's entry has a deployment caveat.</p>
+  <p class="note">Selection is a judgement call, made by asking which result most changed what was possible on real robots the following year. Where a year had several contenders, the others are listed under “Also”.</p>
+</section>
+
+<section class="col">
+  <h2>Sources</h2>
+  <ol class="reflist">
+    <li>P. Abbeel, A. Coates, A. Y. Ng. Autonomous helicopter aerobatics through apprenticeship learning. <i>IJRR</i>, 2010.</li>
+    <li>M. P. Deisenroth, C. E. Rasmussen. PILCO. <i>ICML</i>, 2011 · S. Ross, G. Gordon, J. A. Bagnell. DAgger. <i>AISTATS</i>, 2011.</li>
+    <li>E. Todorov, T. Erez, Y. Tassa. MuJoCo. <i>IROS</i>, 2012 · Y. Tassa, T. Erez, E. Todorov. Synthesis and stabilization of complex behaviors through online trajectory optimization. <i>IROS</i>, 2012.</li>
+    <li>V. Mnih et al. Playing Atari with deep RL. <a href="https://arxiv.org/abs/1312.5602">arXiv:1312.5602</a>, 2013; Nature 518, 2015.</li>
+    <li>M. Posa, C. Cantu, R. Tedrake. <i>IJRR</i> 33(1), 2014 · S. Levine, P. Abbeel. Learning neural network policies with guided policy search under unknown dynamics. <i>NeurIPS</i>, 2014.</li>
+    <li>J. Schulman et al. TRPO (2015), GAE (2016) · T. Lillicrap et al. DDPG (2016) · DARPA Robotics Challenge Finals, June 2015.</li>
+    <li>S. Levine, C. Finn, T. Darrell, P. Abbeel. End-to-end training of deep visuomotor policies. <i>JMLR</i>, 2016, <a href="https://arxiv.org/abs/1504.00702">arXiv:1504.00702</a> · S. Levine et al. Learning hand-eye coordination for robotic grasping. <a href="https://arxiv.org/abs/1603.02199">arXiv:1603.02199</a>.</li>
+    <li>J. Tobin et al. Domain randomization. <i>IROS</i>, 2017, <a href="https://arxiv.org/abs/1703.06907">arXiv:1703.06907</a> · J. Schulman et al. PPO, 2017.</li>
+    <li>OpenAI et al. Learning dexterous in-hand manipulation. <a href="https://arxiv.org/abs/1808.00177">arXiv:1808.00177</a>, 2018 · Kalashnikov et al. QT-Opt. <i>CoRL</i>, 2018.</li>
+    <li>J. Hwangbo et al. <i>Science Robotics</i> 4(26), 2019 · OpenAI et al. Solving Rubik's cube with a robot hand, 2019.</li>
+    <li>J. Lee et al. <i>Science Robotics</i> 5(47), 2020 · D. Hafner et al. Dreamer. <i>ICLR</i>, 2020.</li>
+    <li>N. Rudin et al. Learning to walk in minutes. <i>CoRL</i> 2022, <a href="https://arxiv.org/abs/2109.11978">arXiv:2109.11978</a> · A. Kumar et al. RMA. <i>RSS</i>, 2021.</li>
+    <li>T. Miki et al. <i>Science Robotics</i> 7(62), 2022, <a href="https://arxiv.org/abs/2201.08117">arXiv:2201.08117</a>.</li>
+    <li>E. Kaufmann et al. Champion-level drone racing. <i>Nature</i> 620, 2023 (<a href="https://news.uzh.ch/en/articles/media/2023/Drone-race.html">UZH release</a>) · C. Chi et al. Diffusion Policy. <i>RSS</i>, 2023 · T. Zhao et al. ALOHA/ACT. <i>RSS</i>, 2023.</li>
+    <li>I. Radosavovic et al. <i>Science Robotics</i> 9(89), 2024 · K. Black et al. π0, <a href="https://arxiv.org/abs/2410.24164">arXiv:2410.24164</a> · T. He et al. H2O / OmniH2O, 2024.</li>
+    <li>Q. Liao et al. BeyondMimic. <i>Science Robotics</i>, 2026 (arXiv 2025) · T. He et al. ASAP. <i>RSS</i>, 2025 · Beijing E-Town humanoid half-marathon, 19 April 2025 (AFP, TechCrunch/Bloomberg reports).</li>
+    <li>Z. Luo et al. SONIC. <i>Science Robotics</i>, 2026 · Q. Liao et al. SuperMimic. <i>CoRL</i> 2026, <a href="https://arxiv.org/abs/2610.28480">arXiv:2610.28480</a>.</li>
+  </ol>
+  <footer>The quantitative figures were checked against the papers' abstracts or primary press releases on 25 October 2026. The figures for 2026 are the authors' own and have not been independently reproduced.</footer>
+</section>
+
+</html>

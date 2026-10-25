@@ -9,6 +9,7 @@ A research collection on **SuperMimic** (CoRL 2026) and on how model-based contr
 | [reports/01-supermimic-overview.md](reports/01-supermimic-overview.md) | What SuperMimic is, its reported results, caveats, and how it compares with PPO and distillation pipelines |
 | [reports/02-supermimic-method-and-history.md](reports/02-supermimic-method-and-history.md) | The method with all equations (world model, BPTT objective, critic), training loop, and a timeline from classic RL to 2026 |
 | [reports/03-model-reward-or-reference.md](reports/03-model-reward-or-reference.md) | Why robot control is hard; model-based vs RL vs imitation; reference-based vs self-exploration RL; which method fits which task |
+| [reports/04-breakthrough-timeline.md](reports/04-breakthrough-timeline.md) | One breakthrough per year, 2010–2026: the bottleneck it solved, the experiment that proved it, and its real-world reach |
 | [CATALOG.md](CATALOG.md) | Every paper, grouped by topic, with year, venue, links, local PDF and a one-line reason it matters |
 
 The HTML pages in [reports/html/](reports/html/) are the illustrated versions, with diagrams, rendered equations and a decision flowchart. GitHub shows HTML as source, so download them and open them in a browser. The equations load MathJax from a CDN, so they need an internet connection.
