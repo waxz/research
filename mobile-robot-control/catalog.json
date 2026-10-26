@@ -1,0 +1,584 @@
+{
+  "categories": [
+    {
+      "id": "00-surveys",
+      "name": "Surveys and overview papers",
+      "about": "Reviews of AGV/AMR planning and control, and of learning-based mobile robot navigation."
+    },
+    {
+      "id": "01-localization-mapping",
+      "name": "Localization and mapping",
+      "about": "Beacon/reflector EKF localization, Monte Carlo localization, lidar and visual SLAM, odometry calibration."
+    },
+    {
+      "id": "02-planning",
+      "name": "Path and motion planning",
+      "about": "Graph search, kinematically feasible planning for car-like vehicles, sampling-based planning, benchmarks."
+    },
+    {
+      "id": "03-tracking-and-local-control",
+      "name": "Path tracking and local obstacle avoidance",
+      "about": "Tracking controllers, reactive and optimization-based local planners, sampling MPC, safety filters."
+    },
+    {
+      "id": "04-fleet-management",
+      "name": "Fleet management and multi-robot coordination",
+      "about": "Warehouse fleets, multi-agent path finding, traffic and task assignment."
+    },
+    {
+      "id": "05-learning-navigation",
+      "name": "Learning-based navigation",
+      "about": "Reinforcement learning, imitation learning and navigation foundation models."
+    },
+    {
+      "id": "06-systems-and-deployments",
+      "name": "Systems and deployments",
+      "about": "Navigation stacks and field deployments that set the bar for real-world reliability."
+    },
+    {
+      "id": "07-standards",
+      "name": "Standards",
+      "about": "Safety and interoperability standards that constrain industrial vehicle control."
+    }
+  ],
+  "papers": [
+    {
+      "key": "xiao2022survey",
+      "cat": "00-surveys",
+      "title": "Motion Planning and Control for Mobile Robot Navigation Using Machine Learning: a Survey",
+      "authors": "X. Xiao, B. Liu, G. Warnell, P. Stone",
+      "year": 2022,
+      "venue": "Autonomous Robots",
+      "arxiv": "2011.13112",
+      "pdf": true,
+      "note": "How learning relates to the classical navigation stack; common challenges."
+    },
+    {
+      "key": "fragapane2021amr",
+      "cat": "00-surveys",
+      "title": "Planning and Control of Autonomous Mobile Robots for Intralogistics: Literature Review and Research Agenda",
+      "authors": "G. Fragapane, R. de Koster, F. Sgarbossa, J. O. Strandhagen",
+      "year": 2021,
+      "venue": "European Journal of Operational Research 294(2)",
+      "url": "https://doi.org/10.1016/j.ejor.2021.01.019",
+      "pdf": false,
+      "note": "AMR planning/control framework; decentralization vs AGV central control."
+    },
+    {
+      "key": "deryck2020agv",
+      "cat": "00-surveys",
+      "title": "Automated Guided Vehicle Systems, State-of-the-Art Control Algorithms and Techniques",
+      "authors": "M. De Ryck, M. Versteyhe, F. Debrouwere",
+      "year": 2020,
+      "venue": "Journal of Manufacturing Systems 54",
+      "url": "https://doi.org/10.1016/j.jmsy.2019.12.002",
+      "pdf": false,
+      "note": "AGV control algorithms; central vs decentral control trend."
+    },
+    {
+      "key": "vis2006survey",
+      "cat": "00-surveys",
+      "title": "Survey of Research in the Design and Control of Automated Guided Vehicle Systems",
+      "authors": "I. F. A. Vis",
+      "year": 2006,
+      "venue": "European Journal of Operational Research",
+      "url": "https://doi.org/10.1016/j.ejor.2004.09.020",
+      "pdf": false,
+      "note": "Classic OR survey: guide-path design, fleet sizing, dispatching, routing."
+    },
+    {
+      "key": "leanh2006review",
+      "cat": "00-surveys",
+      "title": "A Review of Design and Control of Automated Guided Vehicle Systems",
+      "authors": "T. Le-Anh, M. B. M. De Koster",
+      "year": 2006,
+      "venue": "European Journal of Operational Research",
+      "url": "https://doi.org/10.1016/j.ejor.2005.01.036",
+      "pdf": false,
+      "note": "Dispatching, scheduling and deadlock handling for AGV systems."
+    },
+    {
+      "key": "leonard1991beacons",
+      "cat": "01-localization-mapping",
+      "title": "Mobile Robot Localization by Tracking Geometric Beacons",
+      "authors": "J. J. Leonard, H. F. Durrant-Whyte",
+      "year": 1991,
+      "venue": "IEEE Transactions on Robotics and Automation",
+      "url": "https://doi.org/10.1109/70.88147",
+      "pdf": false,
+      "note": "EKF localization against known beacons: the model behind reflector navigation."
+    },
+    {
+      "key": "borenstein1996odometry",
+      "cat": "01-localization-mapping",
+      "title": "Measurement and Correction of Systematic Odometry Errors in Mobile Robots",
+      "authors": "J. Borenstein, L. Feng",
+      "year": 1996,
+      "venue": "IEEE Transactions on Robotics and Automation",
+      "url": "https://doi.org/10.1109/70.544770",
+      "pdf": false,
+      "note": "UMBmark odometry calibration."
+    },
+    {
+      "key": "dellaert1999mcl",
+      "cat": "01-localization-mapping",
+      "title": "Monte Carlo Localization for Mobile Robots",
+      "authors": "F. Dellaert, D. Fox, W. Burgard, S. Thrun",
+      "year": 1999,
+      "venue": "ICRA",
+      "url": "https://doi.org/10.1109/robot.1999.772544",
+      "pdf": false,
+      "note": "Particle-filter localization; basis of AMCL."
+    },
+    {
+      "key": "fox2003kld",
+      "cat": "01-localization-mapping",
+      "title": "Adapting the Sample Size in Particle Filters Through KLD-Sampling",
+      "authors": "D. Fox",
+      "year": 2003,
+      "venue": "IJRR 22(12)",
+      "url": "https://doi.org/10.1177/0278364903022012001",
+      "pdf": false,
+      "note": "Adaptive particle count used by AMCL."
+    },
+    {
+      "key": "grisetti2007gmapping",
+      "cat": "01-localization-mapping",
+      "title": "Improved Techniques for Grid Mapping with Rao-Blackwellized Particle Filters",
+      "authors": "G. Grisetti, C. Stachniss, W. Burgard",
+      "year": 2007,
+      "venue": "IEEE Transactions on Robotics",
+      "url": "https://doi.org/10.1109/tro.2006.889486",
+      "pdf": false,
+      "note": "GMapping lidar SLAM."
+    },
+    {
+      "key": "hess2016cartographer",
+      "cat": "01-localization-mapping",
+      "title": "Real-Time Loop Closure in 2D LIDAR SLAM (Cartographer)",
+      "authors": "W. Hess, D. Kohler, H. Rapp, D. Andor",
+      "year": 2016,
+      "venue": "ICRA",
+      "url": "https://doi.org/10.1109/icra.2016.7487258",
+      "pdf": false,
+      "note": "Submap + branch-and-bound loop closure; widely used on AMRs."
+    },
+    {
+      "key": "murartal2017orbslam2",
+      "cat": "01-localization-mapping",
+      "title": "ORB-SLAM2: an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras",
+      "authors": "R. Mur-Artal, J. D. Tardos",
+      "year": 2017,
+      "venue": "IEEE Transactions on Robotics",
+      "arxiv": "1610.06475",
+      "pdf": false,
+      "note": "Feature-based visual SLAM."
+    },
+    {
+      "key": "hart1968astar",
+      "cat": "02-planning",
+      "title": "A Formal Basis for the Heuristic Determination of Minimum Cost Paths (A*)",
+      "authors": "P. E. Hart, N. J. Nilsson, B. Raphael",
+      "year": 1968,
+      "venue": "IEEE Transactions on Systems Science and Cybernetics",
+      "url": "https://doi.org/10.1109/tssc.1968.300136",
+      "pdf": false,
+      "note": "A* search."
+    },
+    {
+      "key": "dolgov2010hybridastar",
+      "cat": "02-planning",
+      "title": "Path Planning for Autonomous Vehicles in Unknown Semi-Structured Environments (Hybrid A*)",
+      "authors": "D. Dolgov, S. Thrun, M. Montemerlo, J. Diebel",
+      "year": 2010,
+      "venue": "IJRR",
+      "url": "https://doi.org/10.1177/0278364909359210",
+      "pdf": false,
+      "note": "Kinematically feasible search for car-like vehicles; 50-300 ms replanning in the Urban Challenge."
+    },
+    {
+      "key": "karaman2011rrtstar",
+      "cat": "02-planning",
+      "title": "Sampling-based Algorithms for Optimal Motion Planning (RRT*)",
+      "authors": "S. Karaman, E. Frazzoli",
+      "year": 2011,
+      "venue": "IJRR",
+      "arxiv": "1105.1186",
+      "pdf": false,
+      "note": "Asymptotically optimal sampling-based planning."
+    },
+    {
+      "key": "perille2020barn",
+      "cat": "02-planning",
+      "title": "Benchmarking Metric Ground Navigation (BARN)",
+      "authors": "D. Perille, A. Truong, X. Xiao, P. Stone",
+      "year": 2020,
+      "venue": "SSRR",
+      "arxiv": "2008.13315",
+      "pdf": true,
+      "note": "300 navigation environments ranked by difficulty."
+    },
+    {
+      "key": "brockett1983stabilization",
+      "cat": "03-tracking-and-local-control",
+      "title": "Asymptotic Stability and Feedback Stabilization",
+      "authors": "R. W. Brockett",
+      "year": 1983,
+      "venue": "Differential Geometric Control Theory (Birkhauser)",
+      "url": "https://doi.org/10.1007/springerreference_60687",
+      "pdf": false,
+      "note": "Why nonholonomic vehicles cannot be stabilized to a pose by smooth static feedback."
+    },
+    {
+      "key": "kanayama1990tracking",
+      "cat": "03-tracking-and-local-control",
+      "title": "A Stable Tracking Control Method for an Autonomous Mobile Robot",
+      "authors": "Y. Kanayama, Y. Kimura, F. Miyazaki, T. Noguchi",
+      "year": 1990,
+      "venue": "ICRA",
+      "url": "https://doi.org/10.1109/robot.1990.126006",
+      "pdf": false,
+      "note": "Lyapunov-based trajectory tracking for unicycle robots."
+    },
+    {
+      "key": "coulter1992purepursuit",
+      "cat": "03-tracking-and-local-control",
+      "title": "Implementation of the Pure Pursuit Path Tracking Algorithm",
+      "authors": "R. C. Coulter",
+      "year": 1992,
+      "venue": "CMU-RI-TR-92-01",
+      "pdf": false,
+      "note": "Geometric path tracking used in many AGVs. Technical report; no stable public link verified."
+    },
+    {
+      "key": "fox1997dwa",
+      "cat": "03-tracking-and-local-control",
+      "title": "The Dynamic Window Approach to Collision Avoidance",
+      "authors": "D. Fox, W. Burgard, S. Thrun",
+      "year": 1997,
+      "venue": "IEEE Robotics & Automation Magazine",
+      "url": "https://doi.org/10.1109/100.580977",
+      "pdf": false,
+      "note": "Velocity-space local planner; basis of ROS DWB."
+    },
+    {
+      "key": "hoffmann2007stanley",
+      "cat": "03-tracking-and-local-control",
+      "title": "Autonomous Automobile Trajectory Tracking for Off-Road Driving (Stanley controller)",
+      "authors": "G. M. Hoffmann, C. J. Tomlin, M. Montemerlo, S. Thrun",
+      "year": 2007,
+      "venue": "ACC",
+      "url": "https://doi.org/10.1109/acc.2007.4282788",
+      "pdf": false,
+      "note": "Front-axle cross-track steering law."
+    },
+    {
+      "key": "vandenberg2011orca",
+      "cat": "03-tracking-and-local-control",
+      "title": "Reciprocal n-Body Collision Avoidance (ORCA)",
+      "authors": "J. van den Berg, S. J. Guy, M. Lin, D. Manocha",
+      "year": 2011,
+      "venue": "Robotics Research (STAR)",
+      "url": "https://doi.org/10.1007/978-3-642-19457-3_1",
+      "pdf": false,
+      "note": "Velocity obstacles for many agents."
+    },
+    {
+      "key": "williams2016mppi",
+      "cat": "03-tracking-and-local-control",
+      "title": "Model Predictive Path Integral Control using Covariance Variable Importance Sampling",
+      "authors": "G. Williams, A. Aldrich, E. Theodorou",
+      "year": 2015,
+      "venue": "arXiv",
+      "arxiv": "1509.01149",
+      "pdf": false,
+      "note": "Sampling-based MPC (MPPI)."
+    },
+    {
+      "key": "williams2017itmpc",
+      "cat": "03-tracking-and-local-control",
+      "title": "Information Theoretic Model Predictive Control: Theory and Applications to Autonomous Driving",
+      "authors": "G. Williams et al.",
+      "year": 2017,
+      "venue": "arXiv / T-RO 2018",
+      "arxiv": "1707.02342",
+      "pdf": true,
+      "note": "MPPI theory; aggressive driving; basis of Nav2's MPPI controller."
+    },
+    {
+      "key": "rosmann2017teb",
+      "cat": "03-tracking-and-local-control",
+      "title": "Integrated Online Trajectory Planning and Optimization in Distinctive Topologies (TEB)",
+      "authors": "C. Rosmann, F. Hoffmann, T. Bertram",
+      "year": 2017,
+      "venue": "Robotics and Autonomous Systems",
+      "url": "https://doi.org/10.1016/j.robot.2016.11.007",
+      "pdf": false,
+      "note": "Timed elastic band local planner."
+    },
+    {
+      "key": "ames2019cbf",
+      "cat": "03-tracking-and-local-control",
+      "title": "Control Barrier Functions: Theory and Applications",
+      "authors": "A. D. Ames et al.",
+      "year": 2019,
+      "venue": "ECC",
+      "url": "https://doi.org/10.23919/ecc.2019.8796030",
+      "pdf": false,
+      "note": "Safety filters that can wrap any controller, including learned ones."
+    },
+    {
+      "key": "wurman2008kiva",
+      "cat": "04-fleet-management",
+      "title": "Coordinating Hundreds of Cooperative, Autonomous Vehicles in Warehouses",
+      "authors": "P. R. Wurman, R. D'Andrea, M. Mountz",
+      "year": 2008,
+      "venue": "AI Magazine 29(1)",
+      "url": "https://ojs.aaai.org/index.php/aimagazine/article/view/2082",
+      "pdf": false,
+      "note": "Kiva goods-to-person system; productivity factor of two or more (authors' claim)."
+    },
+    {
+      "key": "sharon2015cbs",
+      "cat": "04-fleet-management",
+      "title": "Conflict-Based Search for Optimal Multi-Agent Pathfinding",
+      "authors": "G. Sharon, R. Stern, A. Felner, N. R. Sturtevant",
+      "year": 2015,
+      "venue": "Artificial Intelligence 219",
+      "url": "https://doi.org/10.1016/j.artint.2014.11.006",
+      "pdf": false,
+      "note": "CBS: optimal MAPF by resolving conflicts in a constraint tree."
+    },
+    {
+      "key": "li2021lifelongmapf",
+      "cat": "04-fleet-management",
+      "title": "Lifelong Multi-Agent Path Finding in Large-Scale Warehouses (RHCR)",
+      "authors": "J. Li, A. Tinka, S. Kiesel, J. W. Durham, T. K. S. Kumar, S. Koenig",
+      "year": 2021,
+      "venue": "AAAI",
+      "arxiv": "2005.07371",
+      "pdf": true,
+      "note": "Rolling-horizon collision resolution for up to 1,000 agents."
+    },
+    {
+      "key": "amazon2025deepfleet",
+      "cat": "04-fleet-management",
+      "title": "Amazon deploys its millionth robot and launches DeepFleet fleet foundation model (news)",
+      "authors": "Robotics 24/7",
+      "year": 2025,
+      "venue": "Industry news",
+      "url": "https://www.robotics247.com/article/amazon_launches_new_ai_foundation_model_to_power_its_robotic_fleet_deploys_millionth_robot/amazon_robotics",
+      "pdf": false,
+      "note": "Company-reported aim of 10% better fleet travel efficiency."
+    },
+    {
+      "key": "bojarski2016e2e",
+      "cat": "05-learning-navigation",
+      "title": "End to End Learning for Self-Driving Cars",
+      "authors": "M. Bojarski et al.",
+      "year": 2016,
+      "venue": "arXiv",
+      "arxiv": "1604.07316",
+      "pdf": false,
+      "note": "Behavior cloning from human driving: camera to steering."
+    },
+    {
+      "key": "pfeiffer2017perception",
+      "cat": "05-learning-navigation",
+      "title": "From Perception to Decision: A Data-driven Approach to End-to-end Motion Planning for Autonomous Ground Robots",
+      "authors": "M. Pfeiffer et al.",
+      "year": 2017,
+      "venue": "ICRA",
+      "arxiv": "1609.07910",
+      "pdf": false,
+      "note": "Imitating a classical planner from lidar."
+    },
+    {
+      "key": "chen2017cadrl",
+      "cat": "05-learning-navigation",
+      "title": "Decentralized Non-communicating Multiagent Collision Avoidance with Deep Reinforcement Learning (CADRL)",
+      "authors": "Y. F. Chen, M. Liu, M. Everett, J. P. How",
+      "year": 2017,
+      "venue": "ICRA",
+      "arxiv": "1609.07845",
+      "pdf": false,
+      "note": "More than 26% better path quality than ORCA in simulation."
+    },
+    {
+      "key": "chen2017sacadrl",
+      "cat": "05-learning-navigation",
+      "title": "Socially Aware Motion Planning with Deep Reinforcement Learning",
+      "authors": "Y. F. Chen, M. Everett, M. Liu, J. P. How",
+      "year": 2017,
+      "venue": "IROS",
+      "arxiv": "1703.08862",
+      "pdf": false,
+      "note": "RL with social norms for crowd navigation."
+    },
+    {
+      "key": "tai2017virtual",
+      "cat": "05-learning-navigation",
+      "title": "Virtual-to-real Deep Reinforcement Learning: Continuous Control of Mobile Robots for Mapless Navigation",
+      "authors": "L. Tai, G. Paolo, M. Liu",
+      "year": 2017,
+      "venue": "IROS",
+      "arxiv": "1703.00420",
+      "pdf": true,
+      "note": "Mapless RL planner from 10 range readings, transferred to a real robot."
+    },
+    {
+      "key": "zhu2017target",
+      "cat": "05-learning-navigation",
+      "title": "Target-driven Visual Navigation in Indoor Scenes using Deep Reinforcement Learning",
+      "authors": "Y. Zhu et al.",
+      "year": 2017,
+      "venue": "ICRA",
+      "arxiv": "1609.05143",
+      "pdf": false,
+      "note": "Goal-conditioned visual navigation."
+    },
+    {
+      "key": "long2018multirobot",
+      "cat": "05-learning-navigation",
+      "title": "Towards Optimally Decentralized Multi-Robot Collision Avoidance via Deep Reinforcement Learning",
+      "authors": "P. Long et al.",
+      "year": 2018,
+      "venue": "ICRA",
+      "arxiv": "1709.10082",
+      "pdf": false,
+      "note": "Sensor-level multi-robot policy trained with PPO on many robots."
+    },
+    {
+      "key": "wijmans2020ddppo",
+      "cat": "05-learning-navigation",
+      "title": "DD-PPO: Learning Near-Perfect PointGoal Navigators from 2.5 Billion Frames",
+      "authors": "E. Wijmans et al.",
+      "year": 2020,
+      "venue": "ICLR",
+      "arxiv": "1911.00357",
+      "pdf": true,
+      "note": "2.5B steps in under 3 days on 64 GPUs; near-perfect PointGoal navigation in simulation."
+    },
+    {
+      "key": "kahn2021badgr",
+      "cat": "05-learning-navigation",
+      "title": "BADGR: An Autonomous Self-Supervised Learning-Based Navigation System",
+      "authors": "G. Kahn, P. Abbeel, S. Levine",
+      "year": 2021,
+      "venue": "RA-L",
+      "arxiv": "2002.05700",
+      "pdf": false,
+      "note": "Learns traversability from real-world experience without simulation."
+    },
+    {
+      "key": "shah2023gnm",
+      "cat": "05-learning-navigation",
+      "title": "GNM: A General Navigation Model to Drive Any Robot",
+      "authors": "D. Shah et al.",
+      "year": 2023,
+      "venue": "ICRA",
+      "arxiv": "2210.03370",
+      "pdf": true,
+      "note": "60 hours of data from 6 robots; cross-embodiment navigation."
+    },
+    {
+      "key": "shah2023vint",
+      "cat": "05-learning-navigation",
+      "title": "ViNT: A Foundation Model for Visual Navigation",
+      "authors": "D. Shah et al.",
+      "year": 2023,
+      "venue": "CoRL",
+      "arxiv": "2306.14846",
+      "pdf": false,
+      "note": "Transformer navigation foundation model; kilometer-scale navigation."
+    },
+    {
+      "key": "sridhar2024nomad",
+      "cat": "05-learning-navigation",
+      "title": "NoMaD: Goal Masked Diffusion Policies for Navigation and Exploration",
+      "authors": "A. Sridhar et al.",
+      "year": 2024,
+      "venue": "ICRA",
+      "arxiv": "2310.07896",
+      "pdf": false,
+      "note": "Diffusion policy for goal-reaching and exploration."
+    },
+    {
+      "key": "burgard1999rhino",
+      "cat": "06-systems-and-deployments",
+      "title": "Experiences with an Interactive Museum Tour-Guide Robot (RHINO)",
+      "authors": "W. Burgard et al.",
+      "year": 1999,
+      "venue": "Artificial Intelligence 114",
+      "url": "https://doi.org/10.1016/s0004-3702(99)00070-3",
+      "pdf": false,
+      "note": "Six-day museum deployment among crowds, 1997."
+    },
+    {
+      "key": "mardereppstein2010office",
+      "cat": "06-systems-and-deployments",
+      "title": "The Office Marathon: Robust Navigation in an Indoor Office Environment",
+      "authors": "E. Marder-Eppstein et al.",
+      "year": 2010,
+      "venue": "ICRA",
+      "url": "https://doi.org/10.1109/robot.2010.5509725",
+      "pdf": false,
+      "note": "The ROS navigation stack on a PR2."
+    },
+    {
+      "key": "furgale2010vtr",
+      "cat": "06-systems-and-deployments",
+      "title": "Visual Teach and Repeat for Long-Range Rover Autonomy",
+      "authors": "P. Furgale, T. D. Barfoot",
+      "year": 2010,
+      "venue": "Journal of Field Robotics 27(5)",
+      "url": "https://doi.org/10.1002/rob.20342",
+      "pdf": false,
+      "note": "32+ km of route repeating, 99.6% autonomous, no GPS."
+    },
+    {
+      "key": "teller2010forklift",
+      "cat": "06-systems-and-deployments",
+      "title": "A Voice-Commandable Robotic Forklift Working Alongside Humans in Minimally-Prepared Outdoor Environments",
+      "authors": "S. Teller et al.",
+      "year": 2010,
+      "venue": "ICRA",
+      "url": "https://people.csail.mit.edu/jrg/2010/Teller-ICRA10.pdf",
+      "pdf": false,
+      "note": "Autonomous pallet handling with local sensing, near people."
+    },
+    {
+      "key": "macenski2020nav2",
+      "cat": "06-systems-and-deployments",
+      "title": "The Marathon 2: A Navigation System (Nav2)",
+      "authors": "S. Macenski, F. Martin, R. White, J. Gines Clavero",
+      "year": 2020,
+      "venue": "IROS",
+      "arxiv": "2003.00368",
+      "pdf": true,
+      "note": "ROS 2 navigation with behavior trees; the open-source AMR baseline."
+    },
+    {
+      "key": "iso3691-4-2023",
+      "cat": "07-standards",
+      "title": "ISO 3691-4:2023 Industrial trucks - Safety requirements and verification - Part 4: Driverless industrial trucks and their systems",
+      "authors": "ISO",
+      "year": 2023,
+      "venue": "ISO standard (2nd ed.)",
+      "url": "https://www.iso.org/standard/83545.html",
+      "pdf": false,
+      "note": "Covers AGVs, AMRs, tuggers; first edition 2020."
+    },
+    {
+      "key": "vda5050-2-1",
+      "cat": "07-standards",
+      "title": "VDA 5050: Interface for the communication between automated guided vehicles (AGV) and a master control, v2.1.0",
+      "authors": "VDA / VDMA",
+      "year": 2024,
+      "venue": "Industry standard",
+      "url": "https://vda.de/dam/jcr:f0c9c019-1506-4dee-998a-e92723fbf025/VDA5050-V2p1p0.pdf",
+      "pdf": false,
+      "note": "Vendor-neutral MQTT interface for mixed fleets; v2.0.0 in Feb 2022."
+    }
+  ]
+}
