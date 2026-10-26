@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SLAM and Localization Cookbook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500;75..125,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a two-column reference book. A sticky recipe index on wide screens, one 72ch reading column;
+   recipe headings carry a mono "R" number tab, worked examples and pitfalls are set apart by colour. */
+:root {
+  --bg: #f5f5f1; --paper: #ffffff; --ink: #1c1f1d; --muted: #5f6662; --rule: #d9ddd7;
+  --accent: #3d4fb0; --accent-soft: #e8ebf8; --warm: #a85d0c; --warm-soft: #f7ecdc; --code-bg: #eef0ec;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Literata", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111412; --paper: #181c1a; --ink: #e3e8e4; --muted: #98a19c; --rule: #2d3430;
+    --accent: #95a4f3; --accent-soft: #1f2545; --warm: #efa652; --warm-soft: #3a2a16; --code-bg: #202623;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111412; --paper: #181c1a; --ink: #e3e8e4; --muted: #98a19c; --rule: #2d3430;
+  --accent: #95a4f3; --accent-soft: #1f2545; --warm: #efa652; --warm-soft: #3a2a16; --code-bg: #202623;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.62;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px; }
+.layout { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; }
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; max-height: 100vh; overflow-y: auto; padding: 32px 0 24px; font-family: var(--mono); font-size: .74rem; line-height: 1.45; }
+nav.toc .p { color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin: 14px 0 4px; font-size: .68rem; }
+nav.toc a { display: block; color: var(--ink); text-decoration: none; padding: 2px 6px; border-radius: 3px; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+main { min-width: 0; max-width: 74ch; padding-top: 36px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } nav.toc { display: none; } main { margin: 0 auto; } }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; }
+main > h1:first-child { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; font-stretch: 85%; margin: 0 0 .4rem; }
+main h1 { font-size: 1.9rem; font-weight: 800; font-stretch: 88%; margin: 3.4rem 0 .6rem; padding-top: .8rem; border-top: 3px solid var(--ink); }
+main h2 { font-size: 1.35rem; font-weight: 800; font-stretch: 92%; margin: 2.6rem 0 .5rem; scroll-margin-top: 12px; }
+main h2 .rno { font-family: var(--mono); font-size: .8rem; font-weight: 500; color: var(--paper); background: var(--accent); padding: 2px 7px; border-radius: 3px; margin-right: 10px; vertical-align: 3px; }
+main h3 { font-size: 1.05rem; }
+p { margin: .7rem 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+strong { font-weight: 600; }
+main > p:nth-of-type(1) em { color: var(--muted); }
+ul, ol { padding-left: 1.4em; } li { margin: .25rem 0; }
+li > p { margin: .3rem 0; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+code { font-family: var(--mono); font-size: .86em; background: var(--code-bg); padding: 1px 4px; border-radius: 3px; }
+pre { background: var(--code-bg); padding: 12px 14px; border-radius: 4px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+.tbl { overflow-x: auto; margin: 1rem 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; line-height: 1.42; }
+th, td { text-align: left; padding: 7px 11px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+p.we { background: var(--warm-soft); border-left: 3px solid var(--warm); padding: 8px 14px; border-radius: 0 4px 4px 0; }
+p.pit { color: var(--muted); font-size: .94rem; }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 4px 0; }
+.mermaid { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 12px; overflow-x: auto; text-align: center; }
+.loading { color: var(--muted); font-family: var(--mono); font-size: .85rem; }
+</style>
+<script>
+  window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Recipes"></nav>
+  <main id="book"><p class="loading">Rendering the cookbook…</p></main>
+</div>
+<script type="text/markdown" id="src">
+# The SLAM and Localization Cookbook
+
+*The mathematics of knowing where you are, with encoders, IMUs, lasers, LiDAR, cameras, GNSS and star trackers. A companion to [REPORT.md](../REPORT.md). It builds on the general [Control-to-Learning cookbook](../../robot-learning-control/cookbook/COOKBOOK.md) (cited "R1–R39") and the [mobile-robot cookbook](../../mobile-robot-control/cookbook/COOKBOOK.md) (cited "M1–M22").*
+
+Each recipe has the same parts: **Problem**, **Recipe**, **Worked example**, **Used in** and **Pitfalls**. The worked examples are produced by [`examples.py`](examples.py): run `python3 examples.py s05` for recipe S5. Only NumPy is needed.
+
+```mermaid
+flowchart LR
+  G["Geometry<br/>S1"] --> P["Proprioception<br/>S2–S3 IMU, encoders"]
+  G --> X["Exteroception<br/>S4 GNSS · S6–S9 cameras · S12–S13 lidar"]
+  P --> F["Fusion<br/>S5 GNSS/INS · S10–S11 VIO"]
+  X --> F
+  F --> O["Back-end<br/>S14 factor graphs · S15 loop closure · S16 map-based"]
+  O --> Q["Reliability<br/>S17 degeneracy · S18 calibration · S21 metrics"]
+  G --> SP["Space<br/>S19 attitude, TRN"]
+  X --> L["Learning<br/>S20"]
+```
+
+## Contents
+
+- **Geometry and proprioception:** [S1 Rotations and Lie groups](#s1-rotations-poses-and-lie-groups) · [S2 IMU and encoder models](#s2-imu-and-encoder-models-and-why-they-drift) · [S3 Strapdown inertial navigation](#s3-strapdown-inertial-navigation-and-the-schuler-period)
+- **Absolute sensing and fusion:** [S4 GNSS positioning](#s4-gnss-positioning-and-dilution-of-precision) · [S5 GNSS/INS error-state Kalman filter](#s5-gnssins-fusion-with-an-error-state-kalman-filter)
+- **Cameras:** [S6 Camera models and stereo](#s6-camera-models-and-stereo-depth) · [S7 Epipolar geometry, PnP, RANSAC](#s7-epipolar-geometry-pnp-and-ransac) · [S8 Triangulation and bundle adjustment](#s8-triangulation-and-bundle-adjustment) · [S9 Scale and observability](#s9-monocular-scale-and-visual-inertial-observability)
+- **Visual-inertial:** [S10 IMU preintegration](#s10-imu-preintegration) · [S11 Filter-based VIO](#s11-filter-based-vio-error-state-ekf-and-msckf)
+- **Laser and LiDAR:** [S12 Point-to-plane ICP, NDT, LOAM](#s12-lidar-registration-point-to-plane-icp-ndt-loam-features) · [S13 2D laser SLAM](#s13-2d-laser-slam-correlative-matching-and-rao-blackwellized-particle-filters)
+- **Back-end:** [S14 Factor graphs and smoothing](#s14-factor-graphs-and-smoothing) · [S15 Loop closure and robustness](#s15-place-recognition-loop-closure-and-robust-kernels) · [S16 Map-based localization](#s16-map-based-localization-and-integrity)
+- **Reliability:** [S17 Degeneracy](#s17-degeneracy-and-observability-checks) · [S18 Calibration and time sync](#s18-calibration-and-time-synchronization)
+- **Space and learning:** [S19 Spacecraft attitude and terrain-relative navigation](#s19-spacecraft-attitude-star-trackers-and-terrain-relative-navigation) · [S20 Learning in SLAM](#s20-learning-in-slam) · [S21 Evaluation metrics](#s21-evaluation-ate-rpe-and-drift)
+
+---
+
+# Geometry and proprioception
+
+## S1. Rotations, poses and Lie groups
+
+**Problem.** 3D orientation can't be added like a vector. Estimators need a correct way to perturb, average and differentiate rotations and poses.
+
+**Recipe.**
+- **SO(3)** is the group of rotation matrices ($R^\top R=I$, $\det R=1$). **SE(3)** is the group of poses $T=\begin{bmatrix}R&t\\0&1\end{bmatrix}$.
+- **Exponential map** (Rodrigues): $\exp(\phi^\wedge)=I+\sin\theta\,K+(1-\cos\theta)K^2$, where $\theta=\lVert\phi\rVert$ and $K=[\phi/\theta]_\times$. The **log** inverts it: $\theta=\arccos\frac{\mathrm{tr}R-1}{2}$.
+- **Perturbations.** Estimators keep a nominal $\bar R$ and a small error $\delta\phi\in\mathbb R^3$ with $R=\bar R\exp(\delta\phi^\wedge)$. The filter or optimizer works on $\delta\phi$, which is a vector, then folds it back in. This is the "on-manifold" idea behind the multiplicative EKF, preintegration and every modern SLAM back-end.
+- **Quaternions** $q=(\cos\frac\theta2,u\sin\frac\theta2)$ are compact and singularity-free. $q$ and $-q$ represent the same rotation.
+
+**Worked example (`s01`).** $\exp([0,0,90°])$ is the expected 90° yaw matrix, and the log returns 90°. Composing a 10° roll after that yaw gives a total rotation of 90.44°, not 100°: rotations don't add.
+
+**Pitfalls.** Euler-angle singularities. Averaging quaternions component-wise. Mixing left and right perturbation conventions between modules.
+
+## S2. IMU and encoder models, and why they drift
+
+**Problem.** Model the high-rate sensors precisely enough to integrate them, and know how fast they go wrong.
+
+**Recipe.**
+- **Gyroscope:** $\omega_m=\omega+b_g+n_g$.
+- **Accelerometer** (measures specific force in the body frame): $a_m=R^\top(a-g)+b_a+n_a$.
+- **Bias models:** biases follow slow random walks, $\dot b=n_b$. Allan-variance plots give the noise densities (angle and velocity random walk) and the bias instability.
+- **Error growth:**
+  - a constant accelerometer bias $b_a$ gives a position error of $\tfrac12b_at^2$;
+  - a gyro bias $b_g$ tilts the estimated gravity direction by $b_gt$, which leaks $g\,b_gt$ into horizontal acceleration and gives a position error of about $\tfrac16g\,b_gt^3$.
+- **Wheel encoders** (M2, M6) give distance with error proportional to *distance*, not time. A stopped wheel adds no error, while a stopped IMU keeps drifting. The two are complementary.
+
+**Worked example (`s02`).**
+
+| Accelerometer bias | Grade | After 10 s | After 60 s | After 600 s |
+|---|---|---:|---:|---:|
+| 10 mg | Consumer MEMS | 4.9 m | 176.5 m | 17.7 km |
+| 1 mg | Industrial MEMS | 0.5 m | 17.7 m | 1.8 km |
+| 25 µg | Navigation grade | 0.0 m | 0.4 m | 44 m |
+
+For gyros over 60 s: a 10 °/h MEMS gyro tilts 10 arcmin, adding about 17 m of gravity-leakage position error. A 0.01 °/h navigation gyro adds 1.7 cm.
+
+**Used in.** Every inertial system, from phones to the Shuttle's three IMUs.
+
+**Pitfalls.** Temperature-dependent biases. Vibration. Treating MEMS biases as constant.
+
+## S3. Strapdown inertial navigation and the Schuler period
+
+**Problem.** Turn gyro and accelerometer readings into attitude, velocity and position.
+
+**Recipe** (navigation frame, ignoring Earth rotation for clarity):
+
+$$\begin{aligned}R_{k+1}&=R_k\exp\big((\omega_m-b_g)^\wedge\Delta t\big)\\v_{k+1}&=v_k+\big(R_k(a_m-b_a)+g\big)\Delta t\\p_{k+1}&=p_k+v_k\Delta t+\tfrac12\big(R_k(a_m-b_a)+g\big)\Delta t^2\end{aligned}$$
+
+- **Schuler period.** On the spherical Earth, a horizontal position error tilts the local-level frame. That feeds gravity back as a restoring force, so horizontal errors *oscillate* with period $2\pi\sqrt{R_\oplus/g}$ instead of growing without limit. This is why aircraft inertial systems drift on the order of a nautical mile per hour, not quadratically.
+- Long-duration navigation-grade systems also model Earth rotation, Coriolis and transport rate; see Groves.
+
+**Worked example (`s03`).** $2\pi\sqrt{6.371\times10^6/9.81}=84.4$ min.
+
+**Used in.** Apollo, the Shuttle, aircraft, submarines. Robots use the short-time form, which is S10's preintegration.
+
+**Pitfalls.** Wrong initial alignment: attitude errors at start-up inject gravity errors immediately.
+
+# Absolute sensing and fusion
+
+## S4. GNSS positioning and dilution of precision
+
+**Problem.** Get a global position from satellite ranges.
+
+**Recipe.**
+- **Pseudorange** to satellite $i$: $\rho_i=\lVert s_i-x\rVert+c\,\delta t+\varepsilon_i$. There are four unknowns ($x,y,z$ and the receiver clock bias $c\,\delta t$), so at least four satellites are needed.
+- **Gauss–Newton** (R4). Linearize with $H_i=[-u_i^\top,\ 1]$, where $u_i$ is the unit vector from receiver to satellite, solve $H\,\delta=\rho-\hat\rho$ by least squares, and iterate.
+- **Dilution of precision.** $Q=(H^\top H)^{-1}$ maps range noise to position noise: $\sigma_{\text{pos}}\approx\mathrm{PDOP}\cdot\sigma_\rho$, with $\mathrm{PDOP}=\sqrt{Q_{xx}+Q_{yy}+Q_{zz}}$. Good sky geometry gives a low DOP.
+- **RTK.** Carrier-phase differencing against a base station resolves integer ambiguities and gives centimetre accuracy, when the ambiguities can be fixed.
+
+**Worked example (`s04`).** Six satellites, 3 m range noise and a 150 m clock bias. Gauss–Newton converges to 2.8 m position error, with the clock bias estimated as 152 m, PDOP 4.96 and GDOP 5.80.
+
+**Used in.** Cars, outdoor robots, low-Earth-orbit satellites, and the late-era Shuttle.
+
+**Pitfalls.** Multipath and non-line-of-sight signals in cities. Integer-fix errors in RTK. No coverage indoors or beyond Earth orbit.
+
+## S5. GNSS/INS fusion with an error-state Kalman filter
+
+**Problem.** Combine a drifting but high-rate INS with noisy but bounded GNSS.
+
+**Recipe.**
+- **Error state.** Integrate the INS at full rate (S3). A Kalman filter (R9) estimates the INS *error* $\delta x=[\delta p,\delta v,\delta\phi,\delta b_a,\delta b_g]$, which stays small and nearly linear. Linearizing around the nominal trajectory gives $\delta\dot x=F\delta x+Gn$.
+- **Update.** A GNSS fix observes $\delta p=p_{\text{INS}}-p_{\text{GNSS}}+v$. After each update, correct the INS with the estimated error and reset $\delta x$.
+- **Loosely vs tightly coupled.** Loosely coupled uses GNSS positions; tightly coupled uses raw pseudoranges, which still helps with fewer than four satellites.
+- **Fault detection.** Gate each measurement on its normalized innovation $\nu^\top S^{-1}\nu<\chi^2$. The Shuttle's navigation did exactly this before accepting TACAN or microwave-landing-system updates.
+
+**Worked example (`s05`).** A 1-D INS with a 0.05 m/s² accelerometer bias, corrected by 1 Hz GNSS with 2 m noise:
+
+| Time | INS alone | GNSS/INS |
+|---:|---:|---:|
+| 30 s | 22.5 m | 0.87 m |
+| 60 s | 90 m | 0.13 m |
+| 90 s | 202.5 m | 0.05 m |
+| 120 s | 360 m | 0.09 m |
+
+The filter also estimates the bias as 0.0498 m/s² (true 0.05).
+
+**Used in.** Shuttle entry navigation (IMU + TACAN/MLS), cars (Wan et al. 2018), aircraft, drones.
+
+**Pitfalls.** Wrong process noise makes the filter overconfident and reject good fixes. Unmodelled time offsets (S18).
+
+# Cameras
+
+## S6. Camera models and stereo depth
+
+**Problem.** Relate 3D points to pixels and recover depth.
+
+**Recipe.**
+- **Pinhole model:** $\begin{bmatrix}u\\v\\1\end{bmatrix}\sim K[R\mid t]\begin{bmatrix}X\\1\end{bmatrix}$, with $K=\begin{bmatrix}f_x&0&c_x\\0&f_y&c_y\\0&0&1\end{bmatrix}$. Add lens distortion (radial-tangential, or fisheye models).
+- **Stereo depth.** With baseline $b$ and disparity $d$, $z=fb/d$. Error propagation gives $\sigma_z\approx\frac{z^2}{fb}\sigma_d$: depth error grows with the *square* of distance.
+- **RGB-D / time-of-flight** measures depth directly, with similar range-squared error growth for structured light.
+
+**Worked example (`s06`).** With $f=700$ px, $b=0.12$ m and 0.25 px disparity noise:
+
+| Depth | Disparity | Depth std |
+|---:|---:|---:|
+| 2 m | 42 px | 1.2 cm |
+| 10 m | 8.4 px | 0.30 m |
+| 30 m | 2.8 px | 2.7 m |
+
+The point $(0.5,-0.2,4.0)$ projects to pixel $(407.5,205)$.
+
+**Used in.** Every visual pipeline; Mars rover stereo VO.
+
+**Pitfalls.** Calibration errors, rolling shutter, auto-exposure changes.
+
+## S7. Epipolar geometry, PnP and RANSAC
+
+**Problem.** Estimate camera motion from matched features, many of which are wrong.
+
+**Recipe.**
+- **Epipolar constraint.** Two views of a point satisfy $x_2^\top E\,x_1=0$, where $E=[t]_\times R$ is the essential matrix (normalized coordinates). It is solved with 8 points (linear) or 5 points (minimal).
+- **PnP.** With known 3D points and their 2D projections, solve for the pose (P3P, then refine).
+- **RANSAC.** Repeat: sample a minimal set of $s$ correspondences, fit a model, count inliers. To find an all-inlier sample with probability $p$, given an inlier ratio $w$, you need
+
+  $$N=\frac{\log(1-p)}{\log(1-w^s)}$$
+
+  iterations. Smaller minimal sets need dramatically fewer iterations, which is why IMU-aided 2-point methods are popular.
+
+**Worked example (`s07`).** At a 50% inlier ratio and 99% confidence: the 8-point method needs 1,177 iterations, 5-point 146, P3P 35, and an IMU-aided 2-point method 17.
+
+**Used in.** VO front-ends (Nistér 2004), ORB-SLAM relocalization.
+
+**Pitfalls.** Pure rotation makes $t$ unobservable. Degenerate scenes (planes) for the 8-point algorithm.
+
+## S8. Triangulation and bundle adjustment
+
+**Problem.** Recover 3D points, then jointly refine all poses and points.
+
+**Recipe.**
+- **Linear triangulation (DLT).** Each view gives two rows, $u\,P^{(3)}-P^{(1)}$ and $v\,P^{(3)}-P^{(2)}$, where $P^{(k)}$ is the $k$-th row of the camera's projection matrix. Stack them and take the null vector by SVD.
+- **Bundle adjustment.** Minimize total reprojection error over camera poses $T_i$ and points $X_j$:
+
+  $$\min_{\{T_i\},\{X_j\}}\sum_{i,j}\rho\big(\lVert\pi(T_i,X_j)-z_{ij}\rVert^2_{\Sigma}\big)$$
+
+  Solve with Gauss–Newton or Levenberg–Marquardt. The normal equations have a sparse block structure. The **Schur complement** eliminates the many points first, leaving a small camera-only system; this makes large BA fast.
+
+**Worked example (`s08`).** For two cameras 0.5 m apart, a point at $(0.3,0.2,5.0)$ and 0.5 px pixel noise, DLT triangulates $(0.295,0.201,5.021)$. The depth error dominates, as S6 predicts.
+
+**Used in.** PTAM, ORB-SLAM, structure-from-motion, DROID-SLAM's differentiable BA layer.
+
+**Pitfalls.** Points near the epipole or with low parallax. Bad initialization causing local minima.
+
+## S9. Monocular scale and visual-inertial observability
+
+**Problem.** What a sensor suite can and cannot determine.
+
+**Recipe.**
+- **Monocular vision** recovers motion only **up to scale** (7-DoF similarity ambiguity): multiply every distance by $s$ and the images are identical. Evaluation therefore aligns with Umeyama's method in Sim(3) (S21).
+- **Visual-inertial** fixes the scale through the accelerometer, and roll and pitch through gravity. **Four directions stay unobservable**: global $x,y,z$ and yaw. Estimators that accidentally "observe" them (through linearization errors) become inconsistent and overconfident; fixes include observability-constrained EKFs and first-estimate Jacobians.
+- **Lidar and stereo** observe metric scale directly.
+
+**Worked example (`s09`).** A trajectory estimated at 0.37× true scale, rotated and offset, is aligned by Sim(3) Umeyama. It recovers scale 2.707 (true 1/0.37 = 2.703) with 0.043 m absolute trajectory error (ATE) after alignment.
+
+**Pitfalls.** Initializing VIO with too little motion, which leaves scale unobservable. Constant-velocity motion hides accelerometer bias.
+
+# Visual-inertial
+
+## S10. IMU preintegration
+
+**Problem.** Optimization-based VIO re-linearizes states, and re-integrating hundreds of IMU samples each time would be too slow.
+
+**Recipe** (Forster et al.). Between keyframes $i$ and $j$, integrate the IMU *in the frame of $i$*:
+
+$$\begin{aligned}\Delta R_{ij}&=\prod_k\exp\big((\omega_k-b_g)^\wedge\Delta t\big)\\\Delta v_{ij}&=\sum_k\Delta R_{ik}(a_k-b_a)\Delta t\\\Delta p_{ij}&=\sum_k\big[\Delta v_{ik}\Delta t+\tfrac12\Delta R_{ik}(a_k-b_a)\Delta t^2\big]\end{aligned}$$
+
+- These deltas **don't depend on the poses or velocities** at $i$ and $j$. The IMU factor compares them with the states, e.g. $\Delta R_{ij}\approx R_i^\top R_j$ and $\Delta v_{ij}\approx R_i^\top(v_j-v_i-g\Delta t_{ij})$.
+- Bias changes are handled by first-order Jacobians instead of re-integrating.
+- The covariance is propagated alongside, to weight the factor.
+
+**Worked example (`s10`).** 20 samples at 200 Hz (0.1 s), turning at 1 rad/s while accelerating at 1 m/s², give $\Delta\theta=5.73°$, $\Delta v=[0.0998,0.0047,0]$ m/s and $\Delta p\approx[0.005,0.0001,0]$ m. These are computed once per keyframe pair.
+
+**Used in.** VINS-Mono, ORB-SLAM3, LIO-SAM, GTSAM.
+
+**Pitfalls.** Wrong noise densities. Time offsets between camera and IMU (S18).
+
+## S11. Filter-based VIO: error-state EKF and MSCKF
+
+**Problem.** Visual-inertial estimation with constant computation per frame, for small processors.
+
+**Recipe.**
+- **Error-state EKF.** The nominal state is integrated with the IMU (S3). The error state $[\delta\phi,\delta v,\delta p,\delta b]$ uses minimal coordinates on SO(3) (S1), the same multiplicative idea as the spacecraft MEKF (S19).
+- **MSCKF** (Mourikis & Roumeliotis 2007). Keep a sliding window of past camera poses in the state, *but not the landmarks*. When a feature track ends:
+  1. triangulate the feature;
+  2. stack its reprojection residuals;
+  3. project them onto the left null space of the landmark Jacobian, removing the landmark;
+  4. apply an EKF update.
+
+  The cost is linear in the number of features.
+- **Iterated EKF** (FAST-LIO2) re-linearizes the update a few times, closing much of the gap to optimization.
+
+**Used in.** MSCKF/OpenVINS-style VIO on phones and drones; FAST-LIO2 for lidar.
+
+**Pitfalls.** Inconsistency from unobservable directions (S9). Outliers: gate innovations with $\chi^2$ tests.
+
+# Laser and LiDAR
+
+## S12. LiDAR registration: point-to-plane ICP, NDT, LOAM features
+
+**Problem.** Align a new 3D scan to a map or the previous scan.
+
+**Recipe.**
+- **Point-to-plane ICP.** For each source point $p_i$ with matched map plane (normal $n_i$, offset $d_i$), minimize $\sum_i\big(n_i^\top(Rp_i+t)-d_i\big)^2$. Linearize with $R\approx\bar R\exp(\delta\phi^\wedge)$; each residual row is $[\,-n_i^\top[q_i]_\times,\ n_i^\top\,]$ in $[\delta\phi,\delta t]$. Solve and iterate. It converges faster than point-to-point.
+- **NDT.** Split the map into voxels holding Gaussians $(\mu_k,\Sigma_k)$ and maximize $\sum_i\exp(-\tfrac12(q_i-\mu_k)^\top\Sigma_k^{-1}(q_i-\mu_k))$. Smooth, with no explicit correspondences; popular for car map matching.
+- **LOAM features.** Pick sharp **edge** points (high curvature) and flat **planar** points. Use point-to-line and point-to-plane residuals. Run odometry at high rate and mapping at low rate.
+- **De-skewing.** A spinning lidar sweeps over about 0.1 s. Transform each point to a common time using the IMU motion during the sweep.
+
+**Worked example (`s12`).** Points on three orthogonal planes, displaced by a rotation of (0.57°, −1.15°, 2.87°) and a translation of (0.20, −0.10, 0.05) m. Five Gauss–Newton point-to-plane iterations recover both exactly.
+
+**Used in.** LOAM, LIO-SAM, FAST-LIO2 (direct point-to-plane against an ikd-Tree), Autoware-style NDT localization.
+
+**Pitfalls.** Degenerate geometry (S17). Moving objects. Wrong de-skew.
+
+## S13. 2D laser SLAM: correlative matching and Rao-Blackwellized particle filters
+
+**Problem.** Map a building with a 2D scanner, as warehouse robots do at commissioning.
+
+**Recipe.**
+- **Correlative scan matching.** Brute-force search over $(x,y,\theta)$ on a grid, maximizing the scan's log-likelihood in the occupancy map (M10). Multi-resolution and branch-and-bound make it fast; this is Cartographer's loop-closure search.
+- **Rao-Blackwellized particle filter** (GMapping). Each particle carries a trajectory hypothesis *and its own map*. Factorize $p(x_{1:t},m\mid z,u)=p(x_{1:t}\mid z,u)\,p(m\mid x_{1:t},z)$: sample poses, and compute maps analytically per particle. Proposals improved by scan matching keep the particle count small.
+- **Graph-based** (Lu & Milios 1997, Cartographer). Scan-matched relative poses and loop closures form a pose graph (S14).
+
+**Used in.** GMapping, Cartographer, Hector; then AMCL for runtime localization (M8).
+
+**Pitfalls.** Particle depletion in large loops. Glass and reflective surfaces.
+
+# Back-end
+
+## S14. Factor graphs and smoothing
+
+**Problem.** Fuse all measurements over the whole trajectory consistently.
+
+**Recipe.**
+- **MAP estimation.** With Gaussian noise, the maximum-a-posteriori estimate is nonlinear least squares:
+
+  $$\hat X=\arg\min_X\sum_k\lVert h_k(X_k)-z_k\rVert^2_{\Sigma_k}$$
+
+  Each term is a **factor**: a prior, odometry, an IMU preintegration (S10), a reprojection (S8), a lidar match (S12), a GNSS fix (S4) or a loop closure (S15).
+- **Gauss–Newton** on the sparse information matrix $J^\top\Sigma^{-1}J$, whose sparsity mirrors the graph.
+  - **iSAM2** updates the solution incrementally with a Bayes tree, re-linearizing only what changed.
+  - **Sliding windows** marginalize old states into a prior via the Schur complement, keeping bounded cost (VINS-Mono, LIO-SAM).
+
+**Worked example (`s14`).** A 1-D loop of 10 × 1 m steps with odometry biased +2% ends at 10.20 m instead of 10.00 m. One loop-closure factor brings it to 10.001 m, and the 0.2 m error is spread smoothly back over the trajectory: corrections −0.02, −0.08, −0.14, −0.20 m at steps 1, 4, 7 and 10.
+
+**Used in.** iSAM2/GTSAM, g2o, Ceres-based systems; ORB-SLAM3, VINS-Mono, LIO-SAM, Cartographer.
+
+**Pitfalls.** Wrong covariances weight sensors badly. A single false loop closure can wreck the map (S15).
+
+## S15. Place recognition, loop closure and robust kernels
+
+**Problem.** Recognize a previously visited place under changed viewpoint or appearance, and survive mistakes.
+
+**Recipe.**
+- **Visual bag of words.** Quantize descriptors into words, compare TF-IDF histograms, verify geometrically (S7). This is DBoW in ORB-SLAM.
+- **Learned global descriptors** (NetVLAD) are more invariant to lighting and season.
+- **Lidar descriptors.** Scan Context encodes a scan as a polar height grid; compare across rotations.
+- **Robust kernels.** Replace $\lVert r\rVert^2$ with $\rho(r)$ (Huber, Cauchy) so outliers get low weight. Cauchy gives weight $1/(1+r^2/c^2)$. Switchable constraints and graduated non-convexity go further.
+- **The asymmetry.** A missed loop closure costs some drift; a false one can fold the map. Tune for **precision first**.
+
+**Worked example (`s15`).** A detector with 180 true positives, 4 false positives and 36 misses has precision 0.978 and recall 0.833. A Cauchy kernel gives a 10σ outlier weight 0.0099 instead of 1.
+
+**Used in.** ORB-SLAM (DBoW2), NetVLAD pipelines, Scan Context in LIO-SAM-style systems.
+
+**Pitfalls.** Perceptual aliasing: identical aisles, repeated façades.
+
+## S16. Map-based localization and integrity
+
+**Problem.** Localize precisely against a prior map, and know when the answer can't be trusted.
+
+**Recipe.**
+- **2D site maps:** AMCL (M8) or reflector EKF (M7).
+- **3D maps for cars:** match the live scan to the map with NDT or ICP (S12), or to a probabilistic intensity map (Levinson & Thrun 2010: each cell stores a Gaussian over remittance). Feed the result as a pose measurement into the GNSS/INS filter (S5), as in Baidu's system (5–10 cm RMS).
+- **Planetary landing (terrain-relative navigation):** match descent-image landmarks to an orbital map and fuse with the IMU. Mars 2020's Lander Vision System had a 60 m landing-accuracy requirement.
+- **Integrity.** Beyond the covariance, bound the probability of a *wrong* answer:
+  - **innovation monitoring**: $\chi^2$ test on $\nu^\top S^{-1}\nu$;
+  - **map-change detection**;
+  - **protection levels** in aviation GNSS (receiver autonomous integrity monitoring).
+
+**Used in.** Robotaxis, warehouses, the Mars 2020 landing, airliner approaches.
+
+**Pitfalls.** Stale maps. Overconfident covariances from scan matching in degenerate areas (S17).
+
+# Reliability
+
+## S17. Degeneracy and observability checks
+
+**Problem.** Detect when the environment doesn't constrain all directions, as in long corridors, tunnels or open fields.
+
+**Recipe.**
+- For a registration problem with Jacobian $J$, the information matrix is $J^\top J$. Its **eigenvalues** say how well each direction is constrained, and eigenvectors with tiny eigenvalues are degenerate directions.
+- **Mitigations:**
+  - freeze updates along degenerate directions (solution remapping);
+  - rely on the IMU or odometry there;
+  - add sensors that constrain that direction.
+
+**Worked example (`s17`).** For 2D point-to-line ICP:
+
+| Scene | Eigenvalues of $J^\top J$ | Condition number |
+|---|---|---:|
+| Corridor with two parallel walls | $[0,\,400,\,13467]$ | $10^{16}$ |
+| Same corridor with an end wall in view | $[200,\,400,\,13535]$ | 68 |
+
+The zero eigenvalue is motion along the corridor: it is unobservable until the end wall is seen.
+
+**Used in.** Lidar SLAM in tunnels and mines; the "corridor problem" in warehouses.
+
+**Pitfalls.** Trusting a scan-match covariance computed in a degenerate scene.
+
+## S18. Calibration and time synchronization
+
+**Problem.** Fusion is only as good as the known geometry and timing between sensors.
+
+**Recipe.**
+- **Intrinsics:** camera matrix and distortion from checkerboard or AprilTag sequences; IMU noise from Allan variance.
+- **Extrinsics.** Sensor-to-sensor transforms come from hand-eye calibration ($AX=XB$ from paired motions) or continuous-time batch estimation (Kalibr-style), which also estimates the **time offset**.
+- **Time offset error.** An offset $\Delta t$ causes a position error of $v\,\Delta t$ and a rotation error of $\omega\,\Delta t$. For a lidar point at range $r$, the rotation error moves it by $r\,\omega\,\Delta t$.
+- **Hardware sync** (PPS, PTP, trigger lines) beats software timestamps.
+
+**Worked example (`s18`).**
+- A 10 ms offset costs 1 cm at 1 m/s, 0.20 m at 20 m/s, and 1.5 m at 30 m/s with 50 ms.
+- Rotating at 1 rad/s, 10 ms is 0.57°, which puts a point 50 m away 0.5 m off.
+
+**Pitfalls.** Calibrations drift with temperature and vibration. Rolling-shutter timing.
+
+# Space and learning
+
+## S19. Spacecraft attitude, star trackers and terrain-relative navigation
+
+**Problem.** Know orientation (and position) with no GPS: in orbit, between planets, or landing on another world.
+
+**Recipe.**
+- **Wahba's problem.** Find the rotation that best maps reference unit vectors $r_i$ (star catalog, Sun, magnetic field) to body measurements $b_i$:
+
+  $$\min_R\sum_iw_i\lVert b_i-R^\top r_i\rVert^2$$
+
+  Form $B=\sum_iw_ir_ib_i^\top=U\Sigma V^\top$; then $R=U\,\mathrm{diag}(1,1,\det U\det V)V^\top$. **TRIAD** uses exactly two vectors. **QUEST** (Shuster & Oh 1981) solves the same problem fast via an eigenvalue problem on quaternions.
+- **Star trackers** match star patterns to a catalog for absolute attitude. The Shuttle's two star trackers aligned its IMUs using a stored 100-star catalog.
+- **Multiplicative EKF** (Lefferts, Markley & Shuster 1982). Gyros propagate the attitude, and star-tracker or vector measurements update a 3-parameter attitude error and the gyro bias (S1, S11).
+- **Apollo and the Shuttle.** Inertial propagation was updated by a Kalman filter (Schmidt's extended form for Apollo). The Shuttle used TACAN, the microwave landing system and altimeters during entry, each gated by a fault-detection test, and later GPS.
+- **Terrain-relative navigation and rovers.** Map-matched landmarks plus the IMU (Mars 2020). Stereo VO detecting wheel slip on the Mars Exploration Rovers. VIO plus a laser altimeter on Ingenuity.
+
+**Worked example (`s19`).** Two vectors, one precise ($10^{-3}$ noise, e.g. a Sun sensor) and one coarse ($10^{-2}$, e.g. a magnetometer), weighted by inverse variance. The SVD solution has 697 arcsec (0.19°) of error, limited by the coarse vector about the axis it alone constrains. A star tracker with a 20° field of view on 1,024 px resolves about 70 arcsec per pixel; centroiding to 0.1 px gives about 7 arcsec per star.
+
+**Used in.** Every satellite; Apollo; the Shuttle; Mars landers, rovers and the helicopter.
+
+**Pitfalls.** The Sun or Earth blinding the tracker. High rotation rates smearing stars. Lost-in-space initialization.
+
+## S20. Learning in SLAM
+
+**Problem.** Where learning helps, and where geometry still rules.
+
+**Recipe.**
+- **Learned front-ends.** SuperPoint keypoints and SuperGlue matching replace hand-made features and match better under lighting and viewpoint change. NetVLAD global descriptors handle place recognition (S15).
+- **Learned dense SLAM** (DROID-SLAM). A recurrent network predicts optical-flow corrections and confidences, and a **differentiable dense bundle-adjustment layer** turns them into pose and depth updates. Geometry stays inside the network: it is S8 made differentiable, exactly as SuperMimic made dynamics differentiable (R31).
+- **Neural and Gaussian maps.** iMAP (implicit networks), SplaTAM and Gaussian Splatting SLAM represent the map as optimizable radiance fields or Gaussians. Tracking is done by photometric rendering error.
+- **3D foundation models.** DUSt3R predicts pointmaps from image pairs. MASt3R-SLAM builds real-time monocular dense SLAM (15 FPS) on such a prior, with no fixed camera model.
+- **Where learning hasn't replaced geometry.** Calibrated metric fusion with IMU and GNSS, certified integrity, and spacecraft. Covariances from learned systems are rarely trustworthy.
+
+**Used in.** AR, research robotics, offline mapping. Learned place recognition increasingly appears in production stacks.
+
+**Pitfalls.** Domain shift from training data. GPU requirements. No calibrated uncertainty.
+
+## S21. Evaluation: ATE, RPE and drift
+
+**Problem.** Measure accuracy fairly.
+
+**Recipe.**
+- **Absolute trajectory error (ATE).** Align the estimate to ground truth (SE(3), or Sim(3) for monocular, via Umeyama), then take the RMS position error.
+- **Relative pose error (RPE).** Error of relative motion over fixed segments; it measures local drift.
+- **KITTI drift.** Average translational error in % of distance over 100–800 m segments, plus rotational error in deg/m.
+- **Always report** the alignment used, the sensors, whether loop closure was on, and the failure rate. Learned systems often win on fewer *catastrophic* failures (DROID-SLAM) rather than on lower median error.
+
+**Worked example (`s21`).** A 1% lateral drift over a 100 m straight gives ATE 0.579 m without alignment, RPE 0.100 m over 10 m segments, and 1.00% end drift. Different metrics tell different stories about the same run.
+
+**Used in.** KITTI, EuRoC, TUM and every SLAM paper.
+
+**Pitfalls.** Aligning away real errors. Comparing ATE across differently aligned results.
+
+---
+
+# Appendix · Quick reference
+
+| Idea | Equation |
+|---|---|
+| Rodrigues | $\exp(\phi^\wedge)=I+\sin\theta K+(1-\cos\theta)K^2$ |
+| IMU model | $\omega_m=\omega+b_g+n$, $a_m=R^\top(a-g)+b_a+n$ |
+| Accelerometer bias drift | $\tfrac12b_at^2$ |
+| Schuler period | $2\pi\sqrt{R_\oplus/g}=84.4$ min |
+| GNSS | $\rho=\lVert s-x\rVert+c\delta t$, $\mathrm{PDOP}=\sqrt{\mathrm{tr}\,Q_{pos}}$ |
+| Stereo depth error | $\sigma_z=z^2\sigma_d/(fb)$ |
+| Epipolar constraint | $x_2^\top[t]_\times Rx_1=0$ |
+| RANSAC | $N=\log(1-p)/\log(1-w^s)$ |
+| Bundle adjustment | $\min\sum\rho(\lVert\pi(T,X)-z\rVert^2)$ |
+| Point-to-plane | $\min\sum(n^\top(Rp+t)-d)^2$ |
+| MAP / factor graph | $\min\sum\lVert h(X)-z\rVert^2_\Sigma$ |
+| Cauchy weight | $1/(1+r^2/c^2)$ |
+| Wahba (SVD) | $B=\sum wrb^\top=U\Sigma V^\top$, $R=U\,\mathrm{diag}(1,1,\pm1)V^\top$ |
+| Time-offset error | $v\Delta t$, $r\omega\Delta t$ |
+
+</script>
+<script>
+(function () {
+  var src = document.getElementById('src').textContent;
+  var store = [];
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  // protect math from the Markdown parser
+  src = src.replace(/\$\$([\s\S]+?)\$\$/g, function (_, m) { store.push('\\[' + esc(m) + '\\]'); return '@@M' + (store.length - 1) + '@@'; });
+  src = src.replace(/\$([^\n$]+?)\$/g, function (_, m) { store.push('\\(' + esc(m) + '\\)'); return '@@M' + (store.length - 1) + '@@'; });
+  var html = marked.parse(src, { gfm: true });
+  html = html.replace(/@@M(\d+)@@/g, function (_, i) { return store[+i]; });
+  var book = document.getElementById('book');
+  book.innerHTML = html;
+  function slug(t) { return t.trim().toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-'); }
+  var toc = document.getElementById('toc');
+  book.querySelectorAll('h1, h2').forEach(function (h) {
+    h.id = slug(h.textContent);
+    if (h.tagName === 'H1' && h !== book.firstElementChild) {
+      var p = document.createElement('div'); p.className = 'p'; p.textContent = h.textContent; toc.appendChild(p);
+    }
+    if (h.tagName === 'H2') {
+      var m = h.textContent.match(/^([A-Z]\d+)\.\s*(.*)$/);
+      if (m) { h.innerHTML = '<span class="rno">' + m[1] + '</span>' + h.innerHTML.replace(/^[A-Z]\d+\.\s*/, ''); }
+      var a = document.createElement('a'); a.href = '#' + h.id; a.textContent = m ? m[1] + ' · ' + m[2] : h.textContent; toc.appendChild(a);
+    }
+  });
+  book.querySelectorAll('table').forEach(function (t) { var w = document.createElement('div'); w.className = 'tbl'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
+  book.querySelectorAll('p').forEach(function (p) {
+    var s = p.firstElementChild;
+    if (s && s.tagName === 'STRONG' && p.firstChild === s) {
+      if (/^Worked example/.test(s.textContent)) p.className = 'we';
+      if (/^Pitfalls/.test(s.textContent)) p.className = 'pit';
+    }
+  });
+  book.querySelectorAll('pre code.language-mermaid').forEach(function (c) { var d = document.createElement('div'); d.className = 'mermaid'; d.textContent = c.textContent; c.parentNode.replaceWith(d); });
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark' || (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  try { mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'neutral' }); mermaid.run({ querySelector: '.mermaid' }); } catch (e) {}
+  if (location.hash) { var t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); }
+  MathJax.startup.promise.then(function () { return MathJax.typesetPromise([book]); });
+})();
+</script>
+</body>
+</html>
