@@ -1,0 +1,520 @@
+# The Control and Estimation Theory Cookbook
+
+*The mathematics of automatic control and state estimation, from PID to learning, one recipe at a time. A companion to [REPORT.md](../REPORT.md). The general background (linear algebra, probability, deep learning, RL) is in the [Control-to-Learning cookbook](../../robot-learning-control/cookbook/COOKBOOK.md), cited "R1–R39".*
+
+Each recipe has the same parts: **Problem**, **Recipe**, **Worked example**, **Used in** and **Pitfalls**. The worked examples come from [`examples.py`](examples.py): `python3 examples.py c03` runs recipe C3. Only NumPy is needed.
+
+```mermaid
+flowchart LR
+  C1["C1–C4<br/>classical feedback, PID, margins"] --> C5["C5–C7<br/>state space, LQR, optimal control"]
+  C5 --> C8["C8<br/>robust"]
+  C5 --> C9["C9–C10<br/>adaptive, nonlinear"]
+  C5 --> C11["C11<br/>MPC"]
+  C12["C12<br/>system ID"] --> C9
+  E1["E1–E2<br/>least squares, Wiener"] --> E3["E3<br/>Kalman (dual of LQR)"]
+  C5 --- E3
+  E3 --> E4["E4–E6<br/>EKF, UKF, particle"]
+  E4 --> E7["E7–E8<br/>smoothing, MHE, consistency"]
+  C11 --> L["L1–L6<br/>learning-based control and estimation"]
+  E7 --> L
+  C12 --> L
+```
+
+## Contents
+
+- **Classical and modern control:** [C1 Feedback](#c1-feedback-sensitivity-and-steady-state-error) · [C2 Stability](#c2-stability-characteristic-roots-routhhurwitz-nyquist) · [C3 PID](#c3-pid-control-and-tuning) · [C4 Margins](#c4-frequency-response-gain-phase-and-delay-margins) · [C5 State space](#c5-state-space-controllability-and-pole-placement) · [C6 LQR and LQG](#c6-lqr-and-the-lqg-margin-problem) · [C7 Optimal control](#c7-dynamic-programming-the-maximum-principle-and-minimum-time-control) · [C8 Robust](#c8-robust-control-sensitivity-h-infinity-and-small-gain) · [C9 Adaptive](#c9-adaptive-control-mrac-and-self-tuning) · [C10 Nonlinear](#c10-nonlinear-control-lyapunov-design-feedback-linearization-sliding-mode-backstepping) · [C11 MPC](#c11-model-predictive-control) · [C12 System ID](#c12-system-identification-and-persistent-excitation)
+- **Estimation:** [E1 Least squares](#e1-least-squares-and-recursive-least-squares) · [E2 Wiener](#e2-wiener-filtering) · [E3 Kalman](#e3-the-kalman-filter-and-its-duality-with-lqr) · [E4 EKF](#e4-the-extended-kalman-filter) · [E5 UKF](#e5-the-unscented-kalman-filter) · [E6 Particle filters](#e6-particle-filters) · [E7 Smoothing and MHE](#e7-smoothing-and-moving-horizon-estimation) · [E8 Consistency](#e8-consistency-checks-nees-and-nis)
+- **Learning-based:** [L1 Learned models](#l1-learning-models-neural-networks-gps-sindy-koopman) · [L2 RL as approximate DP](#l2-reinforcement-learning-as-approximate-dynamic-programming) · [L3 DeePC](#l3-data-driven-predictive-control-deepc) · [L4 Safe learning](#l4-safe-learning-lyapunov-and-barrier-constraints) · [L5 Learned estimators](#l5-learned-estimators-kalmannet-and-differentiable-filters) · [L6 Differentiable control](#l6-differentiable-control-and-end-to-end-learning)
+
+---
+
+# Classical and modern control
+
+## C1. Feedback, sensitivity and steady-state error
+
+**Problem.** Why feed back at all, and what does feedback buy and cost?
+
+**Recipe.**
+- **Loop.** Plant $G$, controller $C$, loop gain $L=GC$.
+  - Reference to output: $T=\dfrac{L}{1+L}$ (complementary sensitivity).
+  - Disturbance to output: $S=\dfrac{1}{1+L}$ (sensitivity). Note $S+T=1$.
+- **High loop gain** makes $S$ small: disturbances are rejected and plant variations matter less. Black's 1934 amplifier traded raw gain for this insensitivity.
+- **Steady-state error** to a step is $1/(1+L(0))$ for a type-0 loop. An integrator in $C$ (the I in PID) makes it zero.
+- **The waterbed.** For stable open loops, Bode's sensitivity integral gives $\int_0^\infty\ln\lvert S(j\omega)\rvert\,d\omega=0$ (more generally, $\ge0$). Pushing $\lvert S\rvert$ down at some frequencies pushes it up elsewhere.
+
+**Worked example (`c01`).** For $L=K/(s+1)$:
+
+| Gain $K$ | Closed-loop DC gain | Steady-state error | Bandwidth |
+|---:|---:|---:|---:|
+| 1 | 0.50 | 0.50 | 2 rad/s |
+| 10 | 0.91 | 0.09 | 11 rad/s |
+| 100 | 0.99 | 0.01 | 101 rad/s |
+
+Gain buys accuracy and speed, until delays and unmodelled dynamics push back (C4).
+
+**Pitfalls.** Sensor noise is fed back through $T$. Too much gain destabilizes (C2).
+
+## C2. Stability: characteristic roots, Routh–Hurwitz, Nyquist
+
+**Problem.** When does feedback make a system unstable?
+
+**Recipe.**
+- **Characteristic roots.** A linear system is stable if all closed-loop poles (roots of $1+L(s)=0$) have negative real parts. Maxwell (1868) analysed governors this way.
+- **Routh–Hurwitz** decides stability from polynomial coefficients without computing roots. For $s^3+a_2s^2+a_1s+a_0$, the conditions are all $a_i>0$ and $a_2a_1>a_0$.
+- **Nyquist criterion** (1932). The number of unstable closed-loop poles equals the number of unstable open-loop poles plus the number of clockwise encirclements of $-1$ by $L(j\omega)$. It works directly from measured frequency responses, and gives margins (C4).
+- **Root locus** traces the closed-loop poles as a gain varies.
+
+**Worked example (`c02`).** The plant $1/((s+1)(s+2)(s+3))$ under proportional gain $K$ gives $s^3+6s^2+11s+6+K$. Routh's condition $6\cdot11>6+K$ says stability holds for $K<60$. Numerically, $K=59$ leaves the slowest pole at $-0.011$ and $K=61$ puts it at $+0.011$. At $K=60$ the poles sit on the imaginary axis at $\pm j\sqrt{11}=\pm3.32j$.
+
+**Pitfalls.** Stability isn't enough: a nearly unstable loop rings and amplifies noise. Use margins (C4) and sensitivity peaks (C8).
+
+## C3. PID control and tuning
+
+**Problem.** The workhorse controller: what each term does and how to tune it.
+
+**Recipe.**
+- **Ideal form:**
+
+  $$u(t)=K_p\Big(e(t)+\frac1{T_i}\int_0^te\,d\tau+T_d\frac{de}{dt}\Big)$$
+
+  - **P** acts on the present error.
+  - **I** removes steady-state error, the accumulated past (C1).
+  - **D** anticipates the future and adds damping.
+- **Practical PID needs:**
+  - a derivative filter, $T_ds/(1+T_ds/N)$;
+  - derivative on the measurement, not the error, to avoid kicks at setpoint steps;
+  - **anti-windup** that stops integrating when the actuator saturates;
+  - setpoint weighting.
+- **Ziegler–Nichols (1942) ultimate-gain rule.** Raise the P gain until sustained oscillation, at gain $K_u$ and period $T_u$. Then set $K_p=0.6K_u$, $T_i=T_u/2$, $T_d=T_u/8$. It gives fast but aggressive responses, aiming for roughly quarter-amplitude decay.
+- **Modern tuning** (SIMC, AMIGO, relay auto-tuning) targets robustness, i.e. a sensitivity peak $M_s\approx1.4$–$2$ (C8).
+
+**Worked example (`c03`).** For the plant $1/(s+1)^3$, $K_u=8$ and $T_u=3.63$ s.
+
+| Tuning | Gains | Overshoot | 2% settling |
+|---|---|---:|---:|
+| Ziegler–Nichols PID | $K_p=4.8$, $T_i=1.81$, $T_d=0.45$ | 52% | 9.6 s |
+| Softer PI | $K_p=1$, $T_i=2$ | 13% | 11.1 s |
+
+C8 shows the robustness cost of the aggressive tuning.
+
+**Used in.** About 90% of industrial loops (Åström & Hägglund 2001). Joint servos under every learned robot policy (R7).
+
+**Pitfalls.** Integral windup. Derivative noise. Tuning for speed at the expense of robustness.
+
+## C4. Frequency response: gain, phase and delay margins
+
+**Problem.** How far is the loop from instability, and how much delay can it tolerate?
+
+**Recipe.**
+- **Gain crossover** $\omega_c$, where $\lvert L(j\omega_c)\rvert=1$. **Phase margin:** $\text{PM}=180°+\angle L(j\omega_c)$.
+- **Phase crossover** $\omega_{180}$, where $\angle L=-180°$. **Gain margin:** $\text{GM}=1/\lvert L(j\omega_{180})\rvert$.
+- **Delay margin.** A pure delay $e^{-s\theta}$ subtracts $\omega\theta$ of phase, so the loop tolerates an extra delay of $\text{PM}/\omega_c$ (PM in radians).
+- **Rules of thumb:** PM 45–60° and GM 6–10 dB. Bode's gain-phase relation ties a slope of −20 dB/decade to −90° of phase, which limits how sharply a loop can roll off.
+
+**Worked example (`c04`).** For $L=4e^{-0.2s}/(s+1)$: crossover at 3.87 rad/s, phase margin 60.1°, gain margin 6.5 dB, and a delay margin of 0.271 s on top of the existing 0.2 s.
+
+**Pitfalls.** Good margins at one operating point don't hold everywhere (gain scheduling). Margins of single loops can hide multivariable fragility (C6, C8).
+
+## C5. State space, controllability and pole placement
+
+**Problem.** Handle many states and inputs in the time domain.
+
+**Recipe.**
+- **State space:** $\dot x=Ax+Bu$, $y=Cx+Du$, the representation Kalman made standard (1960).
+- **Controllability.** $\mathrm{rank}[B,AB,\dots,A^{n-1}B]=n$ means any state can be reached and any closed-loop poles placed.
+- **Observability.** $\mathrm{rank}[C;CA;\dots;CA^{n-1}]=n$ means the state can be reconstructed from outputs. It is the dual condition, needed for estimation (E3).
+- **Pole placement (Ackermann):** $K=[0\ \cdots\ 0\ 1]\,\mathcal C^{-1}\varphi(A)$, where $\varphi$ is the desired characteristic polynomial and $\mathcal C$ the controllability matrix. Then $u=-Kx$ gives $\mathrm{eig}(A-BK)$ equal to the desired poles.
+
+**Worked example (`c05`).** For the double integrator with target poles $-2\pm2j$: the controllability matrix has rank 2, Ackermann gives $K=[8,4]$, and the closed-loop poles are $-2\pm2j$.
+
+**Pitfalls.** Pole placement says nothing about input size or robustness. Placing poles far left demands huge inputs and amplifies noise, which is why LQR is preferred (C6).
+
+## C6. LQR and the LQG margin problem
+
+**Problem.** Pick a state-feedback gain that trades performance against effort, and understand what happens when an estimator is added.
+
+**Recipe.**
+- **LQR.** Minimize $\int_0^\infty(x^\top Qx+u^\top Ru)\,dt$. The gain is $K=R^{-1}B^\top P$, where $P$ solves the continuous algebraic Riccati equation
+
+  $$A^\top P+PA-PBR^{-1}B^\top P+Q=0$$
+
+  Solve it via the stable eigenvectors of the Hamiltonian $\begin{bmatrix}A&-BR^{-1}B^\top\\-Q&-A^\top\end{bmatrix}$. The discrete version is in R8.
+- **Guaranteed margins.** With full state feedback, LQR satisfies $\lvert1+L(j\omega)\rvert\ge1$. That gives a gain margin from 1/2 to ∞ (−6 dB to +∞) and at least 60° of phase margin in each channel (Safonov & Athans 1977).
+- **LQG.** Feed LQR from a Kalman estimate (E3). The separation principle says this is optimal for linear-Gaussian systems, but **the margins disappear**. Doyle's 1978 counterexample has arbitrarily small gain margin; the abstract reads, in full, "There are none." Loop transfer recovery and robust control (C8) followed.
+
+**Worked example (`c06`).** For a lightly damped oscillator with $Q=\mathrm{diag}(10,1)$ and $R=1$: $K=[2.32,2.18]$, the loop's peak sensitivity is exactly $1.000$, and the phase margin is 73.5°, comfortably above the guaranteed 60°.
+
+**Used in.** Aerospace, mechatronics, robot balancing. It is the starting point of RL theory on linear systems (L2).
+
+**Pitfalls.** Choosing $Q$ and $R$ is still tuning. Margins assume the state is measured, not estimated.
+
+## C7. Dynamic programming, the maximum principle and minimum-time control
+
+**Problem.** Optimal control of nonlinear or constrained systems.
+
+**Recipe.**
+- **Dynamic programming** (Bellman 1957). The value function satisfies the Hamilton–Jacobi–Bellman equation
+
+  $$-\partial_tV=\min_u\big[\ell(x,u)+\nabla V^\top f(x,u)\big]$$
+
+  and the optimal policy is the minimizer. LQR is the case $V=x^\top Px$. RL approximates $V$ from data (R24–R27, L2).
+- **Pontryagin's maximum principle** (1962). Along an optimal trajectory, with Hamiltonian $H=\ell+\lambda^\top f$, the costate satisfies $\dot\lambda=-\partial H/\partial x$ and $u^*$ minimizes $H$ pointwise. This gives necessary conditions for trajectory optimization (R11).
+- **Minimum time with bounded input** ($\lvert u\rvert\le1$, double integrator). $H$ is linear in $u$, so the optimum is **bang-bang**. The switch happens on the curve $x=-\tfrac12v\lvert v\rvert$.
+
+**Worked example (`c07`).** From $x=1$, $v=0$ to the origin with $\lvert u\rvert\le1$, the bang-bang law takes 1.999 s. The analytic answer is $2\sqrt{x_0}=2$ s.
+
+**Pitfalls.** The curse of dimensionality for dynamic programming. Bang-bang control chatters near the switching curve, which motivates smoothing or MPC.
+
+## C8. Robust control: sensitivity, H-infinity and small gain
+
+**Problem.** Guarantee stability and performance for every plant in a set, not just the nominal model.
+
+**Recipe.**
+- **Sensitivity peak.** $M_s=\lVert S\rVert_\infty=\max_\omega\lvert1/(1+L)\rvert$ is the inverse of the shortest distance from $L(j\omega)$ to $-1$. It bounds the margins: $\text{GM}\ge\dfrac{M_s}{M_s-1}$ and $\text{PM}\ge2\arcsin\dfrac1{2M_s}$.
+- **Small-gain theorem.** If the uncertainty $\Delta$ is stable with $\lVert\Delta\rVert_\infty<1/\lVert M\rVert_\infty$, the loop $M$–$\Delta$ is stable. For multiplicative uncertainty $G(1+W\Delta)$, the condition becomes $\lVert WT\rVert_\infty<1$.
+- **$H_\infty$ synthesis** (Zames 1981; Doyle, Glover, Khargonekar & Francis 1989). Minimize a weighted mix such as $\big\lVert\begin{bmatrix}W_1S\\W_2T\end{bmatrix}\big\rVert_\infty$ by solving two Riccati equations. **μ-analysis** handles structured uncertainty.
+
+**Worked example (`c08`).**
+- $M_s=1.4$ guarantees GM ≥ 10.9 dB and PM ≥ 41.8°; $M_s=2$ guarantees GM ≥ 6.0 dB and PM ≥ 29°.
+- For C3's loops, Ziegler–Nichols gives $M_s=2.26$ (fragile), while the softer PI gives $M_s=1.67$.
+
+**Used in.** Flight control, hard-disk servos, process control.
+
+**Pitfalls.** Conservatism from loose uncertainty bounds. High controller order (use order reduction).
+
+## C9. Adaptive control: MRAC and self-tuning
+
+**Problem.** Control a plant whose parameters are unknown or drifting.
+
+**Recipe.**
+- **Model-reference adaptive control (MRAC).** Choose a reference model $\dot y_m=-a_my_m+b_mr$. Parameterize the controller, e.g. $u=\theta r$, and adapt $\theta$ from the error $e=y-y_m$.
+  - The early **MIT rule**, $\dot\theta=-\gamma e\,\partial e/\partial\theta$, can go unstable.
+  - The **Lyapunov rule** follows from $V=\tfrac12e^2+\tfrac{\lvert b\rvert}{2\gamma}\tilde\theta^2$: it gives $\dot\theta=-\gamma\,e\,r\,\mathrm{sign}(b)$ and $\dot V\le0$.
+- **Self-tuning regulators** (Åström & Wittenmark 1973). Run recursive least squares (E1) on the plant, then redesign the controller (pole placement, minimum variance) from the latest estimates (certainty equivalence).
+- **Robustness modifications** (σ-modification, projection, dead-zones) stop parameter drift under disturbances.
+- **Runtime assurance.** The X-15-3 accident (1967), in which the MH-96 adaptive system entered a limit cycle, is the classic warning that adaptation needs bounds and monitoring.
+
+**Worked example (`c09`).** For the plant $\dot y=-2y+0.5u$ (gain unknown to the controller) with reference model $\dot y_m=-2y_m+2r$, the ideal gain is $\theta^*=4$.
+- With adaptation gain 0.5, $\theta$ reaches 3.969 in 40 s and the mean tracking error is 0.015.
+- With gain 2, $\theta=4.000$ and the error is essentially zero.
+
+**Used in.** Flight control research, process control, and the ancestors of learning-based control.
+
+**Pitfalls.** Lack of persistent excitation makes parameters wander (C12). High adaptation gain combined with unmodelled dynamics gives bursting and oscillation.
+
+## C10. Nonlinear control: Lyapunov design, feedback linearization, sliding mode, backstepping
+
+**Problem.** Control large-signal nonlinear behaviour with proofs.
+
+**Recipe.**
+- **Lyapunov design.** Find $V(x)>0$ and choose $u$ so that $\dot V=\nabla V^\top f(x,u)<0$ (R6). A **control Lyapunov function** guarantees such a $u$ exists; Sontag's formula constructs one.
+- **Feedback linearization.** For $\dot x=f(x)+g(x)u$, cancel the nonlinearity: $u=g^{-1}(v-f)$ gives $\dot x=v$, then design $v$ linearly. Computed-torque robot control is the standard example. It needs an exact model and well-defined relative degree.
+- **Sliding mode** (Utkin 1977). Define a surface $s=\dot e+\lambda e$ and drive it to zero with $u=u_{\text{eq}}-k\,\mathrm{sign}(s)$, where $k$ exceeds the bound on disturbances.
+  - On the surface, the dynamics are those of $s=0$, regardless of matched disturbances.
+  - The price is **chattering**. A boundary layer $\mathrm{sat}(s/\phi)$ trades exactness for smoothness.
+- **Backstepping.** For cascaded (strict-feedback) systems, design a virtual control for the first state, then step back one integrator at a time, adding to the Lyapunov function at each step.
+
+**Worked example (`c10`).** A double integrator with disturbance $0.5\sin3t$, surface $s=\dot x+2x$ and gain $k=1$:
+
+| Boundary layer $\phi$ | $\lvert x(6\,\text{s})\rvert$ | Control sign switches |
+|---|---:|---:|
+| $10^{-6}$ (pure sign) | 0.0001 | 26,133 (chattering) |
+| 0.05 | 0.006 | 6 |
+
+**Used in.** Motor drives, power converters, ABS, robotics.
+
+**Pitfalls.** Cancelling uncertain terms. Chattering exciting unmodelled dynamics.
+
+## C11. Model predictive control
+
+**Problem.** Optimize future behaviour subject to input and state constraints, and re-plan every step.
+
+**Recipe.**
+- **Finite-horizon problem** (R11), solved every step from the current state, applying only $u_0$:
+
+  $$\min_{u_{0:N-1}}\sum_{k=0}^{N-1}\big(x_k^\top Qx_k+u_k^\top Ru_k\big)+x_N^\top Px_N\quad\text{s.t. } x_{k+1}=Ax_k+Bu_k,\ u_k\in\mathcal U,\ x_k\in\mathcal X$$
+
+- **Condensed form.** Stacking the predictions $X=S_xx_0+S_uU$ turns it into a QP in $U$: $\min\tfrac12U^\top HU+f^\top U$ subject to box or polytope constraints. Solve with active-set, interior-point or first-order methods; projected gradient suffices for input boxes.
+- **Stability** (Mayne et al. 2000). Use a terminal cost $P$ from the LQR Riccati equation and a terminal set where the LQR law satisfies the constraints. Then the optimal cost is a Lyapunov function, and recursive feasibility holds.
+- **Variants:** explicit MPC (precomputed piecewise-affine law), nonlinear MPC, robust/tube MPC, economic MPC.
+
+**Worked example (`c11`).** Double integrator from 5 m, input limit $\lvert u\rvert\le0.5$, horizon 40:
+
+| Controller | Cost | Overshoot past target | Settles within 5 cm |
+|---|---:|---:|---:|
+| LQR with its output clipped | 727 | 1.88 m | 12.8 s |
+| Constrained MPC | 624 | 0.24 m | 7.9 s |
+
+MPC knows about the limit and starts braking in time.
+
+**Used in.** Refining and chemicals (Qin & Badgwell 2003), automotive, legged robots, the learning-based MPC variants in L1–L4.
+
+**Pitfalls.** Model mismatch. Infeasibility after disturbances (use soft constraints). Computation time.
+
+## C12. System identification and persistent excitation
+
+**Problem.** Get a model from input-output data.
+
+**Recipe.**
+- **ARX model:** $y_k=a_1y_{k-1}+\dots+b_1u_{k-1}+\dots+e_k$, linear in the parameters, so least squares (E1) gives $\hat\theta=(\Phi^\top\Phi)^{-1}\Phi^\top y$.
+- **Prediction-error methods** (Ljung) generalize this to ARMAX, Box–Jenkins and state-space models. Subspace methods identify state-space models directly.
+- **Persistent excitation.** The input must be rich enough that $\Phi^\top\Phi$ is invertible. A constant input after the transients identifies only the DC gain. This also underlies adaptive control (C9) and DeePC (L3).
+- **Validation.** Check residual whiteness and cross-validation on fresh data.
+
+**Worked example (`c12`).** For $y_k=0.9y_{k-1}+0.5u_{k-1}+e_k$ driven by random ±1 inputs, least squares gives $a=0.903$ and $b=0.500$. With a constant input at steady state, the regressor matrix has rank 1 of 2: $a$ and $b$ can't be separated.
+
+**Pitfalls.** Closed-loop data, where feedback correlates input and noise. Overfitting high-order models.
+
+# Estimation
+
+## E1. Least squares and recursive least squares
+
+**Problem.** Estimate parameters from noisy data, possibly online.
+
+**Recipe.**
+- **Batch.** $\hat\theta=\arg\min\lVert y-\Phi\theta\rVert^2=(\Phi^\top\Phi)^{-1}\Phi^\top y$. Gauss and Legendre (around 1800) used it for orbit determination. It is the maximum-likelihood estimate under Gaussian noise (R14).
+- **Recursive least squares (RLS)** with forgetting factor $\lambda\le1$:
+
+  $$K_k=\frac{P_{k-1}\varphi_k}{\lambda+\varphi_k^\top P_{k-1}\varphi_k},\quad\hat\theta_k=\hat\theta_{k-1}+K_k\big(y_k-\varphi_k^\top\hat\theta_{k-1}\big),\quad P_k=\frac{(I-K_k\varphi_k^\top)P_{k-1}}{\lambda}$$
+
+  RLS is a Kalman filter for a constant (or random-walk) parameter. $\lambda<1$ discounts old data so the estimate tracks changes.
+
+**Worked example (`e01`).** A parameter jumps from 1 to 2 at step 200.
+- With $\lambda=1$, the estimate is only 1.12 thirty steps after the jump, and 1.49 at step 400.
+- With $\lambda=0.95$, it is 1.78 thirty steps after the jump and 2.01 by step 400.
+
+**Pitfalls.** With $\lambda<1$ and poor excitation, $P$ blows up (estimator windup).
+
+## E2. Wiener filtering
+
+**Problem.** The optimal linear filter for stationary signals in noise, the precursor of the Kalman filter.
+
+**Recipe.**
+- For a signal $s$ in noise, the non-causal Wiener filter is $H(\omega)=\dfrac{S_{sy}(\omega)}{S_{yy}(\omega)}$, the cross-spectrum over the measurement spectrum. For uncorrelated noise this becomes $\dfrac{S_{ss}}{S_{ss}+S_{nn}}$: pass frequencies where the signal dominates, attenuate where noise does.
+- The causal version needs spectral factorization (Wiener–Hopf).
+- **Limits.** It is stationary only, frequency-domain and not recursive. Kalman's 1960 state-space formulation removed all three limits, and gives the same answer as the steady-state Kalman filter for stationary problems.
+
+**Used in.** Signal processing, communications, image restoration.
+
+## E3. The Kalman filter and its duality with LQR
+
+**Problem.** The optimal recursive state estimate for linear-Gaussian systems.
+
+**Recipe.** Model: $x_{k+1}=Ax_k+Bu_k+w_k$ with $w\sim\mathcal N(0,Q)$, and $y_k=Cx_k+v_k$ with $v\sim\mathcal N(0,R)$.
+1. **Predict:** $\hat x^-=A\hat x+Bu$, $P^-=APA^\top+Q$.
+2. **Update:** $K=P^-C^\top(CP^-C^\top+R)^{-1}$, $\hat x=\hat x^-+K(y-C\hat x^-)$, $P=(I-KC)P^-$.
+
+- It is the exact Bayesian posterior for linear-Gaussian systems (R3), and the best linear unbiased estimator otherwise.
+- **Steady state.** $P$ converges to the solution of a filter Riccati equation, the control DARE (R8) with $(A,B)\to(A^\top,C^\top)$. This is **duality**: observability ↔ controllability, Kalman gain ↔ LQR gain.
+- **Kalman–Bucy (1961)** is the continuous-time version.
+
+**Worked example (`e03`).** For a constant-velocity model ($\Delta t=0.1$) with position measurements of 0.5 m standard deviation:
+- iterating the filter gives the steady-state gain $K=[0.1814,0.1810]$;
+- solving the *control* Riccati equation on the dual system gives the identical gain;
+- the steady-state position standard deviation is 0.21 m, versus 0.5 m per raw measurement.
+
+**Used in.** Apollo (in extended form), the Shuttle, GNSS/INS, every tracking system.
+
+**Pitfalls.** Wrong $Q$ and $R$ (check with E8). Numerical loss of symmetry (use the Joseph form or square-root filters, which grew out of Apollo-era flight-computer constraints).
+
+## E4. The extended Kalman filter
+
+**Problem.** Estimation with nonlinear dynamics $x_{k+1}=f(x_k,u_k)+w$ and measurements $y=h(x)+v$.
+
+**Recipe.**
+- Linearize at the current estimate: $F=\partial f/\partial x\vert_{\hat x}$ and $H=\partial h/\partial x\vert_{\hat x^-}$. Then run E3, propagating the mean through the true $f$ and $h$.
+- **Error-state (indirect) form.** Estimate a small error around a nominal trajectory, with rotations handled multiplicatively (S1, S5, S11). This is the form used in navigation since Apollo, where Schmidt's extended filter was first applied.
+- **Iterated EKF.** Re-linearize the update a few times around the new estimate.
+
+**Worked example (`e04`, shared with E5).** A polar measurement with range 1 and bearing 90° has noisy bearing. The true mean of $y=r\sin\theta$ shrinks as $e^{-\sigma_\theta^2/2}$:
+
+| Bearing std | True mean | EKF (linearized) | UKF |
+|---:|---:|---:|---:|
+| 5° | 0.9962 | 1.0000 | 0.9962 |
+| 15° | 0.9663 | 1.0000 | 0.9663 |
+| 30° | 0.8718 | 1.0000 | 0.8721 |
+
+Linearization always predicts 1.000. That bias makes EKFs overconfident on strongly nonlinear measurements.
+
+**Pitfalls.** Inconsistency from linearization error and from "observing" unobservable directions (S9). Jacobian bugs.
+
+## E5. The unscented Kalman filter
+
+**Problem.** Propagate means and covariances through nonlinearities more accurately than linearization, without Jacobians.
+
+**Recipe** (Julier & Uhlmann 1997; Wan & van der Merwe 2000).
+1. **Sigma points:** $\mathcal X_0=\bar x$ and $\mathcal X_{\pm i}=\bar x\pm\big(\sqrt{(n+\lambda)P}\big)_i$, with $\lambda=\alpha^2(n+\kappa)-n$.
+2. **Weights:** $W_0^m=\lambda/(n+\lambda)$, $W_0^c=W_0^m+(1-\alpha^2+\beta)$, and $W_i=1/(2(n+\lambda))$.
+3. **Transform:** pass each sigma point through $f$ or $h$; the weighted mean and covariance of the results approximate the transformed distribution. Matching the mean to second order is the key gain over the EKF.
+4. **Update** using cross-covariances in place of the $PH^\top$ products.
+
+**Worked example (`e04`).** In the polar example above, the unscented transform ($\alpha=1$, $\beta=2$, $\kappa=1$) matches the true mean to four decimals up to 15° of bearing noise, and gives 0.8721 against 0.8718 at 30°. The EKF stays stuck at 1.000.
+
+**Used in.** Attitude estimation, robotics, battery state-of-charge, process estimation.
+
+**Pitfalls.** $2n+1$ function evaluations per step. Still Gaussian, so it can't represent multimodal beliefs (E6). Negative weights for some parameter choices.
+
+## E6. Particle filters
+
+**Problem.** Non-Gaussian, multimodal posteriors (global localization, tracking with clutter).
+
+**Recipe** (Gordon, Salmond & Smith 1993).
+1. Sample particles through the dynamics.
+2. Weight each by the likelihood, $w^{(i)}\propto p(y\mid x^{(i)})$.
+3. Resample in proportion to the weights.
+
+- **Degeneracy.** Weights collapse onto a few particles. Monitor the **effective sample size** $\text{ESS}=1/\sum_i(w^{(i)})^2$ and resample when it drops below about $N/2$.
+- **Variants:** Rao-Blackwellized filters (analytic substructure, as in FastSLAM and GMapping, S13); auxiliary filters; regularized filters.
+- **The cost of dimension.** The number of particles needed grows quickly with state dimension, so particle filters suit low-dimensional or factorized problems.
+
+**Worked example (`e06`).** 1,000 particles weighted by a sharp likelihood have ESS 459, so it is time to resample. Uniform weights give ESS 1,000.
+
+**Used in.** AMCL (M8), target tracking, GMapping.
+
+**Pitfalls.** Sample impoverishment after repeated resampling. Poor proposal distributions.
+
+## E7. Smoothing and moving-horizon estimation
+
+**Problem.** Use future measurements (offline), constraints, or a window of data for better estimates.
+
+**Recipe.**
+- **RTS smoother** (Rauch, Tung & Striebel 1965). After a forward Kalman pass, run backward with $C_k=P_kA^\top(P^-_{k+1})^{-1}$:
+  - $\hat x_k^s=\hat x_k+C_k(\hat x_{k+1}^s-\hat x^-_{k+1})$;
+  - $P_k^s=P_k+C_k(P_{k+1}^s-P^-_{k+1})C_k^\top$.
+- **Moving-horizon estimation** (Rao, Rawlings & Mayne 2003). Solve a constrained least-squares problem over the last $N$ steps, with an arrival cost summarizing older data:
+
+  $$\min_{x_{k-N:k}}\lVert x_{k-N}-\bar x\rVert^2_{P^{-1}}+\sum\lVert x_{j+1}-f(x_j)\rVert^2_{Q^{-1}}+\sum\lVert y_j-h(x_j)\rVert^2_{R^{-1}}$$
+
+  subject to constraints such as positive concentrations. It is the estimation twin of MPC.
+- **Factor graphs** are the same idea over the whole trajectory with sparse structure (S14).
+
+**Worked example (`e07`).** For a random walk with $q=0.01$ and $r=1$, at the middle of a 41-step window the filtered variance is 0.098 and the smoothed variance 0.052, about 1.9× smaller, because the smoother also uses the 20 later measurements.
+
+**Used in.** Trajectory reconstruction, process estimation with constraints, SLAM back-ends.
+
+**Pitfalls.** Smoothing isn't causal (you can't control with future data). MHE compute time.
+
+## E8. Consistency checks: NEES and NIS
+
+**Problem.** Know whether a filter's covariance tells the truth.
+
+**Recipe.**
+- **Normalized innovation squared:** $\text{NIS}_k=\nu_k^\top S_k^{-1}\nu_k$, with innovation $\nu=y-h(\hat x^-)$ and $S=HP^-H^\top+R$. If the filter is consistent, it is $\chi^2$-distributed with $m$ (measurement dimension) degrees of freedom.
+- **Normalized estimation error squared:** $\text{NEES}_k=(x_k-\hat x_k)^\top P_k^{-1}(x_k-\hat x_k)$, which needs ground truth (simulation).
+- **Test.** The time-average over $N$ steps, times $N$, should fall within the $\chi^2_{mN}$ confidence bounds. Too large means overconfident (covariance too small); too small means overly conservative.
+- **Online,** innovation gating rejects outliers. The Shuttle's navigation checked each navaid measurement against its expected error range before using it.
+
+**Worked example (`e08`).** For 50 steps of a 2-D measurement, the 95% band for average NIS is $[1.48,2.59]$. A filter with the correct $R$ scores 1.85 (consistent). One whose $R$ is 4× too small scores 11.0 (inconsistent: overconfident).
+
+**Pitfalls.** Passing the test on average while failing in specific regimes. Tuning $Q$ to pass on one dataset only.
+
+# Learning-based control and estimation
+
+## L1. Learning models: neural networks, GPs, SINDy, Koopman
+
+**Problem.** Get dynamics models when first principles are incomplete.
+
+**Recipe.**
+- **Black-box neural models** (Narendra & Parthasarathy 1990): $x_{k+1}=f_\theta(x_k,u_k)$, trained by regression (R14, R18). These are the world models of R30.
+- **Gaussian processes** (R16): a mean *and uncertainty* for the model error, $x_{k+1}=f_{\text{nom}}(x,u)+g(x,u)$ with $g\sim\mathcal{GP}$. Cautious MPC propagates that uncertainty into tightened constraints (Hewing et al. 2019).
+- **SINDy** (Brunton, Proctor & Kutz 2016). Regress $\dot x$ on a library $\Theta(x)=[1,x,x^2,\dots]$ with sparsity, using sequential thresholded least squares, to get interpretable equations.
+- **Koopman operator** (Koopman 1931; deep Koopman, Lusch et al. 2018). Find observables $z=\psi(x)$ in which the dynamics are linear, $z_{k+1}=Kz_k$. Then linear control and estimation tools apply.
+
+**Worked example (`l01`).** From simulated trajectories of $\dot x=-2x+0.5x^3$, SINDy with library $[1,x,\dots,x^5]$ returns coefficients $[0,-2,0,0.5,0,0]$: the exact equation.
+
+**Pitfalls.** Extrapolating outside the data. Noisy derivatives in SINDy. Choosing Koopman observables.
+
+## L2. Reinforcement learning as approximate dynamic programming
+
+**Problem.** Find good policies without a model, or with an imperfect one.
+
+**Recipe.**
+- RL solves the Bellman/HJB problem of C7 from samples: value-based (R25), policy-gradient (R26–R28) or actor-critic (R29).
+- **On linear-quadratic problems** (Recht 2019) RL can be compared directly with the Riccati optimum.
+  - Model-free policy search (random search, policy gradients) converges to the LQR gain, at a cost of many rollouts.
+  - Model-based "identify, then solve the Riccati equation" (C12 + C6) is far more sample-efficient.
+- **Why RL is still used.** Nonlinear, high-dimensional, hard-to-model problems with cheap simulators: locomotion (R28), the TCV tokamak (one policy for all 19 coils, trained in simulation), drone racing.
+
+**Worked example (`l02`).** For $x^+=1.1x+u$ with cost $\sum x^2+u^2$, the Riccati optimal gain is 0.7034. Two-point random search with no model reaches 0.7046 after 300 iterations, which is 600 rollouts. The Riccati solve needs one model.
+
+**Pitfalls.** Sample cost. No stability guarantee during learning (L4).
+
+## L3. Data-driven predictive control (DeePC)
+
+**Problem.** Predictive control without identifying a model.
+
+**Recipe.**
+- **Willems' fundamental lemma** (2005). If an input $u$ of length $T$ is persistently exciting of sufficient order, then the columns of the block-Hankel matrices $\mathcal H_L(u)$ and $\mathcal H_L(y)$ span *every* length-$L$ trajectory of the (unknown) LTI system.
+- **DeePC** (Coulson, Lygeros & Dörfler 2019). Find $g$ with $\begin{bmatrix}U_p\\Y_p\\U_f\end{bmatrix}g=\begin{bmatrix}u_{\text{ini}}\\y_{\text{ini}}\\u\end{bmatrix}$; then the predicted outputs are $y=Y_fg$. Optimize $u$ (and $g$) as in MPC, with regularization for noise and nonlinearity.
+
+**Worked example (`l03`).** From one 120-sample random experiment on an unknown second-order system, the Hankel matrices predict the system's response to a new sinusoidal input from a new initial state. The error over the next 8 outputs is $1.9\times10^{-15}$: exact, with no model identified.
+
+**Pitfalls.** Noise and nonlinearity need regularization. Hankel matrices grow with horizon and data length.
+
+## L4. Safe learning: Lyapunov and barrier constraints
+
+**Problem.** Learn or explore without leaving a safe region.
+
+**Recipe.**
+- **Safety filter** with a control barrier function (M21): $u=\arg\min\lVert u-u_{\text{learned}}\rVert^2$ subject to $\dot h(x,u)\ge-\alpha h(x)$. This keeps the safe set $\{h\ge0\}$ forward-invariant under the model.
+- **Lyapunov-constrained learning** (Berkenkamp et al. 2017). Use a GP model's confidence bounds to certify a region of attraction where $\dot V<0$ with high probability. Only explore inside it, and expand it as data shrinks the uncertainty.
+- **Neural Lyapunov control** (Chang et al. 2019). Learn a controller and a Lyapunov function $V_\phi$ together, and verify $V>0$, $\dot V<0$ with an SMT solver or falsifier.
+- **Robust and tube MPC** around learned models (Hewing et al. 2020) is the predictive-control version.
+
+**Used in.** Safe RL in robotics (Brunke et al. 2022), learning-based MPC, runtime assurance for adaptive and learned flight control.
+
+**Pitfalls.** Guarantees only as good as the model and its error bounds. Conservatism.
+
+## L5. Learned estimators: KalmanNet and differentiable filters
+
+**Problem.** Estimate state when the dynamics or noise statistics are partially unknown.
+
+**Recipe.**
+- **Keep the structure, learn the gain** (KalmanNet, Revach et al. 2022). Run the Kalman predict/update equations, but have a recurrent network output $K_k$ from innovation features. It is trained end-to-end on state error, and no $Q$ or $R$ is needed.
+- **Train through the filter** (Backprop KF, Haarnoja et al. 2016). The Kalman filter is a differentiable layer; learn the observation model (e.g. image features to measurements) by backpropagating the state error.
+- **Deep state-space models** (Deep Kalman filters, Krishnan et al. 2015). Learn nonlinear transitions and emissions with variational inference.
+
+**Worked example (`l05`).** For the constant-velocity model of E3, regressing the true state error on the innovation over 20,000 steps of data gives a gain of $[0.176,0.179]$, against the Riccati-optimal $[0.182,0.181]$. Data alone recovers the Kalman gain, the core of the learned-gain idea.
+
+**Pitfalls.** Uncalibrated or absent covariances. Training data must cover the operating range. Extra caution in safety-critical navigation.
+
+## L6. Differentiable control and end-to-end learning
+
+**Problem.** Learn costs, models or policies by backpropagating through a controller.
+
+**Recipe.**
+- **Differentiable MPC** (Amos et al. 2018). Differentiate the MPC solution with respect to its cost and model parameters via the KKT conditions (R12), so MPC can be a layer in a learned system.
+- **Analytic policy gradients** through differentiable simulators or learned models (R26, R31). SuperMimic trains a humanoid tracker by BPTT through a learned world model in 3 GPU-hours.
+- **Learning to tune.** Learn PID or MPC weights by gradient descent on closed-loop performance, or by Bayesian optimization.
+
+**Used in.** Imitation of expert controllers, learning costs from demonstrations (inverse optimal control), SuperMimic.
+
+**Pitfalls.** Gradient bias through non-smooth constraints and contact (Suh et al. 2022). Exploding gradients over long horizons (R21).
+
+---
+
+# Appendix · Quick reference
+
+| Idea | Equation |
+|---|---|
+| Sensitivity | $S=1/(1+L)$, $T=L/(1+L)$, $S+T=1$ |
+| PID | $u=K_p(e+\frac1{T_i}\int e+T_d\dot e)$ |
+| Ziegler–Nichols | $K_p=0.6K_u$, $T_i=T_u/2$, $T_d=T_u/8$ |
+| Delay margin | $\text{PM}/\omega_c$ |
+| Controllability | $\mathrm{rank}[B,AB,\dots]=n$ |
+| CARE / LQR | $A^\top P+PA-PBR^{-1}B^\top P+Q=0$, $K=R^{-1}B^\top P$ |
+| LQR margins | GM $\in[1/2,\infty)$, PM $\ge60°$ |
+| HJB | $-\partial_tV=\min_u[\ell+\nabla V^\top f]$ |
+| Margins from $M_s$ | GM $\ge M_s/(M_s-1)$, PM $\ge2\arcsin(1/(2M_s))$ |
+| Lyapunov MRAC | $\dot\theta=-\gamma\,e\,r\,\mathrm{sign}(b)$ |
+| Sliding mode | $s=\dot e+\lambda e$, $u=u_{\text{eq}}-k\,\mathrm{sign}(s)$ |
+| MPC | $\min\sum x^\top Qx+u^\top Ru+x_N^\top Px_N$ s.t. constraints |
+| RLS | $\hat\theta\leftarrow\hat\theta+K(y-\varphi^\top\hat\theta)$ |
+| Kalman gain | $K=P^-C^\top(CP^-C^\top+R)^{-1}$ |
+| UKF sigma points | $\bar x\pm\sqrt{(n+\lambda)P}$ |
+| ESS | $1/\sum w_i^2$ |
+| RTS gain | $C_k=P_kA^\top(P^-_{k+1})^{-1}$ |
+| NIS | $\nu^\top S^{-1}\nu\sim\chi^2_m$ |
+| SINDy | $\dot X=\Theta(X)\Xi$, $\Xi$ sparse |
+| Fundamental lemma | trajectories $=\mathrm{span}\,\mathcal H_L(u,y)$ |
+| CBF filter | $\min\lVert u-u_{\text{nom}}\rVert^2$ s.t. $\dot h\ge-\alpha h$ |

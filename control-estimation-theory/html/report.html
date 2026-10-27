@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>From PID to Learning</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500;75..125,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a two-column reference book. A sticky recipe index on wide screens, one 72ch reading column;
+   recipe headings carry a mono "R" number tab, worked examples and pitfalls are set apart by colour. */
+:root {
+  --bg: #f5f5f1; --paper: #ffffff; --ink: #1c1f1d; --muted: #5f6662; --rule: #d9ddd7;
+  --accent: #3d4fb0; --accent-soft: #e8ebf8; --warm: #a85d0c; --warm-soft: #f7ecdc; --code-bg: #eef0ec;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Literata", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111412; --paper: #181c1a; --ink: #e3e8e4; --muted: #98a19c; --rule: #2d3430;
+    --accent: #95a4f3; --accent-soft: #1f2545; --warm: #efa652; --warm-soft: #3a2a16; --code-bg: #202623;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111412; --paper: #181c1a; --ink: #e3e8e4; --muted: #98a19c; --rule: #2d3430;
+  --accent: #95a4f3; --accent-soft: #1f2545; --warm: #efa652; --warm-soft: #3a2a16; --code-bg: #202623;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.62;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px; }
+.layout { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; }
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; max-height: 100vh; overflow-y: auto; padding: 32px 0 24px; font-family: var(--mono); font-size: .74rem; line-height: 1.45; }
+nav.toc .p { color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin: 14px 0 4px; font-size: .68rem; }
+nav.toc a { display: block; color: var(--ink); text-decoration: none; padding: 2px 6px; border-radius: 3px; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+main { min-width: 0; max-width: 74ch; padding-top: 36px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } nav.toc { display: none; } main { margin: 0 auto; } }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; }
+main > h1:first-child { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; font-stretch: 85%; margin: 0 0 .4rem; }
+main h1 { font-size: 1.9rem; font-weight: 800; font-stretch: 88%; margin: 3.4rem 0 .6rem; padding-top: .8rem; border-top: 3px solid var(--ink); }
+main h2 { font-size: 1.35rem; font-weight: 800; font-stretch: 92%; margin: 2.6rem 0 .5rem; scroll-margin-top: 12px; }
+main h2 .rno { font-family: var(--mono); font-size: .8rem; font-weight: 500; color: var(--paper); background: var(--accent); padding: 2px 7px; border-radius: 3px; margin-right: 10px; vertical-align: 3px; }
+main h3 { font-size: 1.05rem; }
+p { margin: .7rem 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+strong { font-weight: 600; }
+main > p:nth-of-type(1) em { color: var(--muted); }
+ul, ol { padding-left: 1.4em; } li { margin: .25rem 0; }
+li > p { margin: .3rem 0; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+code { font-family: var(--mono); font-size: .86em; background: var(--code-bg); padding: 1px 4px; border-radius: 3px; }
+pre { background: var(--code-bg); padding: 12px 14px; border-radius: 4px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+.tbl { overflow-x: auto; margin: 1rem 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; line-height: 1.42; }
+th, td { text-align: left; padding: 7px 11px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+p.we { background: var(--warm-soft); border-left: 3px solid var(--warm); padding: 8px 14px; border-radius: 0 4px 4px 0; }
+p.pit { color: var(--muted); font-size: .94rem; }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 4px 0; }
+.mermaid { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 12px; overflow-x: auto; text-align: center; }
+.loading { color: var(--muted); font-family: var(--mono); font-size: .85rem; }
+</style>
+<script>
+  window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'local' }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Recipes"></nav>
+  <main id="book"><p class="loading">Rendering the cookbook…</p></main>
+</div>
+<script type="text/markdown" id="src">
+# From PID to learning: a history and analysis of control and estimation
+
+*How automatic control and state estimation evolved, from Maxwell's governor, PID and the frequency domain, through state-space optimal, robust, adaptive, nonlinear and predictive control, and from least squares through Kalman, EKF, UKF, particle filters and moving-horizon estimation, to today's learning-based control and estimation. The format matches the other collections in this repository. Equations are derived in the companion [cookbook](cookbook/COOKBOOK.md) (recipes C1–C12, E1–E8, L1–L6), and every source is in the [catalog](CATALOG.md). Claims were checked against the original papers' metadata and abstracts on 27 Oct 2026.*
+
+## Summary
+
+- **Each era was built to fix the failure of the one before.**
+  - Classical frequency-domain design handled one loop at a time.
+  - State-space optimal control (Kalman, Bellman, Pontryagin) handled many variables and optimality but trusted the model completely.
+  - Doyle's 1978 note on LQG margins (abstract: "There are none.") exposed that trust and launched robust control.
+  - Adaptive and nonlinear control attacked unknown and nonlinear plants.
+  - MPC added constraints, which is what industry needed most.
+  - Learning-based control now attacks the remaining gap: models and objectives that are hard to write down.
+- **Old methods were not replaced; they were layered.** In an industrial survey (IFAC, reported by Samad 2017), 91% of respondents rated PID's current impact as high, the top of the list, with MPC second. Åström & Hägglund (2001) estimate about 90% of loops are PID. Today's learning-based controllers mostly sit on top of PID loops, Kalman filters and MPC, or inside them.
+- **Estimation mirrors control.** The Kalman filter is the dual of LQR, the same Riccati equation run the other way (E3). Nonlinear estimation followed the same arc as nonlinear control: linearize (EKF), sample deterministically (UKF), sample randomly (particle filter), then optimize over a window (MHE and factor graphs). Learning now enters by learning the model or the gain while keeping the filter structure (KalmanNet).
+- **What learning adds and what it costs.** Learning adds models from data, nonlinear policies, and objectives scored directly. It costs data and compute and, above all, the guarantees of stability, margins and consistency that classical theory provides. Most successful modern systems therefore combine learning with a classical structure:
+  - a learned residual on top of a physics model;
+  - a learned dynamics model inside MPC;
+  - an RL policy behind a safety filter;
+  - a learned gain inside the Kalman filter's structure.
+
+---
+
+## 1. The two problems and their duality
+
+| | Control | Estimation |
+|---|---|---|
+| Question | What input $u$ drives the system where I want? | What is the hidden state $x$, given noisy measurements $y$? |
+| Linear-quadratic answer | LQR: $u=-Kx$, $K$ from a control Riccati equation | Kalman filter: $\hat x\leftarrow\hat x+L(y-C\hat x)$, $L$ from a filter Riccati equation |
+| Duality | $(A,B,Q,R)$ | $(A^\top,C^\top,Q_w,R_v)$: the same equation |
+| Combined | **Separation principle.** For linear-Gaussian systems, the optimal output-feedback controller (LQG) is LQR acting on the Kalman estimate. Optimal, but with no guaranteed robustness (Doyle 1978). | |
+
+## 2. Eras: what each solved and what pushed the next
+
+| Era | Key ideas | What it solved | Limitation that drove the next era |
+|---|---|---|---|
+| **Mechanical feedback** (1788–1868) | Watt's governor; Maxwell's *On Governors* (1868) | Automatic speed regulation; first stability analysis via characteristic roots | No general design method |
+| **Classical** (1922–1950s) | PID (Minorsky 1922, ship steering); the negative-feedback amplifier (Black 1934); Nyquist criterion (1932); Bode gain-phase relations (1940); Ziegler–Nichols tuning (1942); root locus | Robust single-loop design with simple models; margins as robustness measures | One loop at a time; no optimality; no explicit handling of many interacting variables |
+| **State space and optimal** (1956–1970) | Bellman's dynamic programming (1957); Pontryagin's maximum principle (1962); Kalman's controllability, LQR and filter (1960–61); Apollo navigation | Multivariable design, optimality, recursive estimation; guidance for spaceflight | Needs an accurate model; LQG robustness can be arbitrarily poor (Doyle 1978) |
+| **Robust** (1978–1990s) | Sensitivity and $H_\infty$ (Zames 1981); state-space $H_\infty$ synthesis (Doyle, Glover, Khargonekar & Francis 1989); μ-analysis | Guaranteed stability and performance for a set of models | Conservative; mostly linear; uncertainty must be described in advance |
+| **Adaptive** (1958–1990s) | MRAC (the MIT rule); self-tuning regulators (Åström & Wittenmark 1973); Lyapunov-based adaptation laws | Unknown or slowly changing parameters | Robustness and transients. The X-15-3's MH-96 "self-adaptive" system went into a limit cycle during the fatal 1967 flight, one factor among several. |
+| **Nonlinear** (1970s–1990s) | Lyapunov design; feedback linearization; sliding mode (Utkin 1977); backstepping | Large-signal nonlinear behaviour with proofs | Needs structural model knowledge; chattering; tuning |
+| **Model predictive control** (1978–) | IDCOM (Richalet et al. 1978) and DMC in refineries; stability theory with terminal costs and sets (Mayne et al. 2000) | Constraints and multivariable trade-offs, explicitly and optimally | Online computation; model quality; long horizons |
+| **Learning-based** (1990–) | Neural adaptive control (Narendra & Parthasarathy 1990); iterative learning control; RL (R23–R31); GP-MPC; SINDy and Koopman models; DeePC; differentiable MPC; safe RL; RL on real plants (TCV tokamak 2022) | Models and policies from data; objectives that are hard to model | Guarantees, data efficiency, safety, certification |
+
+## 3. Control methods compared
+
+| Method | Needs | Guarantees | Constraints | Nonlinear | Uncertainty | Tuning effort | Online compute | Where it dominates |
+|---|---|---|---|---|---|---|---|---|
+| **PID** | Rough plant behaviour | Local (margins) | Via anti-windup only | Gain scheduling | Robust if detuned | Low (rules, auto-tune) | Trivial | ~90% of industrial loops |
+| **Lead-lag / loop shaping** | Frequency response | Margins | No | No | Margins | Medium | Trivial | Servo and aerospace loops |
+| **Pole placement / LQR** | Linear model | Stability; LQR: ≥6 dB gain and 60° phase margin with full state | No | Linearized | Margins (state feedback) | Medium (choose $Q$, $R$) | Trivial | Aerospace, mechatronics |
+| **LQG** | Linear model + noise models | Optimal in expectation; *no* margin guarantee | No | Linearized | Poor in general | Medium | Low | Where combined with loop recovery |
+| **$H_\infty$ / μ** | Model + uncertainty description | Robust stability and performance | No | No | Explicit | High | Low | Flight control, disk drives, process |
+| **Adaptive (MRAC, STR)** | Model structure | Lyapunov stability of the tracking error | No | Some | Parametric | High | Low | Changing plants, aerospace research |
+| **Sliding mode / backstepping** | Model structure and bounds | Lyapunov / finite-time | No | Yes | Matched, bounded | High | Low | Motors, power electronics, robotics |
+| **MPC** | Model | Recursive feasibility and stability with terminal ingredients | **Yes** | Nonlinear MPC | Robust / stochastic MPC | Medium | Medium–high | Refining and chemicals, automotive, legged robots |
+| **RL / learned policy** | Simulator or data | Usually none | Penalties or safety filters | Yes | Domain randomization | High (rewards) | Low at run time | Locomotion, games, the tokamak |
+| **Learning-based MPC** | Model + data | Inherits MPC's, given model-error bounds | Yes | Yes | Learned (e.g. GP variance) | High | High | Racing, robotics, buildings |
+
+## 4. Estimation methods compared
+
+| Method | Model class | Posterior representation | Strength | Weakness | Typical use |
+|---|---|---|---|---|---|
+| **Least squares / RLS** | Linear in parameters | Point + covariance | Simple, optimal for Gaussian noise | Static; forgetting factor trade-off | System ID, adaptive control |
+| **Wiener filter** | Stationary linear | Frequency-domain transfer function | Optimal stationary filtering | Not recursive; stationary only | Signal processing |
+| **Kalman filter** | Linear-Gaussian state space | Mean + covariance | Optimal, recursive, cheap; dual of LQR | Linear only | Navigation, tracking |
+| **EKF** | Nonlinear, smooth | Linearized Gaussian | Cheap; industry standard (Apollo onward) | Linearization bias; inconsistency | GNSS/INS, SLAM, batteries |
+| **UKF** | Nonlinear | Sigma points | Second-order accuracy for the mean, no Jacobians | Cost about 2n+1 model calls; still Gaussian | Attitude, robotics, process |
+| **Particle filter** | Any | Weighted samples | Multimodal, non-Gaussian | Particle count grows with dimension | Localization, tracking |
+| **MHE / factor graphs** | Nonlinear, constrained | Optimization over a window or the whole trajectory | Constraints, re-linearization, accuracy | Compute | SLAM, process estimation |
+| **Learned estimators** (Deep KF, Backprop KF, KalmanNet) | Partially known or learned | Learned or hybrid | Handles unknown dynamics and noise statistics | Training data; consistency not guaranteed | Research; sensor fusion with unknown noise |
+
+## 5. Model-based vs learning-based: where learning helps
+
+| Pattern | What is learned | Classical structure kept | Example |
+|---|---|---|---|
+| **System identification** (classical "learning") | Model parameters | Everything else | ARX / least squares (C12); self-tuning regulators |
+| **Learn the residual model** | Model error $g(x,u)$ | Physics model + MPC | GP-MPC "cautious MPC" (Hewing et al. 2019) |
+| **Learn the model structure** | Sparse equations or Koopman observables | Linear or MPC design on top | SINDy (Brunton et al. 2016); deep Koopman (Lusch et al. 2018) |
+| **Skip the model** | Nothing parametric; data matrices replace the model | Predictive-control optimization | DeePC (Coulson et al. 2019) via Willems' fundamental lemma |
+| **Learn the policy** | Policy (and value) | Simulator, sometimes PD loops underneath | Tokamak (Degrave et al. 2022); locomotion (R28) |
+| **Learn the policy, guarded** | Policy | Safety filter or Lyapunov constraint | Safe model-based RL (Berkenkamp et al. 2017); neural Lyapunov control |
+| **Differentiable controller** | Cost or model, trained end-to-end | MPC as a layer | Differentiable MPC (Amos et al. 2018); SuperMimic's analytic gradients (R31) |
+| **Learn the estimator gain** | Kalman gain (RNN) | Predict/update structure | KalmanNet (Revach et al. 2022) |
+| **Learn through the filter** | Sensor model / features | Kalman filter as a differentiable layer | Backprop KF (Haarnoja et al. 2016) |
+| **Learn the whole estimator** | Latent dynamics | Variational inference | Deep Kalman filters (Krishnan et al. 2015) |
+
+**What the surveys conclude.**
+- **Hewing et al. (2020)** classify learning in MPC as learning the model, the cost or constraints, or a safety filter.
+- **Brunke et al. (2022)** organize safe learning by how much they rely on models versus data, and how strong their guarantees are.
+- **Recht (2019)** benchmarks RL against LQR and finds model-based methods much more sample-efficient on linear problems. That echoes this collection's [L2 example](cookbook/COOKBOOK.md#l2-reinforcement-learning-as-approximate-dynamic-programming), where model-free random search needs 600 rollouts to match one Riccati solve.
+- **Reiter et al. (2026)** say MPC and RL differ mainly in how they treat the model, which makes them complementary.
+
+## 6. Physics-first vs data-first
+
+This is the control-theory version of "reference vs self-exploration" from the other collections.
+
+| Dimension | Physics-first (first-principles or identified model + classical design) | Data-first (RL, DeePC, learned estimators) |
+|---|---|---|
+| Effort up front | Modelling and identification expertise | Data collection or simulation, reward design |
+| Guarantees | Stability, margins, consistency, constraints | Usually empirical; bounds are an active research area |
+| Extrapolation | Good where the physics holds | Poor outside the data |
+| Performance ceiling | Limited by model fidelity and conservatism | Can exceed hand designs where the model is poor (tokamak shapes, agile flight) |
+| Maintenance | Re-tune when the plant changes | Retrain; monitor for drift |
+| Certification | Established (aviation, automotive, process) | Immature; needs safety filters or runtime assurance |
+
+## 7. Which method for which application
+
+Fit: ●●● strong, ●● viable, ● niche, ○ rarely used.
+
+| Application | Main difficulty | Best-suited approach | Fit: PID · Optimal/robust · MPC · Learning | Notes |
+|---|---|---|---|---|
+| Temperature, flow and pressure loops; HVAC | Many loops, modest dynamics | PID with auto-tuning, anti-windup, feedforward | ●●● ● ●● ● | PID dominates process plants |
+| Refinery and chemical unit optimization | Many coupled variables, constraints, economics | MPC over a PID base layer | ●● ●● ●●● ● | MPC's original industrial home (Qin & Badgwell 2003) |
+| Aircraft flight control | Wide flight envelope, certification | Gain scheduling, robust / dynamic inversion, extensive verification | ●● ●●● ● ○ | Adaptive designs need runtime assurance (X-15 lesson) |
+| Spacecraft attitude | Precision, actuator limits | PD/LQR + multiplicative EKF; momentum management | ●● ●●● ●● ○ | See the SLAM collection, S19 |
+| Robot manipulators | Nonlinear rigid-body dynamics | Computed torque or inverse dynamics + PD; MPC for contact | ●●● ●● ●● ●● | R10–R12 |
+| Legged robots, humanoids | Contact, underactuation | MPC + WBC, or RL policies over PD | ● ●● ●●● ●●● | See the humanoid collection |
+| Electric drives and power electronics | Fast switching, constraints | PI / field-oriented control; finite-set MPC; sliding mode | ●●● ●● ●● ● | Microsecond loops |
+| Automotive (ABS, ESC, powertrain) | Nonlinear tyres, safety | Rule-based + sliding-mode / gain-scheduled control; MPC in powertrains | ●● ●● ●● ● | Certification-heavy |
+| Battery state of charge | Hidden state, nonlinear cell model | EKF / UKF with equivalent-circuit models; learned models emerging | n/a | Estimation problem (E4–E5) |
+| Navigation (GNSS/INS) | Drift + noisy fixes | Error-state EKF; smoothers offline | n/a | SLAM collection, S5 |
+| Target tracking | Manoeuvres, clutter, multimodality | Interacting multiple-model filters; particle filters | n/a | E6 |
+| Fusion plasma shape control | Complex, fast MHD dynamics | Classical multi-loop today; deep RL demonstrated on TCV (2022) | ●● ●● ●● ●● | One network controlled all 19 coils |
+| Unknown repetitive processes | Repeated trajectories | Iterative learning control | ● ● ● ●●● | Learning from trial to trial (Bristow et al. 2006) |
+
+## 8. Breakthroughs, year by year
+
+| Year | Breakthrough | Problem it solved | Evidence / reach |
+|---|---|---|---|
+| 1795–1809 | Least squares (Gauss, Legendre) | Estimating parameters from redundant noisy data | Orbit determination; root of all estimation |
+| 1868 | *On Governors* (Maxwell) | Why governors hunt: stability from characteristic roots | First control-theory paper |
+| 1892 | Lyapunov stability | Stability without solving the equations | Basis of nonlinear and adaptive control |
+| 1922 | Three-term (PID) controller | Automatic ship steering | Minorsky; the universal industrial controller |
+| 1932–1940 | Nyquist criterion; Black's feedback amplifier (published 1934); Bode relations | Stability and robustness of feedback in the frequency domain | Telephone amplifiers; margins as design specs |
+| 1942 | Ziegler–Nichols tuning | Setting PID gains without a model | Still taught; aggressive (52% overshoot in C3) |
+| 1949 | Wiener filter | Optimal stationary filtering | Fire-control and communications |
+| 1957–1962 | Dynamic programming; maximum principle | Optimal control of nonlinear systems | Bellman; Pontryagin |
+| 1960–61 | Kalman: state space, controllability, LQR, Kalman filter; Kalman–Bucy | Multivariable optimal control and recursive estimation | Apollo navigation adopted the extended filter (McGee & Schmidt) |
+| 1965 | RTS smoother | Optimal offline estimates using future data | Trajectory reconstruction |
+| 1973 | Self-tuning regulators | Identify and control at once | Åström & Wittenmark |
+| 1977–78 | LQR margins; Doyle "There are none."; sliding mode | Robustness of state feedback; its loss with an observer; robust discontinuous control | Safonov & Athans; Doyle; Utkin |
+| 1978–80 | Industrial MPC (IDCOM, DMC) | Constraints in multivariable plants | Refineries |
+| 1981–89 | $H_\infty$ control | Worst-case robust design | Zames; Doyle, Glover, Khargonekar & Francis |
+| 1990 | Neural networks for identification and control | Nonlinear models from data | Narendra & Parthasarathy |
+| 1993 | Particle filter | Non-Gaussian, multimodal estimation | Gordon, Salmond & Smith |
+| 1997–2004 | Unscented Kalman filter | Nonlinear estimation without Jacobians, more accurate means | Julier & Uhlmann; Wan & van der Merwe |
+| 2000–03 | MPC stability theory; moving-horizon estimation | Provable MPC; constrained optimal estimation | Mayne et al.; Rao, Rawlings & Mayne |
+| 2005 | Willems' fundamental lemma | Data matrices represent LTI behaviour | Basis of DeePC (2019) |
+| 2016 | SINDy | Interpretable equations from data | Brunton, Proctor & Kutz |
+| 2017–19 | Safe model-based RL; cautious GP-MPC; differentiable MPC; DeePC; neural Lyapunov control | Learning with guarantees; data-driven predictive control | Berkenkamp; Hewing; Amos; Coulson; Chang |
+| 2022 | Deep RL magnetic control of the TCV tokamak; KalmanNet | Learned control on a real fusion device; learned Kalman gains | Degrave et al. (Nature); Revach et al. |
+| 2023–26 | RL/MPC syntheses; learned controllers on robots and drones | Combining guarantees with learned performance | Reiter et al.; humanoid and mobile-robot collections |
+
+## 9. Lessons that recur
+
+1. **Optimal is not robust.** LQG's lack of margins (Doyle 1978) recurs in learned controllers that are optimal in simulation and fragile on hardware. Robustness has to be designed in: margins, $H_\infty$, domain randomization (R33).
+2. **Adaptation needs a safety net.** The X-15 MH-96 accident and later adaptive-control robustness work led to the modern practice of runtime assurance and safety filters. The same pattern guards learned policies (M21).
+3. **Estimators lie when overconfident.** EKF inconsistency, wrong noise covariances and unobservable directions (S9) make filters reject good data. Test with NEES and NIS (E8).
+4. **Constraints dominate in practice.** MPC won the process industry because it handles limits explicitly; clipped linear controllers overshoot (C11).
+5. **Structure beats brute force.** In every learning success here (GP-MPC, KalmanNet, SuperMimic, DeePC), learning fills in a structure that theory provides rather than replacing it.
+
+## 10. Quick start: textbooks and tutorials
+
+| Resource | Access | Start with | Covers |
+|---|---|---|---|
+| [Feedback Systems](https://fbswiki.org/), Åström & Murray (2nd ed.) | Free PDF | Feedback principles, frequency domain, PID chapters | C1–C5 |
+| *Advanced PID Control*, Åström & Hägglund (ISA, 2006) | Book | Tuning, anti-windup, auto-tuning | C3 |
+| *Feedback Control of Dynamic Systems*, Franklin, Powell & Emami-Naeini | Book | Root locus, frequency response, state space | C1–C5 |
+| *Multivariable Feedback Control*, Skogestad & Postlethwaite (2nd ed., 2005) | Book | Sensitivity, robustness, MIMO limitations | C4, C8 |
+| *Robust and Optimal Control*, Zhou, Doyle & Glover (1996) | Book | $H_2$/$H_\infty$, μ | C6, C8 |
+| *Nonlinear Systems*, Hassan Khalil (3rd ed.) | Book | Lyapunov stability, feedback linearization, backstepping | C9–C10 |
+| *Applied Nonlinear Control*, Slotine & Li (1991) | Book | Sliding mode, adaptive control | C9–C10 |
+| *Adaptive Control*, Åström & Wittenmark (2nd ed.) | Book | MRAC, self-tuning | C9, E1 |
+| [Model Predictive Control: Theory, Computation, and Design](https://sites.engineering.ucsb.edu/~jbraw/mpc/), Rawlings, Mayne & Diehl | Free PDF | Chapters 1–2, plus the MHE chapter | C11, E7 |
+| *Reinforcement Learning and Optimal Control*, Bertsekas (2019) | Book + free slides | Exact and approximate DP | C7, L2 |
+| *Optimal State Estimation*, Dan Simon (2006) | Book | KF, EKF, UKF, particle filter, $H_\infty$ filtering | E1–E8 |
+| [Bayesian Filtering and Smoothing](https://users.aalto.fi/~ssarkka/pub/bfs_book_2023_online.pdf), Simo Särkkä (2nd ed., 2023) | Free PDF | Kalman, EKF/UKF, particle filters, RTS smoothers | E3–E7 |
+| *System Identification: Theory for the User*, Lennart Ljung (2nd ed.) | Book | Prediction-error methods, persistent excitation | C12 |
+| [Data-Driven Science and Engineering](https://databookuw.com/), Brunton & Kutz | Free PDF + videos | SINDy, Koopman, data-driven control chapters | L1, L3 |
+| [A Tour of Reinforcement Learning](https://arxiv.org/abs/1806.09460), Recht (2019) | Free paper | The whole paper | L2 |
+| [Underactuated Robotics](https://underactuated.mit.edu/), Tedrake | Free | LQR, trajectory optimization, Lyapunov analysis chapters | C6, C7, L4 |
+
+The RL math (Bellman equations through PPO and analytic gradients) is in the [Control-to-Learning cookbook](../robot-learning-control/cookbook/COOKBOOK.md), R23–R33.
+
+## 11. Sources and caveats
+
+All works are in [CATALOG.md](CATALOG.md) with DOI or arXiv links (10 local PDFs). Notes on specific claims:
+- **PID share:** Åström & Hägglund's 2001 paper says about 90% of loops are PID. The often-quoted ">95% in process control" comes from their later book.
+- **Industry survey:** the 91% "high impact" figure comes from the IFAC Industry Committee survey as reported in its [newsletter](https://sites.ifac-control.org/industry/committee-reports-and-presentations/ifacnewsletter-indcomm-mar2019-v2.pdf) and Samad (2017).
+- **X-15 accident:** the MH-96 role is summarized from NASA sources ([NASA history](https://www.nasa.gov/history/x15/adams.html), [NESC Academy talk](https://nescacademy.nasa.gov/video/afbbfa1bb74243aeab139db4c110c2021d)). The authoritative analysis is NASA/TM-2014-218538, which I didn't retrieve.
+- **Tokamak:** results from the [Nature paper](https://doi.org/10.1038/s41586-021-04301-9) and the [EPFL release](https://actu.epfl.ch/news/epfl-and-deepmind-use-ai-to-control-plasmas-for-nu).
+- **Synthesis:** the fit ratings and application map are a synthesis of the surveys, not measurements.
+
+</script>
+<script>
+(function () {
+  var src = document.getElementById('src').textContent;
+  var store = [];
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  // protect math from the Markdown parser
+  src = src.replace(/\$\$([\s\S]+?)\$\$/g, function (_, m) { store.push('\\[' + esc(m) + '\\]'); return '@@M' + (store.length - 1) + '@@'; });
+  src = src.replace(/\$([^\n$]+?)\$/g, function (_, m) { store.push('\\(' + esc(m) + '\\)'); return '@@M' + (store.length - 1) + '@@'; });
+  var html = marked.parse(src, { gfm: true });
+  html = html.replace(/@@M(\d+)@@/g, function (_, i) { return store[+i]; });
+  var book = document.getElementById('book');
+  book.innerHTML = html;
+  function slug(t) { return t.trim().toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-'); }
+  var toc = document.getElementById('toc');
+  book.querySelectorAll('h1, h2').forEach(function (h) {
+    h.id = slug(h.textContent);
+    if (h.tagName === 'H1' && h !== book.firstElementChild) {
+      var p = document.createElement('div'); p.className = 'p'; p.textContent = h.textContent; toc.appendChild(p);
+    }
+    if (h.tagName === 'H2') {
+      var m = h.textContent.match(/^([A-Z]\d+)\.\s*(.*)$/);
+      if (m) { h.innerHTML = '<span class="rno">' + m[1] + '</span>' + h.innerHTML.replace(/^[A-Z]\d+\.\s*/, ''); }
+      var a = document.createElement('a'); a.href = '#' + h.id; a.textContent = m ? m[1] + ' · ' + m[2] : h.textContent; toc.appendChild(a);
+    }
+  });
+  book.querySelectorAll('table').forEach(function (t) { var w = document.createElement('div'); w.className = 'tbl'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
+  book.querySelectorAll('p').forEach(function (p) {
+    var s = p.firstElementChild;
+    if (s && s.tagName === 'STRONG' && p.firstChild === s) {
+      if (/^Worked example/.test(s.textContent)) p.className = 'we';
+      if (/^Pitfalls/.test(s.textContent)) p.className = 'pit';
+    }
+  });
+  book.querySelectorAll('pre code.language-mermaid').forEach(function (c) { var d = document.createElement('div'); d.className = 'mermaid'; d.textContent = c.textContent; c.parentNode.replaceWith(d); });
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark' || (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  try { mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'neutral' }); mermaid.run({ querySelector: '.mermaid' }); } catch (e) {}
+  if (location.hash) { var t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); }
+  MathJax.startup.promise.then(function () { return MathJax.typesetPromise([book]); });
+})();
+</script>
+</body>
+</html>
