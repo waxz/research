@@ -1,0 +1,985 @@
+{
+ "categories": [
+  {
+   "id": "00-surveys",
+   "name": "Surveys and reviews",
+   "about": "Overviews of 2D detection, YOLO, 3D point-cloud and driving detection, open-vocabulary detection, VLMs and multi-object tracking."
+  },
+  {
+   "id": "01-classical-datasets",
+   "name": "Classical detectors and the datasets that drove progress",
+   "about": "Hand-crafted features before deep learning; ImageNet, PASCAL VOC, COCO."
+  },
+  {
+   "id": "02-backbones",
+   "name": "Backbones and representation learning",
+   "about": "AlexNet to ResNet to Vision Transformers and self-supervised features."
+  },
+  {
+   "id": "03-two-stage",
+   "name": "Two-stage detectors",
+   "about": "The R-CNN family and feature pyramids."
+  },
+  {
+   "id": "04-one-stage-yolo",
+   "name": "One-stage detectors and the YOLO family",
+   "about": "YOLO, SSD, RetinaNet, anchor-free detectors, real-time YOLO generations."
+  },
+  {
+   "id": "05-transformer-detectors",
+   "name": "Transformer detectors",
+   "about": "DETR and its fast, real-time descendants."
+  },
+  {
+   "id": "06-open-vocabulary-vlm",
+   "name": "Open-vocabulary detection, segmentation and VLMs",
+   "about": "CLIP, grounded detection, promptable segmentation, vision-language models that localize."
+  },
+  {
+   "id": "07-point-cloud-3d",
+   "name": "Point-cloud 3D detection",
+   "about": "PointNet to voxel, pillar, point-voxel and center-based detectors."
+  },
+  {
+   "id": "08-camera-bev-fusion",
+   "name": "Camera 3D, BEV and sensor fusion",
+   "about": "Lifting images to bird's-eye view; camera-lidar fusion."
+  },
+  {
+   "id": "09-tracking",
+   "name": "Multi-object tracking",
+   "about": "Tracking-by-detection to joint and end-to-end trackers, 2D and 3D."
+  },
+  {
+   "id": "10-benchmarks-metrics",
+   "name": "Benchmarks and metrics",
+   "about": "Driving datasets and tracking metrics."
+  }
+ ],
+ "papers": [
+  {
+   "key": "zou2023twenty",
+   "cat": "00-surveys",
+   "title": "Object Detection in 20 Years: A Survey",
+   "authors": "Z. Zou, K. Chen, Z. Shi, Y. Guo, J. Ye",
+   "year": 2023,
+   "venue": "Proceedings of the IEEE",
+   "note": "From Viola-Jones to deep detectors; milestones and datasets.",
+   "pdf": true,
+   "arxiv": "1905.05055"
+  },
+  {
+   "key": "liu2020generic",
+   "cat": "00-surveys",
+   "title": "Deep Learning for Generic Object Detection: A Survey",
+   "authors": "L. Liu et al.",
+   "year": 2020,
+   "venue": "IJCV",
+   "note": "Taxonomy of deep 2D detectors.",
+   "pdf": true,
+   "arxiv": "1809.02165"
+  },
+  {
+   "key": "terven2023yolo",
+   "cat": "00-surveys",
+   "title": "A Comprehensive Review of YOLO Architectures in Computer Vision: From YOLOv1 to YOLOv8 and YOLO-NAS",
+   "authors": "J. Terven, D.-M. Cordova-Esparza, J.-A. Romero-Gonzalez",
+   "year": 2023,
+   "venue": "Machine Learning and Knowledge Extraction",
+   "note": "Generation-by-generation YOLO changes. (51 MB PDF; linked rather than stored)",
+   "pdf": false,
+   "arxiv": "2304.00501"
+  },
+  {
+   "key": "guo2021pointcloud",
+   "cat": "00-surveys",
+   "title": "Deep Learning for 3D Point Clouds: A Survey",
+   "authors": "Y. Guo et al.",
+   "year": 2021,
+   "venue": "IEEE TPAMI",
+   "note": "Point-cloud classification, detection, tracking, segmentation.",
+   "pdf": true,
+   "arxiv": "1912.12033"
+  },
+  {
+   "key": "mao2023driving3d",
+   "cat": "00-surveys",
+   "title": "3D Object Detection for Autonomous Driving: A Comprehensive Survey",
+   "authors": "J. Mao, S. Shi, X. Wang, H. Li",
+   "year": 2023,
+   "venue": "IJCV",
+   "note": "LiDAR, camera and fusion 3D detection.",
+   "pdf": true,
+   "arxiv": "2206.09474"
+  },
+  {
+   "key": "zhu2023ovd",
+   "cat": "00-surveys",
+   "title": "A Survey on Open-Vocabulary Detection and Segmentation: Past, Present, and Future",
+   "authors": "C. Zhu, L. Chen",
+   "year": 2023,
+   "venue": "arXiv / TPAMI",
+   "note": "Open-vocabulary detection and segmentation taxonomy.",
+   "pdf": true,
+   "arxiv": "2307.09220"
+  },
+  {
+   "key": "zhang2024vlmsurvey",
+   "cat": "00-surveys",
+   "title": "Vision-Language Models for Vision Tasks: A Survey",
+   "authors": "J. Zhang, J. Huang, S. Jin, S. Lu",
+   "year": 2024,
+   "venue": "IEEE TPAMI",
+   "note": "VLM pre-training, transfer and distillation for vision tasks.",
+   "pdf": true,
+   "arxiv": "2304.00685"
+  },
+  {
+   "key": "ciaparrone2020mot",
+   "cat": "00-surveys",
+   "title": "Deep Learning in Video Multi-Object Tracking: A Survey",
+   "authors": "G. Ciaparrone et al.",
+   "year": 2020,
+   "venue": "Neurocomputing",
+   "note": "Detection, feature extraction, affinity and association stages.",
+   "pdf": true,
+   "arxiv": "1907.12740"
+  },
+  {
+   "key": "viola2001cascade",
+   "cat": "01-classical-datasets",
+   "title": "Rapid Object Detection using a Boosted Cascade of Simple Features",
+   "authors": "P. Viola, M. Jones",
+   "year": 2001,
+   "venue": "CVPR",
+   "note": "Real-time face detection with Haar features and a cascade.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/CVPR.2001.990517"
+  },
+  {
+   "key": "dalal2005hog",
+   "cat": "01-classical-datasets",
+   "title": "Histograms of Oriented Gradients for Human Detection",
+   "authors": "N. Dalal, B. Triggs",
+   "year": 2005,
+   "venue": "CVPR",
+   "note": "HOG + linear SVM pedestrian detection.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/CVPR.2005.177"
+  },
+  {
+   "key": "felzenszwalb2010dpm",
+   "cat": "01-classical-datasets",
+   "title": "Object Detection with Discriminatively Trained Part-Based Models",
+   "authors": "P. F. Felzenszwalb, R. B. Girshick, D. McAllester, D. Ramanan",
+   "year": 2010,
+   "venue": "IEEE TPAMI",
+   "note": "Deformable part models: the pre-deep-learning peak.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/TPAMI.2009.167"
+  },
+  {
+   "key": "deng2009imagenet",
+   "cat": "01-classical-datasets",
+   "title": "ImageNet: A Large-Scale Hierarchical Image Database",
+   "authors": "J. Deng et al.",
+   "year": 2009,
+   "venue": "CVPR",
+   "note": "The dataset behind the deep-learning turn.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/CVPR.2009.5206848"
+  },
+  {
+   "key": "everingham2010voc",
+   "cat": "01-classical-datasets",
+   "title": "The Pascal Visual Object Classes (VOC) Challenge",
+   "authors": "M. Everingham et al.",
+   "year": 2010,
+   "venue": "IJCV",
+   "note": "Detection benchmark and AP@0.5 metric.",
+   "pdf": false,
+   "url": "https://doi.org/10.1007/s11263-009-0275-4"
+  },
+  {
+   "key": "lin2014coco",
+   "cat": "01-classical-datasets",
+   "title": "Microsoft COCO: Common Objects in Context",
+   "authors": "T.-Y. Lin et al.",
+   "year": 2014,
+   "venue": "ECCV",
+   "note": "80 classes; AP averaged over IoU 0.5:0.95.",
+   "pdf": false,
+   "arxiv": "1405.0312"
+  },
+  {
+   "key": "krizhevsky2012alexnet",
+   "cat": "02-backbones",
+   "title": "ImageNet Classification with Deep Convolutional Neural Networks (AlexNet)",
+   "authors": "A. Krizhevsky, I. Sutskever, G. E. Hinton",
+   "year": 2012,
+   "venue": "NeurIPS (CACM 2017 version linked)",
+   "note": "GPU-trained CNN wins ILSVRC 2012.",
+   "pdf": false,
+   "url": "https://doi.org/10.1145/3065386"
+  },
+  {
+   "key": "simonyan2015vgg",
+   "cat": "02-backbones",
+   "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition (VGG)",
+   "authors": "K. Simonyan, A. Zisserman",
+   "year": 2015,
+   "venue": "ICLR",
+   "note": "Stacks of 3x3 convolutions.",
+   "pdf": false,
+   "arxiv": "1409.1556"
+  },
+  {
+   "key": "he2016resnet",
+   "cat": "02-backbones",
+   "title": "Deep Residual Learning for Image Recognition (ResNet)",
+   "authors": "K. He, X. Zhang, S. Ren, J. Sun",
+   "year": 2016,
+   "venue": "CVPR",
+   "note": "152-layer residual nets; 3.57% ImageNet error; won ILSVRC and COCO 2015.",
+   "pdf": true,
+   "arxiv": "1512.03385"
+  },
+  {
+   "key": "dosovitskiy2021vit",
+   "cat": "02-backbones",
+   "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale (ViT)",
+   "authors": "A. Dosovitskiy et al.",
+   "year": 2021,
+   "venue": "ICLR",
+   "note": "Vision Transformer.",
+   "pdf": false,
+   "arxiv": "2010.11929"
+  },
+  {
+   "key": "liu2021swin",
+   "cat": "02-backbones",
+   "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+   "authors": "Z. Liu et al.",
+   "year": 2021,
+   "venue": "ICCV",
+   "note": "Hierarchical windowed attention, a detection backbone.",
+   "pdf": false,
+   "arxiv": "2103.14030"
+  },
+  {
+   "key": "oquab2024dinov2",
+   "cat": "02-backbones",
+   "title": "DINOv2: Learning Robust Visual Features without Supervision",
+   "authors": "M. Oquab et al.",
+   "year": 2024,
+   "venue": "TMLR",
+   "note": "Self-supervised general-purpose visual features.",
+   "pdf": false,
+   "arxiv": "2304.07193"
+  },
+  {
+   "key": "girshick2014rcnn",
+   "cat": "03-two-stage",
+   "title": "Rich Feature Hierarchies for Accurate Object Detection and Semantic Segmentation (R-CNN)",
+   "authors": "R. Girshick, J. Donahue, T. Darrell, J. Malik",
+   "year": 2014,
+   "venue": "CVPR",
+   "note": "CNN features on region proposals.",
+   "pdf": false,
+   "arxiv": "1311.2524"
+  },
+  {
+   "key": "girshick2015fast",
+   "cat": "03-two-stage",
+   "title": "Fast R-CNN",
+   "authors": "R. Girshick",
+   "year": 2015,
+   "venue": "ICCV",
+   "note": "Shared computation with RoI pooling.",
+   "pdf": false,
+   "arxiv": "1504.08083"
+  },
+  {
+   "key": "ren2015faster",
+   "cat": "03-two-stage",
+   "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+   "authors": "S. Ren, K. He, R. Girshick, J. Sun",
+   "year": 2015,
+   "venue": "NeurIPS",
+   "note": "Learned proposals (RPN); 5 fps with VGG-16.",
+   "pdf": true,
+   "arxiv": "1506.01497"
+  },
+  {
+   "key": "lin2017fpn",
+   "cat": "03-two-stage",
+   "title": "Feature Pyramid Networks for Object Detection",
+   "authors": "T.-Y. Lin et al.",
+   "year": 2017,
+   "venue": "CVPR",
+   "note": "Multi-scale features for small objects.",
+   "pdf": false,
+   "arxiv": "1612.03144"
+  },
+  {
+   "key": "he2017maskrcnn",
+   "cat": "03-two-stage",
+   "title": "Mask R-CNN",
+   "authors": "K. He, G. Gkioxari, P. Dollar, R. Girshick",
+   "year": 2017,
+   "venue": "ICCV",
+   "note": "Instance segmentation with RoIAlign.",
+   "pdf": false,
+   "arxiv": "1703.06870"
+  },
+  {
+   "key": "redmon2016yolo",
+   "cat": "04-one-stage-yolo",
+   "title": "You Only Look Once: Unified, Real-Time Object Detection (YOLO)",
+   "authors": "J. Redmon, S. Divvala, R. Girshick, A. Farhadi",
+   "year": 2016,
+   "venue": "CVPR",
+   "note": "Detection as one regression; 45 FPS (Fast YOLO 155 FPS).",
+   "pdf": true,
+   "arxiv": "1506.02640"
+  },
+  {
+   "key": "liu2016ssd",
+   "cat": "04-one-stage-yolo",
+   "title": "SSD: Single Shot MultiBox Detector",
+   "authors": "W. Liu et al.",
+   "year": 2016,
+   "venue": "ECCV",
+   "note": "Multi-scale default boxes.",
+   "pdf": false,
+   "arxiv": "1512.02325"
+  },
+  {
+   "key": "redmon2017yolo9000",
+   "cat": "04-one-stage-yolo",
+   "title": "YOLO9000: Better, Faster, Stronger (YOLOv2)",
+   "authors": "J. Redmon, A. Farhadi",
+   "year": 2017,
+   "venue": "CVPR",
+   "note": "Anchors, batch norm, multi-scale training.",
+   "pdf": false,
+   "arxiv": "1612.08242"
+  },
+  {
+   "key": "lin2017focal",
+   "cat": "04-one-stage-yolo",
+   "title": "Focal Loss for Dense Object Detection (RetinaNet)",
+   "authors": "T.-Y. Lin, P. Goyal, R. Girshick, K. He, P. Dollar",
+   "year": 2017,
+   "venue": "ICCV",
+   "note": "Focal loss fixes foreground-background imbalance.",
+   "pdf": true,
+   "arxiv": "1708.02002"
+  },
+  {
+   "key": "redmon2018yolov3",
+   "cat": "04-one-stage-yolo",
+   "title": "YOLOv3: An Incremental Improvement",
+   "authors": "J. Redmon, A. Farhadi",
+   "year": 2018,
+   "venue": "arXiv",
+   "note": "Multi-scale predictions, Darknet-53.",
+   "pdf": false,
+   "arxiv": "1804.02767"
+  },
+  {
+   "key": "zhou2019centernet",
+   "cat": "04-one-stage-yolo",
+   "title": "Objects as Points (CenterNet)",
+   "authors": "X. Zhou, D. Wang, P. Krahenbuhl",
+   "year": 2019,
+   "venue": "arXiv",
+   "note": "Anchor-free centre-heatmap detection.",
+   "pdf": false,
+   "arxiv": "1904.07850"
+  },
+  {
+   "key": "tian2019fcos",
+   "cat": "04-one-stage-yolo",
+   "title": "FCOS: Fully Convolutional One-Stage Object Detection",
+   "authors": "Z. Tian, C. Shen, H. Chen, T. He",
+   "year": 2019,
+   "venue": "ICCV",
+   "note": "Anchor-free per-pixel detection.",
+   "pdf": false,
+   "arxiv": "1904.01355"
+  },
+  {
+   "key": "tan2020efficientdet",
+   "cat": "04-one-stage-yolo",
+   "title": "EfficientDet: Scalable and Efficient Object Detection",
+   "authors": "M. Tan, R. Pang, Q. V. Le",
+   "year": 2020,
+   "venue": "CVPR",
+   "note": "BiFPN and compound scaling.",
+   "pdf": false,
+   "arxiv": "1911.09070"
+  },
+  {
+   "key": "bochkovskiy2020yolov4",
+   "cat": "04-one-stage-yolo",
+   "title": "YOLOv4: Optimal Speed and Accuracy of Object Detection",
+   "authors": "A. Bochkovskiy, C.-Y. Wang, H.-Y. M. Liao",
+   "year": 2020,
+   "venue": "arXiv",
+   "note": "Bag of freebies and specials.",
+   "pdf": false,
+   "arxiv": "2004.10934"
+  },
+  {
+   "key": "ge2021yolox",
+   "cat": "04-one-stage-yolo",
+   "title": "YOLOX: Exceeding YOLO Series in 2021",
+   "authors": "Z. Ge et al.",
+   "year": 2021,
+   "venue": "arXiv",
+   "note": "Anchor-free decoupled-head YOLO.",
+   "pdf": false,
+   "arxiv": "2107.08430"
+  },
+  {
+   "key": "wang2023yolov7",
+   "cat": "04-one-stage-yolo",
+   "title": "YOLOv7: Trainable Bag-of-Freebies Sets New State-of-the-Art for Real-Time Object Detectors",
+   "authors": "C.-Y. Wang, A. Bochkovskiy, H.-Y. M. Liao",
+   "year": 2023,
+   "venue": "CVPR",
+   "note": "Real-time architecture and training refinements.",
+   "pdf": false,
+   "arxiv": "2207.02696"
+  },
+  {
+   "key": "wang2024yolov9",
+   "cat": "04-one-stage-yolo",
+   "title": "YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information",
+   "authors": "C.-Y. Wang, I.-H. Yeh, H.-Y. M. Liao",
+   "year": 2024,
+   "venue": "ECCV",
+   "note": "Programmable gradient information.",
+   "pdf": false,
+   "arxiv": "2402.13616"
+  },
+  {
+   "key": "wang2024yolov10",
+   "cat": "04-one-stage-yolo",
+   "title": "YOLOv10: Real-Time End-to-End Object Detection",
+   "authors": "A. Wang et al.",
+   "year": 2024,
+   "venue": "NeurIPS",
+   "note": "NMS-free training via consistent dual assignments.",
+   "pdf": false,
+   "arxiv": "2405.14458"
+  },
+  {
+   "key": "ultralytics",
+   "cat": "04-one-stage-yolo",
+   "title": "Ultralytics YOLO documentation (YOLOv5, YOLOv8, YOLO11)",
+   "authors": "Ultralytics",
+   "year": 2025,
+   "venue": "Software documentation",
+   "note": "Widely used open YOLO implementations without accompanying papers.",
+   "pdf": false,
+   "url": "https://docs.ultralytics.com/"
+  },
+  {
+   "key": "carion2020detr",
+   "cat": "05-transformer-detectors",
+   "title": "End-to-End Object Detection with Transformers (DETR)",
+   "authors": "N. Carion et al.",
+   "year": 2020,
+   "venue": "ECCV",
+   "note": "Set prediction with bipartite matching; no NMS or anchors.",
+   "pdf": true,
+   "arxiv": "2005.12872"
+  },
+  {
+   "key": "zhu2021deformable",
+   "cat": "05-transformer-detectors",
+   "title": "Deformable DETR: Deformable Transformers for End-to-End Object Detection",
+   "authors": "X. Zhu et al.",
+   "year": 2021,
+   "venue": "ICLR",
+   "note": "Sparse deformable attention; much faster convergence.",
+   "pdf": false,
+   "arxiv": "2010.04159"
+  },
+  {
+   "key": "zhang2023dino",
+   "cat": "05-transformer-detectors",
+   "title": "DINO: DETR with Improved DeNoising Anchor Boxes for End-to-End Object Detection",
+   "authors": "H. Zhang et al.",
+   "year": 2023,
+   "venue": "ICLR",
+   "note": "Denoising training; DETR reaches SOTA.",
+   "pdf": false,
+   "arxiv": "2203.03605"
+  },
+  {
+   "key": "zhao2024rtdetr",
+   "cat": "05-transformer-detectors",
+   "title": "DETRs Beat YOLOs on Real-time Object Detection (RT-DETR)",
+   "authors": "Y. Zhao et al.",
+   "year": 2024,
+   "venue": "CVPR",
+   "note": "53.1 AP at 108 FPS (R50, T4 GPU).",
+   "pdf": false,
+   "arxiv": "2304.08069"
+  },
+  {
+   "key": "radford2021clip",
+   "cat": "06-open-vocabulary-vlm",
+   "title": "Learning Transferable Visual Models From Natural Language Supervision (CLIP)",
+   "authors": "A. Radford et al.",
+   "year": 2021,
+   "venue": "ICML",
+   "note": "400M image-text pairs; zero-shot matches ResNet-50 on ImageNet.",
+   "pdf": true,
+   "arxiv": "2103.00020"
+  },
+  {
+   "key": "li2022glip",
+   "cat": "06-open-vocabulary-vlm",
+   "title": "Grounded Language-Image Pre-training (GLIP)",
+   "authors": "L. H. Li et al.",
+   "year": 2022,
+   "venue": "CVPR",
+   "note": "Detection as phrase grounding.",
+   "pdf": false,
+   "arxiv": "2112.03857"
+  },
+  {
+   "key": "minderer2022owlvit",
+   "cat": "06-open-vocabulary-vlm",
+   "title": "Simple Open-Vocabulary Object Detection with Vision Transformers (OWL-ViT)",
+   "authors": "M. Minderer et al.",
+   "year": 2022,
+   "venue": "ECCV",
+   "note": "CLIP-style ViT turned into an open-vocabulary detector.",
+   "pdf": false,
+   "arxiv": "2205.06230"
+  },
+  {
+   "key": "liu2024groundingdino",
+   "cat": "06-open-vocabulary-vlm",
+   "title": "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection",
+   "authors": "S. Liu et al.",
+   "year": 2024,
+   "venue": "ECCV",
+   "note": "52.5 AP zero-shot on COCO; text-prompted detection.",
+   "pdf": true,
+   "arxiv": "2303.05499"
+  },
+  {
+   "key": "kirillov2023sam",
+   "cat": "06-open-vocabulary-vlm",
+   "title": "Segment Anything (SAM)",
+   "authors": "A. Kirillov et al.",
+   "year": 2023,
+   "venue": "ICCV",
+   "note": "Promptable segmentation; SA-1B with 1B masks on 11M images.",
+   "pdf": true,
+   "arxiv": "2304.02643"
+  },
+  {
+   "key": "ravi2024sam2",
+   "cat": "06-open-vocabulary-vlm",
+   "title": "SAM 2: Segment Anything in Images and Videos",
+   "authors": "N. Ravi et al.",
+   "year": 2024,
+   "venue": "arXiv / ICLR 2025",
+   "note": "Streaming-memory video segmentation; 6x faster than SAM on images.",
+   "pdf": false,
+   "arxiv": "2408.00714"
+  },
+  {
+   "key": "cheng2024yoloworld",
+   "cat": "06-open-vocabulary-vlm",
+   "title": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+   "authors": "T. Cheng et al.",
+   "year": 2024,
+   "venue": "CVPR",
+   "note": "35.4 AP zero-shot on LVIS at 52 FPS (V100).",
+   "pdf": true,
+   "arxiv": "2401.17270"
+  },
+  {
+   "key": "xiao2024florence2",
+   "cat": "06-open-vocabulary-vlm",
+   "title": "Florence-2: Advancing a Unified Representation for a Variety of Vision Tasks",
+   "authors": "B. Xiao et al.",
+   "year": 2024,
+   "venue": "CVPR",
+   "note": "One sequence-to-sequence model for captioning, detection, grounding, segmentation.",
+   "pdf": false,
+   "arxiv": "2311.06242"
+  },
+  {
+   "key": "liu2023llava",
+   "cat": "06-open-vocabulary-vlm",
+   "title": "Visual Instruction Tuning (LLaVA)",
+   "authors": "H. Liu, C. Li, Q. Wu, Y. J. Lee",
+   "year": 2023,
+   "venue": "NeurIPS",
+   "note": "Instruction-tuned VLM from a vision encoder + LLM.",
+   "pdf": false,
+   "arxiv": "2304.08485"
+  },
+  {
+   "key": "peng2023kosmos2",
+   "cat": "06-open-vocabulary-vlm",
+   "title": "Kosmos-2: Grounding Multimodal Large Language Models to the World",
+   "authors": "Z. Peng et al.",
+   "year": 2023,
+   "venue": "arXiv",
+   "note": "MLLM that outputs boxes as location tokens.",
+   "pdf": false,
+   "arxiv": "2306.14824"
+  },
+  {
+   "key": "bai2023qwenvl",
+   "cat": "06-open-vocabulary-vlm",
+   "title": "Qwen-VL: A Versatile Vision-Language Model for Understanding, Localization, Text Reading, and Beyond",
+   "authors": "J. Bai et al.",
+   "year": 2023,
+   "venue": "arXiv",
+   "note": "VLM with grounding and box output.",
+   "pdf": false,
+   "arxiv": "2308.12966"
+  },
+  {
+   "key": "beyer2024paligemma",
+   "cat": "06-open-vocabulary-vlm",
+   "title": "PaliGemma: A Versatile 3B VLM for Transfer",
+   "authors": "L. Beyer et al.",
+   "year": 2024,
+   "venue": "arXiv",
+   "note": "Small transferable VLM with detection and segmentation tokens.",
+   "pdf": false,
+   "arxiv": "2407.07726"
+  },
+  {
+   "key": "qi2017pointnet",
+   "cat": "07-point-cloud-3d",
+   "title": "PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation",
+   "authors": "C. R. Qi, H. Su, K. Mo, L. J. Guibas",
+   "year": 2017,
+   "venue": "CVPR",
+   "note": "Permutation-invariant networks on raw points.",
+   "pdf": true,
+   "arxiv": "1612.00593"
+  },
+  {
+   "key": "qi2017pointnetpp",
+   "cat": "07-point-cloud-3d",
+   "title": "PointNet++: Deep Hierarchical Feature Learning on Point Sets in a Metric Space",
+   "authors": "C. R. Qi, L. Yi, H. Su, L. J. Guibas",
+   "year": 2017,
+   "venue": "NeurIPS",
+   "note": "Hierarchical local grouping.",
+   "pdf": false,
+   "arxiv": "1706.02413"
+  },
+  {
+   "key": "zhou2018voxelnet",
+   "cat": "07-point-cloud-3d",
+   "title": "VoxelNet: End-to-End Learning for Point Cloud Based 3D Object Detection",
+   "authors": "Y. Zhou, O. Tuzel",
+   "year": 2018,
+   "venue": "CVPR",
+   "note": "Voxel feature encoding + 3D convolutions.",
+   "pdf": false,
+   "arxiv": "1711.06396"
+  },
+  {
+   "key": "yan2018second",
+   "cat": "07-point-cloud-3d",
+   "title": "SECOND: Sparsely Embedded Convolutional Detection",
+   "authors": "Y. Yan, Y. Mao, B. Li",
+   "year": 2018,
+   "venue": "Sensors",
+   "note": "Sparse 3D convolutions for speed.",
+   "pdf": false,
+   "url": "https://doi.org/10.3390/s18103337"
+  },
+  {
+   "key": "lang2019pointpillars",
+   "cat": "07-point-cloud-3d",
+   "title": "PointPillars: Fast Encoders for Object Detection from Point Clouds",
+   "authors": "A. H. Lang et al.",
+   "year": 2019,
+   "venue": "CVPR",
+   "note": "Pillars + 2D CNN; 62 Hz (105 Hz fast version).",
+   "pdf": true,
+   "arxiv": "1812.05784"
+  },
+  {
+   "key": "shi2019pointrcnn",
+   "cat": "07-point-cloud-3d",
+   "title": "PointRCNN: 3D Object Proposal Generation and Detection from Point Cloud",
+   "authors": "S. Shi, X. Wang, H. Li",
+   "year": 2019,
+   "venue": "CVPR",
+   "note": "Two-stage point-based detection.",
+   "pdf": false,
+   "arxiv": "1812.04244"
+  },
+  {
+   "key": "shi2020pvrcnn",
+   "cat": "07-point-cloud-3d",
+   "title": "PV-RCNN: Point-Voxel Feature Set Abstraction for 3D Object Detection",
+   "authors": "S. Shi et al.",
+   "year": 2020,
+   "venue": "CVPR",
+   "note": "Combines voxel and point features.",
+   "pdf": false,
+   "arxiv": "1912.13192"
+  },
+  {
+   "key": "yin2021centerpoint",
+   "cat": "07-point-cloud-3d",
+   "title": "Center-based 3D Object Detection and Tracking (CenterPoint)",
+   "authors": "T. Yin, X. Zhou, P. Krahenbuhl",
+   "year": 2021,
+   "venue": "CVPR",
+   "note": "Objects as BEV centres; 65.5 NDS, 63.8 AMOTA on nuScenes.",
+   "pdf": true,
+   "arxiv": "2006.11275"
+  },
+  {
+   "key": "philion2020lss",
+   "cat": "08-camera-bev-fusion",
+   "title": "Lift, Splat, Shoot: Encoding Images From Arbitrary Camera Rigs by Implicitly Unprojecting to 3D",
+   "authors": "J. Philion, S. Fidler",
+   "year": 2020,
+   "venue": "ECCV",
+   "note": "Per-pixel depth distributions lifted to BEV.",
+   "pdf": false,
+   "arxiv": "2008.05711"
+  },
+  {
+   "key": "wang2021detr3d",
+   "cat": "08-camera-bev-fusion",
+   "title": "DETR3D: 3D Object Detection from Multi-view Images via 3D-to-2D Queries",
+   "authors": "Y. Wang et al.",
+   "year": 2021,
+   "venue": "CoRL",
+   "note": "3D queries projected into images.",
+   "pdf": false,
+   "arxiv": "2110.06922"
+  },
+  {
+   "key": "li2022bevformer",
+   "cat": "08-camera-bev-fusion",
+   "title": "BEVFormer: Learning Bird's-Eye-View Representation from Multi-Camera Images via Spatiotemporal Transformers",
+   "authors": "Z. Li et al.",
+   "year": 2022,
+   "venue": "ECCV",
+   "note": "Camera-only 56.9 NDS on nuScenes, on par with lidar baselines.",
+   "pdf": false,
+   "arxiv": "2203.17270"
+  },
+  {
+   "key": "liu2023bevfusion",
+   "cat": "08-camera-bev-fusion",
+   "title": "BEVFusion: Multi-Task Multi-Sensor Fusion with Unified Bird's-Eye View Representation",
+   "authors": "Z. Liu et al.",
+   "year": 2023,
+   "venue": "ICRA",
+   "note": "Camera + lidar fused in BEV; BEV pooling 40x faster.",
+   "pdf": false,
+   "arxiv": "2205.13542"
+  },
+  {
+   "key": "kuhn1955hungarian",
+   "cat": "09-tracking",
+   "title": "The Hungarian Method for the Assignment Problem",
+   "authors": "H. W. Kuhn",
+   "year": 1955,
+   "venue": "Naval Research Logistics Quarterly",
+   "note": "Optimal assignment, used by SORT and DETR.",
+   "pdf": false,
+   "url": "https://doi.org/10.1002/nav.3800020109"
+  },
+  {
+   "key": "bewley2016sort",
+   "cat": "09-tracking",
+   "title": "Simple Online and Realtime Tracking (SORT)",
+   "authors": "A. Bewley, Z. Ge, L. Ott, F. Ramos, B. Upcroft",
+   "year": 2016,
+   "venue": "ICIP",
+   "note": "Kalman filter + Hungarian on IoU; 260 Hz.",
+   "pdf": false,
+   "arxiv": "1602.00763"
+  },
+  {
+   "key": "wojke2017deepsort",
+   "cat": "09-tracking",
+   "title": "Simple Online and Realtime Tracking with a Deep Association Metric (DeepSORT)",
+   "authors": "N. Wojke, A. Bewley, D. Paulus",
+   "year": 2017,
+   "venue": "ICIP",
+   "note": "Adds appearance re-identification features.",
+   "pdf": false,
+   "arxiv": "1703.07402"
+  },
+  {
+   "key": "bergmann2019tracktor",
+   "cat": "09-tracking",
+   "title": "Tracking without Bells and Whistles (Tracktor)",
+   "authors": "P. Bergmann, T. Meinhardt, L. Leal-Taixe",
+   "year": 2019,
+   "venue": "ICCV",
+   "note": "Detector regression head propagates tracks.",
+   "pdf": false,
+   "arxiv": "1903.05625"
+  },
+  {
+   "key": "weng2020ab3dmot",
+   "cat": "09-tracking",
+   "title": "3D Multi-Object Tracking: A Baseline and New Evaluation Metrics (AB3DMOT)",
+   "authors": "X. Weng, J. Wang, D. Held, K. Kitani",
+   "year": 2020,
+   "venue": "IROS",
+   "note": "3D Kalman + Hungarian baseline.",
+   "pdf": false,
+   "arxiv": "1907.03961"
+  },
+  {
+   "key": "zhang2021fairmot",
+   "cat": "09-tracking",
+   "title": "FairMOT: On the Fairness of Detection and Re-Identification in Multiple Object Tracking",
+   "authors": "Y. Zhang et al.",
+   "year": 2021,
+   "venue": "IJCV",
+   "note": "Joint detection and re-ID in one network.",
+   "pdf": false,
+   "arxiv": "2004.01888"
+  },
+  {
+   "key": "zeng2022motr",
+   "cat": "09-tracking",
+   "title": "MOTR: End-to-End Multiple-Object Tracking with Transformer",
+   "authors": "F. Zeng et al.",
+   "year": 2022,
+   "venue": "ECCV",
+   "note": "Track queries carried across frames.",
+   "pdf": false,
+   "arxiv": "2105.03247"
+  },
+  {
+   "key": "zhang2022bytetrack",
+   "cat": "09-tracking",
+   "title": "ByteTrack: Multi-Object Tracking by Associating Every Detection Box",
+   "authors": "Y. Zhang et al.",
+   "year": 2022,
+   "venue": "ECCV",
+   "note": "Associates low-score boxes too; 80.3 MOTA, 77.3 IDF1, 63.1 HOTA on MOT17 at 30 FPS.",
+   "pdf": true,
+   "arxiv": "2110.06864"
+  },
+  {
+   "key": "cao2023ocsort",
+   "cat": "09-tracking",
+   "title": "Observation-Centric SORT: Rethinking SORT for Robust Multi-Object Tracking",
+   "authors": "J. Cao et al.",
+   "year": 2023,
+   "venue": "CVPR",
+   "note": "Fixes Kalman drift during occlusion.",
+   "pdf": false,
+   "arxiv": "2203.14360"
+  },
+  {
+   "key": "aharon2022botsort",
+   "cat": "09-tracking",
+   "title": "BoT-SORT: Robust Associations Multi-Pedestrian Tracking",
+   "authors": "N. Aharon, R. Orfaig, B.-Z. Bobrovsky",
+   "year": 2022,
+   "venue": "arXiv",
+   "note": "Camera-motion compensation + re-ID.",
+   "pdf": false,
+   "arxiv": "2206.14651"
+  },
+  {
+   "key": "geiger2012kitti",
+   "cat": "10-benchmarks-metrics",
+   "title": "Are We Ready for Autonomous Driving? The KITTI Vision Benchmark Suite",
+   "authors": "A. Geiger, P. Lenz, R. Urtasun",
+   "year": 2012,
+   "venue": "CVPR",
+   "note": "2D/3D detection and tracking benchmark.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/CVPR.2012.6248074"
+  },
+  {
+   "key": "caesar2020nuscenes",
+   "cat": "10-benchmarks-metrics",
+   "title": "nuScenes: A Multimodal Dataset for Autonomous Driving",
+   "authors": "H. Caesar et al.",
+   "year": 2020,
+   "venue": "CVPR",
+   "note": "6 cameras, lidar, radar; NDS metric.",
+   "pdf": false,
+   "arxiv": "1903.11027"
+  },
+  {
+   "key": "sun2020waymo",
+   "cat": "10-benchmarks-metrics",
+   "title": "Scalability in Perception for Autonomous Driving: Waymo Open Dataset",
+   "authors": "P. Sun et al.",
+   "year": 2020,
+   "venue": "CVPR",
+   "note": "Large-scale driving perception benchmark.",
+   "pdf": false,
+   "arxiv": "1912.04838"
+  },
+  {
+   "key": "milan2016mot16",
+   "cat": "10-benchmarks-metrics",
+   "title": "MOT16: A Benchmark for Multi-Object Tracking",
+   "authors": "A. Milan et al.",
+   "year": 2016,
+   "venue": "arXiv",
+   "note": "MOTChallenge pedestrian tracking benchmark.",
+   "pdf": false,
+   "arxiv": "1603.00831"
+  },
+  {
+   "key": "bernardin2008clear",
+   "cat": "10-benchmarks-metrics",
+   "title": "Evaluating Multiple Object Tracking Performance: The CLEAR MOT Metrics",
+   "authors": "K. Bernardin, R. Stiefelhagen",
+   "year": 2008,
+   "venue": "EURASIP JIVP",
+   "note": "MOTA and MOTP.",
+   "pdf": false,
+   "url": "https://doi.org/10.1155/2008/246309"
+  },
+  {
+   "key": "ristani2016idf1",
+   "cat": "10-benchmarks-metrics",
+   "title": "Performance Measures and a Data Set for Multi-Target, Multi-Camera Tracking (IDF1)",
+   "authors": "E. Ristani et al.",
+   "year": 2016,
+   "venue": "ECCV Workshops",
+   "note": "Identity-based metrics.",
+   "pdf": false,
+   "arxiv": "1609.01775"
+  },
+  {
+   "key": "luiten2021hota",
+   "cat": "10-benchmarks-metrics",
+   "title": "HOTA: A Higher Order Metric for Evaluating Multi-Object Tracking",
+   "authors": "J. Luiten et al.",
+   "year": 2021,
+   "venue": "IJCV",
+   "note": "Balances detection and association.",
+   "pdf": false,
+   "arxiv": "2009.07736"
+  }
+ ]
+}
