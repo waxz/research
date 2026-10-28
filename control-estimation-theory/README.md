@@ -32,6 +32,7 @@ To rebuild: `python3 tools/build_catalog.py --download`, then `python3 tools/ren
 
 ## Notes on sources
 
+- **PDF links.** In each catalog, **PDF** is a copy stored in this repository and **PDF ↗** opens the paper's PDF online. Every arXiv entry links its arXiv PDF; journal, NASA and conference papers link an open PDF where one was found and checked. To add one, set `pdf_url` in `catalog.json`; `python3 tools/build_catalog.py --check` verifies non-arXiv PDF links.
 - Every DOI was resolved through Crossref and every arXiv ID checked against the arXiv API on 27 Oct 2026.
 - **PID share:** "about 90% of loops are PID" comes from Åström & Hägglund (2001). The often-quoted "more than 95% in process control" comes from their later book. In the IFAC industry survey, 91% of respondents rated PID's current impact as high.
 - **X-15 accident:** the account is summarized from NASA history pages. The authoritative analysis is NASA/TM-2014-218538, which I did not retrieve.

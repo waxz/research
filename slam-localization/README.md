@@ -32,6 +32,7 @@ To rebuild: `python3 tools/build_catalog.py --download`, then `python3 tools/ren
 
 ## Notes on sources
 
+- **PDF links.** In each catalog, **PDF** is a copy stored in this repository and **PDF ↗** opens the paper's PDF online. Every arXiv entry links its arXiv PDF; journal, NASA and conference papers link an open PDF where one was found and checked. To add one, set `pdf_url` in `catalog.json`; `python3 tools/build_catalog.py --check` verifies non-arXiv PDF links.
 - DOIs were resolved through Crossref and arXiv IDs checked against the arXiv API on 26 Oct 2026. NASA facts come from NTRS reports and NASA SP-504.
 - The Space Shuttle's GPS transition (four missions in 2006–07, then an all-GPS flight) comes from a NASA-sourced excerpt; check the original before formal citation.
 - Accuracy figures are the authors' own: Levinson & Thrun's 10 cm range, Wan et al.'s 5–10 cm, ORB-SLAM3's 2–5×. Fit ratings and the task map are a synthesis, not measurements.

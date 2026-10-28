@@ -32,6 +32,7 @@ To rebuild: `python3 tools/build_catalog.py --download`, then `python3 tools/ren
 
 ## Notes on sources
 
+- **PDF links.** In each catalog, **PDF** is a copy stored in this repository and **PDF ↗** opens the paper's PDF online. Every arXiv entry links its arXiv PDF; journal, NASA and conference papers link an open PDF where one was found and checked. To add one, set `pdf_url` in `catalog.json`; `python3 tools/build_catalog.py --check` verifies non-arXiv PDF links.
 - All arXiv IDs were checked against the arXiv API, and all DOIs through Crossref, on 28 Oct 2026. Quoted results come from the papers' abstracts, on the authors' hardware.
 - YOLOv5, YOLOv8 and YOLO11 (Ultralytics) have no peer-reviewed papers and are cited by their documentation.
 - The 51 MB YOLO review is linked rather than stored, to stay under GitHub's large-file warning.

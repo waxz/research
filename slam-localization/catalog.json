@@ -1,72 +1,595 @@
 {
   "categories": [
-    {"id": "00-surveys-tutorials", "name": "Surveys, tutorials and reference texts", "about": "Where to start: SLAM surveys, the VO tutorial, the visual-inertial review, factor graphs."},
-    {"id": "01-foundations", "name": "Foundations of probabilistic localization and mapping", "about": "The Kalman filter, the stochastic map, graph-based scan alignment."},
-    {"id": "02-laser-lidar", "name": "Laser and LiDAR localization and SLAM", "about": "Scan matching, lidar odometry and mapping, lidar-inertial fusion, place recognition, map-based vehicle localization."},
-    {"id": "03-visual", "name": "Visual odometry and visual SLAM", "about": "Feature-based, direct and dense camera methods, learned features and place recognition."},
-    {"id": "04-visual-inertial", "name": "Visual-inertial navigation", "about": "Filter- and optimization-based camera + IMU fusion."},
-    {"id": "05-optimization", "name": "Smoothing and factor graphs", "about": "Incremental nonlinear least squares for SLAM."},
-    {"id": "06-learning-neural", "name": "Learning-based and neural SLAM", "about": "Deep SLAM, neural implicit and Gaussian-splatting maps, 3D foundation models."},
-    {"id": "07-space", "name": "Spacecraft, planetary and Shuttle navigation", "about": "Attitude determination, the Apollo-era Kalman filter, Shuttle navigation, rover visual odometry, terrain-relative landing, Mars helicopter."},
-    {"id": "08-benchmarks", "name": "Benchmarks and datasets", "about": "How accuracy claims are measured."}
+    {
+      "id": "00-surveys-tutorials",
+      "name": "Surveys, tutorials and reference texts",
+      "about": "Where to start: SLAM surveys, the VO tutorial, the visual-inertial review, factor graphs."
+    },
+    {
+      "id": "01-foundations",
+      "name": "Foundations of probabilistic localization and mapping",
+      "about": "The Kalman filter, the stochastic map, graph-based scan alignment."
+    },
+    {
+      "id": "02-laser-lidar",
+      "name": "Laser and LiDAR localization and SLAM",
+      "about": "Scan matching, lidar odometry and mapping, lidar-inertial fusion, place recognition, map-based vehicle localization."
+    },
+    {
+      "id": "03-visual",
+      "name": "Visual odometry and visual SLAM",
+      "about": "Feature-based, direct and dense camera methods, learned features and place recognition."
+    },
+    {
+      "id": "04-visual-inertial",
+      "name": "Visual-inertial navigation",
+      "about": "Filter- and optimization-based camera + IMU fusion."
+    },
+    {
+      "id": "05-optimization",
+      "name": "Smoothing and factor graphs",
+      "about": "Incremental nonlinear least squares for SLAM."
+    },
+    {
+      "id": "06-learning-neural",
+      "name": "Learning-based and neural SLAM",
+      "about": "Deep SLAM, neural implicit and Gaussian-splatting maps, 3D foundation models."
+    },
+    {
+      "id": "07-space",
+      "name": "Spacecraft, planetary and Shuttle navigation",
+      "about": "Attitude determination, the Apollo-era Kalman filter, Shuttle navigation, rover visual odometry, terrain-relative landing, Mars helicopter."
+    },
+    {
+      "id": "08-benchmarks",
+      "name": "Benchmarks and datasets",
+      "about": "How accuracy claims are measured."
+    }
   ],
   "papers": [
-    {"key": "cadena2016past", "cat": "00-surveys-tutorials", "title": "Past, Present, and Future of Simultaneous Localization and Mapping: Toward the Robust-Perception Age", "authors": "C. Cadena, L. Carlone, H. Carrillo, Y. Latif, D. Scaramuzza, J. Neira, I. Reid, J. J. Leonard", "year": 2016, "venue": "IEEE Transactions on Robotics", "arxiv": "1606.05830", "pdf": true, "note": "The standard modern SLAM survey: factor graphs, robustness, open problems."},
-    {"key": "durrantwhyte2006slam1", "cat": "00-surveys-tutorials", "title": "Simultaneous Localization and Mapping: Part I", "authors": "H. Durrant-Whyte, T. Bailey", "year": 2006, "venue": "IEEE Robotics & Automation Magazine", "url": "https://doi.org/10.1109/MRA.2006.1638022", "pdf": false, "note": "Tutorial on the SLAM problem and EKF/particle solutions."},
-    {"key": "bailey2006slam2", "cat": "00-surveys-tutorials", "title": "Simultaneous Localization and Mapping (SLAM): Part II", "authors": "T. Bailey, H. Durrant-Whyte", "year": 2006, "venue": "IEEE Robotics & Automation Magazine", "url": "https://doi.org/10.1109/mra.2006.1678144", "pdf": false, "note": "Computational complexity, data association, environment representation."},
-    {"key": "scaramuzza2011vo", "cat": "00-surveys-tutorials", "title": "Visual Odometry [Tutorial]", "authors": "D. Scaramuzza, F. Fraundorfer", "year": 2011, "venue": "IEEE Robotics & Automation Magazine", "url": "https://doi.org/10.1109/mra.2011.943233", "pdf": false, "note": "Two-part tutorial on VO pipelines."},
-    {"key": "huang2019vins", "cat": "00-surveys-tutorials", "title": "Visual-Inertial Navigation: A Concise Review", "authors": "G. Huang", "year": 2019, "venue": "ICRA", "arxiv": "1906.02650", "pdf": true, "note": "Filter vs optimization VINS, observability, calibration."},
-    {"key": "dellaert2017factor", "cat": "00-surveys-tutorials", "title": "Factor Graphs for Robot Perception", "authors": "F. Dellaert, M. Kaess", "year": 2017, "venue": "Foundations and Trends in Robotics", "url": "https://doi.org/10.1561/2300000043", "pdf": false, "note": "The factor-graph view of SLAM and its solvers."},
-    {"key": "barfoot2024ser", "cat": "00-surveys-tutorials", "title": "State Estimation for Robotics (2nd ed.)", "authors": "T. D. Barfoot", "year": 2024, "venue": "Cambridge University Press (free PDF)", "url": "https://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser24.pdf", "pdf": false, "note": "Estimation on Lie groups, batch and recursive."},
-
-    {"key": "kalman1960", "cat": "01-foundations", "title": "A New Approach to Linear Filtering and Prediction Problems", "authors": "R. E. Kalman", "year": 1960, "venue": "Journal of Basic Engineering", "url": "https://doi.org/10.1115/1.3662552", "pdf": false, "note": "The Kalman filter."},
-    {"key": "smith1986spatial", "cat": "01-foundations", "title": "On the Representation and Estimation of Spatial Uncertainty", "authors": "R. C. Smith, P. Cheeseman", "year": 1986, "venue": "IJRR", "url": "https://doi.org/10.1177/027836498600500404", "pdf": false, "note": "The stochastic map: correlated robot and landmark uncertainty."},
-    {"key": "lu1997globally", "cat": "01-foundations", "title": "Globally Consistent Range Scan Alignment for Environment Mapping", "authors": "F. Lu, E. Milios", "year": 1997, "venue": "Autonomous Robots", "url": "https://doi.org/10.1023/A:1008854305733", "pdf": false, "note": "First pose-graph formulation of scan-based mapping."},
-
-    {"key": "biber2003ndt", "cat": "02-laser-lidar", "title": "The Normal Distributions Transform: A New Approach to Laser Scan Matching", "authors": "P. Biber, W. Strasser", "year": 2003, "venue": "IROS", "url": "https://doi.org/10.1109/iros.2003.1249285", "pdf": false, "note": "NDT: scan matching against local Gaussians; common for map-based car localization."},
-    {"key": "levinson2010robust", "cat": "02-laser-lidar", "title": "Robust Vehicle Localization in Urban Environments Using Probabilistic Maps", "authors": "J. Levinson, S. Thrun", "year": 2010, "venue": "ICRA", "url": "https://doi.org/10.1109/robot.2010.5509700", "pdf": false, "note": "Lidar-intensity map localization with RMS accuracy in the 10 cm range."},
-    {"key": "zhang2014loam", "cat": "02-laser-lidar", "title": "LOAM: Lidar Odometry and Mapping in Real-time", "authors": "J. Zhang, S. Singh", "year": 2014, "venue": "RSS", "url": "https://doi.org/10.15607/rss.2014.x.007", "pdf": false, "note": "Edge/planar features, split odometry and mapping."},
-    {"key": "hess2016cartographer", "cat": "02-laser-lidar", "title": "Real-Time Loop Closure in 2D LIDAR SLAM (Cartographer)", "authors": "W. Hess, D. Kohler, H. Rapp, D. Andor", "year": 2016, "venue": "ICRA", "url": "https://doi.org/10.1109/icra.2016.7487258", "pdf": false, "note": "Submaps and branch-and-bound loop closure."},
-    {"key": "kim2018scancontext", "cat": "02-laser-lidar", "title": "Scan Context: Egocentric Spatial Descriptor for Place Recognition within 3D Point Cloud Map", "authors": "G. Kim, A. Kim", "year": 2018, "venue": "IROS", "url": "https://doi.org/10.1109/iros.2018.8593953", "pdf": false, "note": "Lidar place recognition for loop closure."},
-    {"key": "wan2018baidu", "cat": "02-laser-lidar", "title": "Robust and Precise Vehicle Localization based on Multi-sensor Fusion in Diverse City Scenes", "authors": "G. Wan et al.", "year": 2018, "venue": "ICRA", "arxiv": "1711.05805", "pdf": false, "note": "GNSS RTK + lidar map + IMU error-state KF; 5-10 cm RMS."},
-    {"key": "shan2020liosam", "cat": "02-laser-lidar", "title": "LIO-SAM: Tightly-coupled Lidar Inertial Odometry via Smoothing and Mapping", "authors": "T. Shan, B. Englot, D. Meyers, W. Wang, C. Ratti, D. Rus", "year": 2020, "venue": "IROS", "arxiv": "2007.00258", "pdf": true, "note": "Factor-graph LIO with IMU preintegration, GPS and loop-closure factors."},
-    {"key": "xu2022fastlio2", "cat": "02-laser-lidar", "title": "FAST-LIO2: Fast Direct LiDAR-inertial Odometry", "authors": "W. Xu, Y. Cai, D. He, J. Lin, F. Zhang", "year": 2022, "venue": "IEEE Transactions on Robotics", "arxiv": "2107.06829", "pdf": true, "note": "Iterated error-state KF registering raw points; ikd-Tree map."},
-
-    {"key": "nister2004vo", "cat": "03-visual", "title": "Visual Odometry", "authors": "D. Nister, O. Naroditsky, J. Bergen", "year": 2004, "venue": "CVPR", "url": "https://doi.org/10.1109/cvpr.2004.1315094", "pdf": false, "note": "Named and established real-time visual odometry."},
-    {"key": "davison2007monoslam", "cat": "03-visual", "title": "MonoSLAM: Real-Time Single Camera SLAM", "authors": "A. J. Davison, I. D. Reid, N. D. Molton, O. Stasse", "year": 2007, "venue": "IEEE TPAMI", "url": "https://doi.org/10.1109/tpami.2007.1049", "pdf": false, "note": "EKF SLAM with a single camera."},
-    {"key": "klein2007ptam", "cat": "03-visual", "title": "Parallel Tracking and Mapping for Small AR Workspaces (PTAM)", "authors": "G. Klein, D. Murray", "year": 2007, "venue": "ISMAR", "url": "https://doi.org/10.1109/ismar.2007.4538852", "pdf": false, "note": "Split tracking and keyframe bundle adjustment."},
-    {"key": "newcombe2011kinectfusion", "cat": "03-visual", "title": "KinectFusion: Real-Time Dense Surface Mapping and Tracking", "authors": "R. A. Newcombe et al.", "year": 2011, "venue": "ISMAR", "url": "https://doi.org/10.1109/ismar.2011.6092378", "pdf": false, "note": "Dense RGB-D mapping on GPU."},
-    {"key": "murartal2015orbslam", "cat": "03-visual", "title": "ORB-SLAM: a Versatile and Accurate Monocular SLAM System", "authors": "R. Mur-Artal, J. M. M. Montiel, J. D. Tardos", "year": 2015, "venue": "IEEE Transactions on Robotics", "arxiv": "1502.00956", "pdf": false, "note": "Feature-based SLAM with loop closing and relocalization."},
-    {"key": "engel2017dso", "cat": "03-visual", "title": "Direct Sparse Odometry", "authors": "J. Engel, V. Koltun, D. Cremers", "year": 2017, "venue": "IEEE TPAMI", "arxiv": "1607.02565", "pdf": false, "note": "Direct photometric optimization."},
-    {"key": "campos2021orbslam3", "cat": "03-visual", "title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial and Multi-Map SLAM", "authors": "C. Campos, R. Elvira, J. J. G. Rodriguez, J. M. M. Montiel, J. D. Tardos", "year": 2021, "venue": "IEEE Transactions on Robotics", "arxiv": "2007.11898", "pdf": true, "note": "Multi-map visual-inertial SLAM; 2-5x more accurate than prior systems (authors)."},
-    {"key": "detone2018superpoint", "cat": "03-visual", "title": "SuperPoint: Self-Supervised Interest Point Detection and Description", "authors": "D. DeTone, T. Malisiewicz, A. Rabinovich", "year": 2018, "venue": "CVPR Workshops", "arxiv": "1712.07629", "pdf": false, "note": "Learned keypoints."},
-    {"key": "sarlin2020superglue", "cat": "03-visual", "title": "SuperGlue: Learning Feature Matching with Graph Neural Networks", "authors": "P.-E. Sarlin, D. DeTone, T. Malisiewicz, A. Rabinovich", "year": 2020, "venue": "CVPR", "arxiv": "1911.11763", "pdf": false, "note": "Learned matching."},
-    {"key": "arandjelovic2016netvlad", "cat": "03-visual", "title": "NetVLAD: CNN Architecture for Weakly Supervised Place Recognition", "authors": "R. Arandjelovic et al.", "year": 2016, "venue": "CVPR", "arxiv": "1511.07247", "pdf": false, "note": "Learned global descriptors for loop closure."},
-
-    {"key": "mourikis2007msckf", "cat": "04-visual-inertial", "title": "A Multi-State Constraint Kalman Filter for Vision-aided Inertial Navigation", "authors": "A. I. Mourikis, S. I. Roumeliotis", "year": 2007, "venue": "ICRA", "url": "https://doi.org/10.1109/robot.2007.364024", "pdf": false, "note": "Filter-based VIO without landmarks in the state."},
-    {"key": "forster2017preint", "cat": "04-visual-inertial", "title": "On-Manifold Preintegration for Real-Time Visual-Inertial Odometry", "authors": "C. Forster, L. Carlone, F. Dellaert, D. Scaramuzza", "year": 2017, "venue": "IEEE Transactions on Robotics", "arxiv": "1512.02363", "pdf": true, "note": "IMU preintegration on SO(3)."},
-    {"key": "qin2018vinsmono", "cat": "04-visual-inertial", "title": "VINS-Mono: A Robust and Versatile Monocular Visual-Inertial State Estimator", "authors": "T. Qin, P. Li, S. Shen", "year": 2018, "venue": "IEEE Transactions on Robotics", "arxiv": "1708.03852", "pdf": true, "note": "Sliding-window optimization VIO with 4-DoF pose graph."},
-
-    {"key": "kaess2012isam2", "cat": "05-optimization", "title": "iSAM2: Incremental Smoothing and Mapping Using the Bayes Tree", "authors": "M. Kaess et al.", "year": 2012, "venue": "IJRR", "url": "https://doi.org/10.1177/0278364911430419", "pdf": false, "note": "Incremental factor-graph solver behind GTSAM."},
-
-    {"key": "teed2021droid", "cat": "06-learning-neural", "title": "DROID-SLAM: Deep Visual SLAM for Monocular, Stereo, and RGB-D Cameras", "authors": "Z. Teed, J. Deng", "year": 2021, "venue": "NeurIPS", "arxiv": "2108.10869", "pdf": true, "note": "Recurrent updates through a differentiable dense bundle-adjustment layer."},
-    {"key": "sucar2021imap", "cat": "06-learning-neural", "title": "iMAP: Implicit Mapping and Positioning in Real-Time", "authors": "E. Sucar, S. Liu, J. Ortiz, A. J. Davison", "year": 2021, "venue": "ICCV", "arxiv": "2103.12352", "pdf": false, "note": "Neural implicit map as the SLAM representation."},
-    {"key": "keetha2024splatam", "cat": "06-learning-neural", "title": "SplaTAM: Splat, Track & Map 3D Gaussians for Dense RGB-D SLAM", "authors": "N. Keetha et al.", "year": 2024, "venue": "CVPR", "arxiv": "2312.02126", "pdf": false, "note": "Gaussian-splatting SLAM (RGB-D)."},
-    {"key": "matsuki2024gsslam", "cat": "06-learning-neural", "title": "Gaussian Splatting SLAM", "authors": "H. Matsuki, R. Murai, P. H. J. Kelly, A. J. Davison", "year": 2024, "venue": "CVPR", "arxiv": "2312.06741", "pdf": false, "note": "Monocular Gaussian-splatting SLAM."},
-    {"key": "wang2024dust3r", "cat": "06-learning-neural", "title": "DUSt3R: Geometric 3D Vision Made Easy", "authors": "S. Wang et al.", "year": 2024, "venue": "CVPR", "arxiv": "2312.14132", "pdf": false, "note": "3D foundation model predicting pointmaps from image pairs."},
-    {"key": "murai2025mast3rslam", "cat": "06-learning-neural", "title": "MASt3R-SLAM: Real-Time Dense SLAM with 3D Reconstruction Priors", "authors": "R. Murai, E. Dexheimer, A. J. Davison", "year": 2025, "venue": "CVPR", "arxiv": "2412.12392", "pdf": true, "note": "Monocular dense SLAM on a learned 3D prior, 15 FPS."},
-
-    {"key": "wahba1965", "cat": "07-space", "title": "A Least Squares Estimate of Satellite Attitude (Wahba's problem)", "authors": "G. Wahba", "year": 1965, "venue": "SIAM Review", "url": "https://doi.org/10.1137/1007077", "pdf": false, "note": "Attitude from vector observations."},
-    {"key": "shuster1981quest", "cat": "07-space", "title": "Three-Axis Attitude Determination from Vector Observations (QUEST)", "authors": "M. D. Shuster, S. D. Oh", "year": 1981, "venue": "Journal of Guidance and Control", "url": "https://doi.org/10.2514/3.19717", "pdf": false, "note": "TRIAD and QUEST algorithms."},
-    {"key": "lefferts1982mekf", "cat": "07-space", "title": "Kalman Filtering for Spacecraft Attitude Estimation", "authors": "E. J. Lefferts, F. L. Markley, M. D. Shuster", "year": 1982, "venue": "AIAA Aerospace Sciences Meeting", "url": "https://doi.org/10.2514/6.1982-70", "pdf": false, "note": "Multiplicative EKF for gyro + star-tracker attitude."},
-    {"key": "mcgee1985kalman", "cat": "07-space", "title": "Discovery of the Kalman Filter as a Practical Tool for Aerospace and Industry", "authors": "L. A. McGee, S. F. Schmidt", "year": 1985, "venue": "NASA TM-86847", "url": "https://ntrs.nasa.gov/citations/19860003843", "pdf": false, "note": "How the Kalman filter entered Apollo navigation."},
-    {"key": "nasa1975shuttleentry", "cat": "07-space", "title": "Space Shuttle entry navigation study (aided-inertial Kalman filter)", "authors": "The Analytic Sciences Corp. for NASA", "year": 1975, "venue": "NASA technical report", "url": "https://ntrs.nasa.gov/citations/19750015582", "pdf": false, "note": "IMU aided by TACAN, MLS and altimeters through a Kalman filter."},
-    {"key": "nasa1988sp504", "cat": "07-space", "title": "Space Shuttle Avionics: Guidance, Navigation and Control (NASA SP-504, section 4.5)", "authors": "NASA", "year": 1989, "venue": "NASA SP-504", "url": "https://www.klabs.org/DEI/Processor/shuttle/sp-504/section_4/section_4_05_guidance_navigation_control.htm", "pdf": false, "note": "Three IMUs, two star trackers, Kalman updates with fault detection."},
-    {"key": "maimone2007vo", "cat": "07-space", "title": "Two Years of Visual Odometry on the Mars Exploration Rovers", "authors": "M. Maimone, Y. Cheng, L. Matthies", "year": 2007, "venue": "Journal of Field Robotics 24(3)", "url": "https://doi.org/10.1002/rob.20184", "pdf": false, "note": "Stereo VO on Spirit and Opportunity; slip detection."},
-    {"key": "bayard2019helicopter", "cat": "07-space", "title": "Vision-Based Navigation for the NASA Mars Helicopter", "authors": "D. S. Bayard et al.", "year": 2019, "venue": "AIAA SciTech", "url": "https://doi.org/10.2514/6.2019-1411", "pdf": false, "note": "Camera + IMU + laser altimeter navigation for Ingenuity."},
-    {"key": "nasa2023lvs", "cat": "07-space", "title": "Mars 2020 Lander Vision System flight performance", "authors": "NASA JPL", "year": 2023, "venue": "NASA technical report", "url": "https://ntrs.nasa.gov/citations/20230006986", "pdf": false, "note": "Terrain-relative navigation fusing map-matched landmarks with IMU."},
-
-    {"key": "geiger2012kitti", "cat": "08-benchmarks", "title": "Are We Ready for Autonomous Driving? The KITTI Vision Benchmark Suite", "authors": "A. Geiger, P. Lenz, R. Urtasun", "year": 2012, "venue": "CVPR", "url": "https://doi.org/10.1109/cvpr.2012.6248074", "pdf": false, "note": "Odometry benchmark (drift in % of distance)."},
-    {"key": "burri2016euroc", "cat": "08-benchmarks", "title": "The EuRoC Micro Aerial Vehicle Datasets", "authors": "M. Burri et al.", "year": 2016, "venue": "IJRR", "url": "https://doi.org/10.1177/0278364915620033", "pdf": false, "note": "Visual-inertial benchmark with ground truth."}
+    {
+      "key": "cadena2016past",
+      "cat": "00-surveys-tutorials",
+      "title": "Past, Present, and Future of Simultaneous Localization and Mapping: Toward the Robust-Perception Age",
+      "authors": "C. Cadena, L. Carlone, H. Carrillo, Y. Latif, D. Scaramuzza, J. Neira, I. Reid, J. J. Leonard",
+      "year": 2016,
+      "venue": "IEEE Transactions on Robotics",
+      "arxiv": "1606.05830",
+      "pdf": true,
+      "note": "The standard modern SLAM survey: factor graphs, robustness, open problems."
+    },
+    {
+      "key": "durrantwhyte2006slam1",
+      "cat": "00-surveys-tutorials",
+      "title": "Simultaneous Localization and Mapping: Part I",
+      "authors": "H. Durrant-Whyte, T. Bailey",
+      "year": 2006,
+      "venue": "IEEE Robotics & Automation Magazine",
+      "url": "https://doi.org/10.1109/MRA.2006.1638022",
+      "pdf": false,
+      "note": "Tutorial on the SLAM problem and EKF/particle solutions."
+    },
+    {
+      "key": "bailey2006slam2",
+      "cat": "00-surveys-tutorials",
+      "title": "Simultaneous Localization and Mapping (SLAM): Part II",
+      "authors": "T. Bailey, H. Durrant-Whyte",
+      "year": 2006,
+      "venue": "IEEE Robotics & Automation Magazine",
+      "url": "https://doi.org/10.1109/mra.2006.1678144",
+      "pdf": false,
+      "note": "Computational complexity, data association, environment representation."
+    },
+    {
+      "key": "scaramuzza2011vo",
+      "cat": "00-surveys-tutorials",
+      "title": "Visual Odometry [Tutorial]",
+      "authors": "D. Scaramuzza, F. Fraundorfer",
+      "year": 2011,
+      "venue": "IEEE Robotics & Automation Magazine",
+      "url": "https://doi.org/10.1109/mra.2011.943233",
+      "pdf": false,
+      "note": "Two-part tutorial on VO pipelines."
+    },
+    {
+      "key": "huang2019vins",
+      "cat": "00-surveys-tutorials",
+      "title": "Visual-Inertial Navigation: A Concise Review",
+      "authors": "G. Huang",
+      "year": 2019,
+      "venue": "ICRA",
+      "arxiv": "1906.02650",
+      "pdf": true,
+      "note": "Filter vs optimization VINS, observability, calibration."
+    },
+    {
+      "key": "dellaert2017factor",
+      "cat": "00-surveys-tutorials",
+      "title": "Factor Graphs for Robot Perception",
+      "authors": "F. Dellaert, M. Kaess",
+      "year": 2017,
+      "venue": "Foundations and Trends in Robotics",
+      "url": "https://doi.org/10.1561/2300000043",
+      "pdf": false,
+      "note": "The factor-graph view of SLAM and its solvers."
+    },
+    {
+      "key": "barfoot2024ser",
+      "cat": "00-surveys-tutorials",
+      "title": "State Estimation for Robotics (2nd ed.)",
+      "authors": "T. D. Barfoot",
+      "year": 2024,
+      "venue": "Cambridge University Press (free PDF)",
+      "url": "https://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser24.pdf",
+      "pdf": false,
+      "note": "Estimation on Lie groups, batch and recursive."
+    },
+    {
+      "key": "kalman1960",
+      "cat": "01-foundations",
+      "title": "A New Approach to Linear Filtering and Prediction Problems",
+      "authors": "R. E. Kalman",
+      "year": 1960,
+      "venue": "Journal of Basic Engineering",
+      "url": "https://doi.org/10.1115/1.3662552",
+      "pdf": false,
+      "note": "The Kalman filter."
+    },
+    {
+      "key": "smith1986spatial",
+      "cat": "01-foundations",
+      "title": "On the Representation and Estimation of Spatial Uncertainty",
+      "authors": "R. C. Smith, P. Cheeseman",
+      "year": 1986,
+      "venue": "IJRR",
+      "url": "https://doi.org/10.1177/027836498600500404",
+      "pdf": false,
+      "note": "The stochastic map: correlated robot and landmark uncertainty."
+    },
+    {
+      "key": "lu1997globally",
+      "cat": "01-foundations",
+      "title": "Globally Consistent Range Scan Alignment for Environment Mapping",
+      "authors": "F. Lu, E. Milios",
+      "year": 1997,
+      "venue": "Autonomous Robots",
+      "url": "https://doi.org/10.1023/A:1008854305733",
+      "pdf": false,
+      "note": "First pose-graph formulation of scan-based mapping."
+    },
+    {
+      "key": "biber2003ndt",
+      "cat": "02-laser-lidar",
+      "title": "The Normal Distributions Transform: A New Approach to Laser Scan Matching",
+      "authors": "P. Biber, W. Strasser",
+      "year": 2003,
+      "venue": "IROS",
+      "url": "https://doi.org/10.1109/iros.2003.1249285",
+      "pdf": false,
+      "note": "NDT: scan matching against local Gaussians; common for map-based car localization."
+    },
+    {
+      "key": "levinson2010robust",
+      "cat": "02-laser-lidar",
+      "title": "Robust Vehicle Localization in Urban Environments Using Probabilistic Maps",
+      "authors": "J. Levinson, S. Thrun",
+      "year": 2010,
+      "venue": "ICRA",
+      "url": "https://doi.org/10.1109/robot.2010.5509700",
+      "pdf": false,
+      "note": "Lidar-intensity map localization with RMS accuracy in the 10 cm range.",
+      "pdf_url": "https://fileadmin.cs.lth.se/ai/Proceedings/ICRA2010/MainConference/data/papers/1912.pdf"
+    },
+    {
+      "key": "zhang2014loam",
+      "cat": "02-laser-lidar",
+      "title": "LOAM: Lidar Odometry and Mapping in Real-time",
+      "authors": "J. Zhang, S. Singh",
+      "year": 2014,
+      "venue": "RSS",
+      "url": "https://doi.org/10.15607/rss.2014.x.007",
+      "pdf": false,
+      "note": "Edge/planar features, split odometry and mapping.",
+      "pdf_url": "https://www.roboticsproceedings.org/rss10/p07.pdf"
+    },
+    {
+      "key": "hess2016cartographer",
+      "cat": "02-laser-lidar",
+      "title": "Real-Time Loop Closure in 2D LIDAR SLAM (Cartographer)",
+      "authors": "W. Hess, D. Kohler, H. Rapp, D. Andor",
+      "year": 2016,
+      "venue": "ICRA",
+      "url": "https://doi.org/10.1109/icra.2016.7487258",
+      "pdf": false,
+      "note": "Submaps and branch-and-bound loop closure."
+    },
+    {
+      "key": "kim2018scancontext",
+      "cat": "02-laser-lidar",
+      "title": "Scan Context: Egocentric Spatial Descriptor for Place Recognition within 3D Point Cloud Map",
+      "authors": "G. Kim, A. Kim",
+      "year": 2018,
+      "venue": "IROS",
+      "url": "https://doi.org/10.1109/iros.2018.8593953",
+      "pdf": false,
+      "note": "Lidar place recognition for loop closure."
+    },
+    {
+      "key": "wan2018baidu",
+      "cat": "02-laser-lidar",
+      "title": "Robust and Precise Vehicle Localization based on Multi-sensor Fusion in Diverse City Scenes",
+      "authors": "G. Wan et al.",
+      "year": 2018,
+      "venue": "ICRA",
+      "arxiv": "1711.05805",
+      "pdf": false,
+      "note": "GNSS RTK + lidar map + IMU error-state KF; 5-10 cm RMS."
+    },
+    {
+      "key": "shan2020liosam",
+      "cat": "02-laser-lidar",
+      "title": "LIO-SAM: Tightly-coupled Lidar Inertial Odometry via Smoothing and Mapping",
+      "authors": "T. Shan, B. Englot, D. Meyers, W. Wang, C. Ratti, D. Rus",
+      "year": 2020,
+      "venue": "IROS",
+      "arxiv": "2007.00258",
+      "pdf": true,
+      "note": "Factor-graph LIO with IMU preintegration, GPS and loop-closure factors."
+    },
+    {
+      "key": "xu2022fastlio2",
+      "cat": "02-laser-lidar",
+      "title": "FAST-LIO2: Fast Direct LiDAR-inertial Odometry",
+      "authors": "W. Xu, Y. Cai, D. He, J. Lin, F. Zhang",
+      "year": 2022,
+      "venue": "IEEE Transactions on Robotics",
+      "arxiv": "2107.06829",
+      "pdf": true,
+      "note": "Iterated error-state KF registering raw points; ikd-Tree map."
+    },
+    {
+      "key": "nister2004vo",
+      "cat": "03-visual",
+      "title": "Visual Odometry",
+      "authors": "D. Nister, O. Naroditsky, J. Bergen",
+      "year": 2004,
+      "venue": "CVPR",
+      "url": "https://doi.org/10.1109/cvpr.2004.1315094",
+      "pdf": false,
+      "note": "Named and established real-time visual odometry."
+    },
+    {
+      "key": "davison2007monoslam",
+      "cat": "03-visual",
+      "title": "MonoSLAM: Real-Time Single Camera SLAM",
+      "authors": "A. J. Davison, I. D. Reid, N. D. Molton, O. Stasse",
+      "year": 2007,
+      "venue": "IEEE TPAMI",
+      "url": "https://doi.org/10.1109/tpami.2007.1049",
+      "pdf": false,
+      "note": "EKF SLAM with a single camera."
+    },
+    {
+      "key": "klein2007ptam",
+      "cat": "03-visual",
+      "title": "Parallel Tracking and Mapping for Small AR Workspaces (PTAM)",
+      "authors": "G. Klein, D. Murray",
+      "year": 2007,
+      "venue": "ISMAR",
+      "url": "https://doi.org/10.1109/ismar.2007.4538852",
+      "pdf": false,
+      "note": "Split tracking and keyframe bundle adjustment."
+    },
+    {
+      "key": "newcombe2011kinectfusion",
+      "cat": "03-visual",
+      "title": "KinectFusion: Real-Time Dense Surface Mapping and Tracking",
+      "authors": "R. A. Newcombe et al.",
+      "year": 2011,
+      "venue": "ISMAR",
+      "url": "https://doi.org/10.1109/ismar.2011.6092378",
+      "pdf": false,
+      "note": "Dense RGB-D mapping on GPU."
+    },
+    {
+      "key": "murartal2015orbslam",
+      "cat": "03-visual",
+      "title": "ORB-SLAM: a Versatile and Accurate Monocular SLAM System",
+      "authors": "R. Mur-Artal, J. M. M. Montiel, J. D. Tardos",
+      "year": 2015,
+      "venue": "IEEE Transactions on Robotics",
+      "arxiv": "1502.00956",
+      "pdf": false,
+      "note": "Feature-based SLAM with loop closing and relocalization."
+    },
+    {
+      "key": "engel2017dso",
+      "cat": "03-visual",
+      "title": "Direct Sparse Odometry",
+      "authors": "J. Engel, V. Koltun, D. Cremers",
+      "year": 2017,
+      "venue": "IEEE TPAMI",
+      "arxiv": "1607.02565",
+      "pdf": false,
+      "note": "Direct photometric optimization."
+    },
+    {
+      "key": "campos2021orbslam3",
+      "cat": "03-visual",
+      "title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial and Multi-Map SLAM",
+      "authors": "C. Campos, R. Elvira, J. J. G. Rodriguez, J. M. M. Montiel, J. D. Tardos",
+      "year": 2021,
+      "venue": "IEEE Transactions on Robotics",
+      "arxiv": "2007.11898",
+      "pdf": true,
+      "note": "Multi-map visual-inertial SLAM; 2-5x more accurate than prior systems (authors)."
+    },
+    {
+      "key": "detone2018superpoint",
+      "cat": "03-visual",
+      "title": "SuperPoint: Self-Supervised Interest Point Detection and Description",
+      "authors": "D. DeTone, T. Malisiewicz, A. Rabinovich",
+      "year": 2018,
+      "venue": "CVPR Workshops",
+      "arxiv": "1712.07629",
+      "pdf": false,
+      "note": "Learned keypoints."
+    },
+    {
+      "key": "sarlin2020superglue",
+      "cat": "03-visual",
+      "title": "SuperGlue: Learning Feature Matching with Graph Neural Networks",
+      "authors": "P.-E. Sarlin, D. DeTone, T. Malisiewicz, A. Rabinovich",
+      "year": 2020,
+      "venue": "CVPR",
+      "arxiv": "1911.11763",
+      "pdf": false,
+      "note": "Learned matching."
+    },
+    {
+      "key": "arandjelovic2016netvlad",
+      "cat": "03-visual",
+      "title": "NetVLAD: CNN Architecture for Weakly Supervised Place Recognition",
+      "authors": "R. Arandjelovic et al.",
+      "year": 2016,
+      "venue": "CVPR",
+      "arxiv": "1511.07247",
+      "pdf": false,
+      "note": "Learned global descriptors for loop closure."
+    },
+    {
+      "key": "mourikis2007msckf",
+      "cat": "04-visual-inertial",
+      "title": "A Multi-State Constraint Kalman Filter for Vision-aided Inertial Navigation",
+      "authors": "A. I. Mourikis, S. I. Roumeliotis",
+      "year": 2007,
+      "venue": "ICRA",
+      "url": "https://doi.org/10.1109/robot.2007.364024",
+      "pdf": false,
+      "note": "Filter-based VIO without landmarks in the state."
+    },
+    {
+      "key": "forster2017preint",
+      "cat": "04-visual-inertial",
+      "title": "On-Manifold Preintegration for Real-Time Visual-Inertial Odometry",
+      "authors": "C. Forster, L. Carlone, F. Dellaert, D. Scaramuzza",
+      "year": 2017,
+      "venue": "IEEE Transactions on Robotics",
+      "arxiv": "1512.02363",
+      "pdf": true,
+      "note": "IMU preintegration on SO(3)."
+    },
+    {
+      "key": "qin2018vinsmono",
+      "cat": "04-visual-inertial",
+      "title": "VINS-Mono: A Robust and Versatile Monocular Visual-Inertial State Estimator",
+      "authors": "T. Qin, P. Li, S. Shen",
+      "year": 2018,
+      "venue": "IEEE Transactions on Robotics",
+      "arxiv": "1708.03852",
+      "pdf": true,
+      "note": "Sliding-window optimization VIO with 4-DoF pose graph."
+    },
+    {
+      "key": "kaess2012isam2",
+      "cat": "05-optimization",
+      "title": "iSAM2: Incremental Smoothing and Mapping Using the Bayes Tree",
+      "authors": "M. Kaess et al.",
+      "year": 2012,
+      "venue": "IJRR",
+      "url": "https://doi.org/10.1177/0278364911430419",
+      "pdf": false,
+      "note": "Incremental factor-graph solver behind GTSAM."
+    },
+    {
+      "key": "teed2021droid",
+      "cat": "06-learning-neural",
+      "title": "DROID-SLAM: Deep Visual SLAM for Monocular, Stereo, and RGB-D Cameras",
+      "authors": "Z. Teed, J. Deng",
+      "year": 2021,
+      "venue": "NeurIPS",
+      "arxiv": "2108.10869",
+      "pdf": true,
+      "note": "Recurrent updates through a differentiable dense bundle-adjustment layer."
+    },
+    {
+      "key": "sucar2021imap",
+      "cat": "06-learning-neural",
+      "title": "iMAP: Implicit Mapping and Positioning in Real-Time",
+      "authors": "E. Sucar, S. Liu, J. Ortiz, A. J. Davison",
+      "year": 2021,
+      "venue": "ICCV",
+      "arxiv": "2103.12352",
+      "pdf": false,
+      "note": "Neural implicit map as the SLAM representation."
+    },
+    {
+      "key": "keetha2024splatam",
+      "cat": "06-learning-neural",
+      "title": "SplaTAM: Splat, Track & Map 3D Gaussians for Dense RGB-D SLAM",
+      "authors": "N. Keetha et al.",
+      "year": 2024,
+      "venue": "CVPR",
+      "arxiv": "2312.02126",
+      "pdf": false,
+      "note": "Gaussian-splatting SLAM (RGB-D)."
+    },
+    {
+      "key": "matsuki2024gsslam",
+      "cat": "06-learning-neural",
+      "title": "Gaussian Splatting SLAM",
+      "authors": "H. Matsuki, R. Murai, P. H. J. Kelly, A. J. Davison",
+      "year": 2024,
+      "venue": "CVPR",
+      "arxiv": "2312.06741",
+      "pdf": false,
+      "note": "Monocular Gaussian-splatting SLAM."
+    },
+    {
+      "key": "wang2024dust3r",
+      "cat": "06-learning-neural",
+      "title": "DUSt3R: Geometric 3D Vision Made Easy",
+      "authors": "S. Wang et al.",
+      "year": 2024,
+      "venue": "CVPR",
+      "arxiv": "2312.14132",
+      "pdf": false,
+      "note": "3D foundation model predicting pointmaps from image pairs."
+    },
+    {
+      "key": "murai2025mast3rslam",
+      "cat": "06-learning-neural",
+      "title": "MASt3R-SLAM: Real-Time Dense SLAM with 3D Reconstruction Priors",
+      "authors": "R. Murai, E. Dexheimer, A. J. Davison",
+      "year": 2025,
+      "venue": "CVPR",
+      "arxiv": "2412.12392",
+      "pdf": true,
+      "note": "Monocular dense SLAM on a learned 3D prior, 15 FPS."
+    },
+    {
+      "key": "wahba1965",
+      "cat": "07-space",
+      "title": "A Least Squares Estimate of Satellite Attitude (Wahba's problem)",
+      "authors": "G. Wahba",
+      "year": 1965,
+      "venue": "SIAM Review",
+      "url": "https://doi.org/10.1137/1007077",
+      "pdf": false,
+      "note": "Attitude from vector observations."
+    },
+    {
+      "key": "shuster1981quest",
+      "cat": "07-space",
+      "title": "Three-Axis Attitude Determination from Vector Observations (QUEST)",
+      "authors": "M. D. Shuster, S. D. Oh",
+      "year": 1981,
+      "venue": "Journal of Guidance and Control",
+      "url": "https://doi.org/10.2514/3.19717",
+      "pdf": false,
+      "note": "TRIAD and QUEST algorithms."
+    },
+    {
+      "key": "lefferts1982mekf",
+      "cat": "07-space",
+      "title": "Kalman Filtering for Spacecraft Attitude Estimation",
+      "authors": "E. J. Lefferts, F. L. Markley, M. D. Shuster",
+      "year": 1982,
+      "venue": "AIAA Aerospace Sciences Meeting",
+      "url": "https://doi.org/10.2514/6.1982-70",
+      "pdf": false,
+      "note": "Multiplicative EKF for gyro + star-tracker attitude."
+    },
+    {
+      "key": "mcgee1985kalman",
+      "cat": "07-space",
+      "title": "Discovery of the Kalman Filter as a Practical Tool for Aerospace and Industry",
+      "authors": "L. A. McGee, S. F. Schmidt",
+      "year": 1985,
+      "venue": "NASA TM-86847",
+      "url": "https://ntrs.nasa.gov/citations/19860003843",
+      "pdf": false,
+      "note": "How the Kalman filter entered Apollo navigation.",
+      "pdf_url": "https://ntrs.nasa.gov/api/citations/19860003843/downloads/19860003843.pdf"
+    },
+    {
+      "key": "nasa1975shuttleentry",
+      "cat": "07-space",
+      "title": "Space Shuttle entry navigation study (aided-inertial Kalman filter)",
+      "authors": "The Analytic Sciences Corp. for NASA",
+      "year": 1975,
+      "venue": "NASA technical report",
+      "url": "https://ntrs.nasa.gov/citations/19750015582",
+      "pdf": false,
+      "note": "IMU aided by TACAN, MLS and altimeters through a Kalman filter.",
+      "pdf_url": "https://ntrs.nasa.gov/api/citations/19750015582/downloads/19750015582.pdf"
+    },
+    {
+      "key": "nasa1988sp504",
+      "cat": "07-space",
+      "title": "Space Shuttle Avionics: Guidance, Navigation and Control (NASA SP-504, section 4.5)",
+      "authors": "NASA",
+      "year": 1989,
+      "venue": "NASA SP-504",
+      "url": "https://www.klabs.org/DEI/Processor/shuttle/sp-504/section_4/section_4_05_guidance_navigation_control.htm",
+      "pdf": false,
+      "note": "Three IMUs, two star trackers, Kalman updates with fault detection."
+    },
+    {
+      "key": "maimone2007vo",
+      "cat": "07-space",
+      "title": "Two Years of Visual Odometry on the Mars Exploration Rovers",
+      "authors": "M. Maimone, Y. Cheng, L. Matthies",
+      "year": 2007,
+      "venue": "Journal of Field Robotics 24(3)",
+      "url": "https://doi.org/10.1002/rob.20184",
+      "pdf": false,
+      "note": "Stereo VO on Spirit and Opportunity; slip detection.",
+      "pdf_url": "https://robotics.jpl.nasa.gov/media/documents/rob-06-0081.R4.pdf"
+    },
+    {
+      "key": "bayard2019helicopter",
+      "cat": "07-space",
+      "title": "Vision-Based Navigation for the NASA Mars Helicopter",
+      "authors": "D. S. Bayard et al.",
+      "year": 2019,
+      "venue": "AIAA SciTech",
+      "url": "https://doi.org/10.2514/6.2019-1411",
+      "pdf": false,
+      "note": "Camera + IMU + laser altimeter navigation for Ingenuity."
+    },
+    {
+      "key": "nasa2023lvs",
+      "cat": "07-space",
+      "title": "Mars 2020 Lander Vision System flight performance",
+      "authors": "NASA JPL",
+      "year": 2023,
+      "venue": "NASA technical report",
+      "url": "https://ntrs.nasa.gov/citations/20230006986",
+      "pdf": false,
+      "note": "Terrain-relative navigation fusing map-matched landmarks with IMU."
+    },
+    {
+      "key": "geiger2012kitti",
+      "cat": "08-benchmarks",
+      "title": "Are We Ready for Autonomous Driving? The KITTI Vision Benchmark Suite",
+      "authors": "A. Geiger, P. Lenz, R. Urtasun",
+      "year": 2012,
+      "venue": "CVPR",
+      "url": "https://doi.org/10.1109/cvpr.2012.6248074",
+      "pdf": false,
+      "note": "Odometry benchmark (drift in % of distance)."
+    },
+    {
+      "key": "burri2016euroc",
+      "cat": "08-benchmarks",
+      "title": "The EuRoC Micro Aerial Vehicle Datasets",
+      "authors": "M. Burri et al.",
+      "year": 2016,
+      "venue": "IJRR",
+      "url": "https://doi.org/10.1177/0278364915620033",
+      "pdf": false,
+      "note": "Visual-inertial benchmark with ground truth."
+    }
   ]
 }

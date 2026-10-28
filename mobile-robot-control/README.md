@@ -36,6 +36,7 @@ To rebuild after editing: `python3 tools/build_catalog.py --download`, then `pyt
 
 ## Notes on sources
 
+- **PDF links.** In each catalog, **PDF** is a copy stored in this repository and **PDF ↗** opens the paper's PDF online. Every arXiv entry links its arXiv PDF; journal, NASA and conference papers link an open PDF where one was found and checked. To add one, set `pdf_url` in `catalog.json`; `python3 tools/build_catalog.py --check` verifies non-arXiv PDF links.
 - All DOIs were resolved through Crossref, and all arXiv IDs checked against the arXiv API, on 26 Oct 2026. Journal papers and standards are linked, not copied.
 - Industry figures are company-reported: Kiva's productivity "factor of two or more", Amazon's DeepFleet 10% travel-efficiency aim. The report labels them that way.
 - Sources disagree on the date (1953 vs 1954) and wire placement of Barrett's first driverless tow tractor; the report says so.

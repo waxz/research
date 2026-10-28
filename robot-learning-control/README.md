@@ -70,12 +70,13 @@ The full list is in [CATALOG.md](CATALOG.md#01-surveys).
 
 ## Adding a paper
 
-1. Add an entry to `catalog.json`. The fields are `key`, `cat`, `title`, `authors`, `year`, `venue`, `note`, plus `arxiv` and/or `url`. Set `"pdf": true` to keep a local copy; this works only for entries with an arXiv ID.
+1. Add an entry to `catalog.json`. The fields are `key`, `cat`, `title`, `authors`, `year`, `venue`, `note`, plus `arxiv` and/or `url`, and optionally `pdf_url` for an open PDF hosted anywhere. Set `"pdf": true` to keep a local copy, downloaded from the arXiv PDF or `pdf_url`.
 2. Run `python3 tools/build_catalog.py --download` from this folder.
 3. Commit `catalog.json`, the regenerated `CATALOG.md` and `catalog.csv`, and any new PDF.
 
 ## Notes on sources
 
+- **PDF links.** In each catalog, **PDF** is a copy stored in this repository and **PDF ↗** opens the paper's PDF online. Every arXiv entry links its arXiv PDF; journal, NASA and conference papers link an open PDF where one was found and checked. To add one, set `pdf_url` in `catalog.json`; `python3 tools/build_catalog.py --check` verifies non-arXiv PDF links.
 - Local PDFs are the authors' open-access arXiv versions, downloaded from arxiv.org. Journal-only papers (for example Kober 2013, Hewing 2020, Mnih 2015) are linked by DOI and not copied.
 - All arXiv IDs and DOIs in the catalog were checked against the arXiv API and Crossref when the collection was built (25 October 2026).
 - SuperMimic's figures are the authors' self-reported numbers from a preprint. The task fit ratings in report 03 are a synthesis of the surveys, not measured results.
