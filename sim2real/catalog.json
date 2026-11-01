@@ -1,0 +1,651 @@
+{
+ "categories": [
+  {
+   "id": "00-surveys",
+   "name": "Surveys and reviews",
+   "about": "Overviews of sim-to-real transfer, randomized simulation and the reality gap."
+  },
+  {
+   "id": "01-reality-gap",
+   "name": "The reality gap: foundations and measurement",
+   "about": "Where the term comes from and how to measure whether simulation predicts reality."
+  },
+  {
+   "id": "02-domain-randomization",
+   "name": "Domain randomization and adaptive randomization",
+   "about": "Visual and dynamics randomization, automatic and data-driven randomization ranges."
+  },
+  {
+   "id": "03-sysid-actuators",
+   "name": "System identification and actuator modelling",
+   "about": "Identifying simulator parameters, actuator networks, latency, residual and learned dynamics."
+  },
+  {
+   "id": "04-adaptation-robustness",
+   "name": "Adaptation and robust policies",
+   "about": "Online system identification, privileged teachers, adaptation modules, adversarial training."
+  },
+  {
+   "id": "05-contact-simulators",
+   "name": "Contact models and simulators",
+   "about": "Rigid-body contact formulations, simulator comparisons and validation against real impacts."
+  },
+  {
+   "id": "06-achievements",
+   "name": "Landmark sim-to-real results",
+   "about": "Legged, humanoid, dexterous and aerial systems trained in simulation and deployed on hardware."
+  },
+  {
+   "id": "07-real2sim-generative",
+   "name": "Real-to-sim, photorealistic and generative simulation",
+   "about": "Digital twins, Gaussian-splat rendering, generated tasks and scenes."
+  }
+ ],
+ "papers": [
+  {
+   "key": "zhao2020survey",
+   "cat": "00-surveys",
+   "title": "Sim-to-Real Transfer in Deep Reinforcement Learning for Robotics: a Survey",
+   "authors": "W. Zhao, J. P. Queralta, T. Westerlund",
+   "year": 2020,
+   "venue": "IEEE SSCI",
+   "note": "Domain randomization, adaptation, imitation, meta-learning for transfer.",
+   "pdf": true,
+   "arxiv": "2009.13303"
+  },
+  {
+   "key": "muratore2022review",
+   "cat": "00-surveys",
+   "title": "Robot Learning from Randomized Simulations: A Review",
+   "authors": "F. Muratore, F. Ramos, G. Turk, W. Yu, M. Gienger, J. Peters",
+   "year": 2022,
+   "venue": "Frontiers in Robotics and AI",
+   "note": "Taxonomy of randomization: static, adaptive, adversarial.",
+   "pdf": true,
+   "arxiv": "2111.00956"
+  },
+  {
+   "key": "hofer2021tase",
+   "cat": "00-surveys",
+   "title": "Sim2Real in Robotics and Automation: Applications and Challenges",
+   "authors": "S. Hofer et al.",
+   "year": 2021,
+   "venue": "IEEE Transactions on Automation Science and Engineering",
+   "note": "Expert perspectives on where sim-to-real works and fails.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/TASE.2021.3064065"
+  },
+  {
+   "key": "hofer2020rss",
+   "cat": "00-surveys",
+   "title": "Perspectives on Sim2Real Transfer for Robotics: A Summary of the R:SS 2020 Workshop",
+   "authors": "S. Hofer et al.",
+   "year": 2020,
+   "venue": "RSS workshop summary",
+   "note": "Debate on whether to close the gap or design around it.",
+   "pdf": false,
+   "arxiv": "2012.03806"
+  },
+  {
+   "key": "salvato2021crossing",
+   "cat": "00-surveys",
+   "title": "Crossing the Reality Gap: A Survey on Sim-to-Real Transferability of Robot Controllers in Reinforcement Learning",
+   "authors": "E. Salvato, G. Fenu, E. Medvet, F. A. Pellegrino",
+   "year": 2021,
+   "venue": "IEEE Access",
+   "note": "Transferability methods for RL controllers.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/ACCESS.2021.3126658"
+  },
+  {
+   "key": "da2025survey",
+   "cat": "00-surveys",
+   "title": "A Survey of Sim-to-Real Methods in RL: Progress, Prospects and Challenges with Foundation Models",
+   "authors": "L. Da et al.",
+   "year": 2025,
+   "venue": "arXiv",
+   "note": "Sim-to-real in the foundation-model era.",
+   "pdf": true,
+   "arxiv": "2502.13187"
+  },
+  {
+   "key": "jakobi1995noise",
+   "cat": "01-reality-gap",
+   "title": "Noise and the Reality Gap: The Use of Simulation in Evolutionary Robotics",
+   "authors": "N. Jakobi, P. Husbands, I. Harvey",
+   "year": 1995,
+   "venue": "ECAL (LNCS)",
+   "note": "Early statement of the reality gap; adding noise to simulation.",
+   "pdf": false,
+   "url": "https://doi.org/10.1007/3-540-59496-5_337"
+  },
+  {
+   "key": "koos2013transferability",
+   "cat": "01-reality-gap",
+   "title": "The Transferability Approach: Crossing the Reality Gap in Evolutionary Robotics",
+   "authors": "S. Koos, J.-B. Mouret, S. Doncieux",
+   "year": 2013,
+   "venue": "IEEE Transactions on Evolutionary Computation",
+   "note": "Optimize for behaviours that transfer, using a learned transferability estimate.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/TEVC.2012.2185849"
+  },
+  {
+   "key": "kadian2020srcc",
+   "cat": "01-reality-gap",
+   "title": "Sim2Real Predictivity: Does Evaluation in Simulation Predict Real-World Performance?",
+   "authors": "A. Kadian et al.",
+   "year": 2020,
+   "venue": "RA-L",
+   "note": "Sim-vs-real correlation (SRCC) was 0.18 for Habitat PointGoal success; agents exploited collision sliding.",
+   "pdf": true,
+   "arxiv": "1912.06321"
+  },
+  {
+   "key": "tobin2017domain",
+   "cat": "02-domain-randomization",
+   "title": "Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World",
+   "authors": "J. Tobin et al.",
+   "year": 2017,
+   "venue": "IROS",
+   "note": "Visual randomization; real detector accurate to 1.5 cm from synthetic images only.",
+   "pdf": true,
+   "arxiv": "1703.06907"
+  },
+  {
+   "key": "sadeghi2017cad2rl",
+   "cat": "02-domain-randomization",
+   "title": "CAD2RL: Real Single-Image Flight without a Single Real Image",
+   "authors": "F. Sadeghi, S. Levine",
+   "year": 2017,
+   "venue": "RSS",
+   "note": "Randomized rendering for indoor drone flight.",
+   "pdf": false,
+   "arxiv": "1611.04201"
+  },
+  {
+   "key": "peng2018dynrand",
+   "cat": "02-domain-randomization",
+   "title": "Sim-to-Real Transfer of Robotic Control with Dynamics Randomization",
+   "authors": "X. B. Peng, M. Andrychowicz, W. Zaremba, P. Abbeel",
+   "year": 2018,
+   "venue": "ICRA",
+   "note": "Randomizing masses, friction, damping and latency with recurrent policies.",
+   "pdf": true,
+   "arxiv": "1710.06537"
+  },
+  {
+   "key": "openai2018dactyl",
+   "cat": "02-domain-randomization",
+   "title": "Learning Dexterous In-Hand Manipulation",
+   "authors": "OpenAI et al.",
+   "year": 2018,
+   "venue": "IJRR 2020",
+   "note": "Heavy physics and visual randomization; no demonstrations.",
+   "pdf": false,
+   "arxiv": "1808.00177"
+  },
+  {
+   "key": "openai2019rubik",
+   "cat": "02-domain-randomization",
+   "title": "Solving Rubik's Cube with a Robot Hand",
+   "authors": "OpenAI et al.",
+   "year": 2019,
+   "venue": "arXiv",
+   "note": "Automatic domain randomization (ADR) widens ranges as the policy succeeds.",
+   "pdf": true,
+   "arxiv": "1910.07113"
+  },
+  {
+   "key": "james2019rcan",
+   "cat": "02-domain-randomization",
+   "title": "Sim-to-Real via Sim-to-Sim: Data-efficient Robotic Grasping via Randomized-to-Canonical Adaptation Networks",
+   "authors": "S. James et al.",
+   "year": 2019,
+   "venue": "CVPR",
+   "note": "Translate randomized and real images into a canonical sim view.",
+   "pdf": false,
+   "arxiv": "1812.07252"
+  },
+  {
+   "key": "chebotar2019simopt",
+   "cat": "02-domain-randomization",
+   "title": "Closing the Sim-to-Real Loop: Adapting Simulation Randomization with Real World Experience",
+   "authors": "Y. Chebotar et al.",
+   "year": 2019,
+   "venue": "ICRA",
+   "note": "SimOpt: fit the randomization distribution to a few real rollouts.",
+   "pdf": false,
+   "arxiv": "1810.05687"
+  },
+  {
+   "key": "ramos2019bayessim",
+   "cat": "02-domain-randomization",
+   "title": "BayesSim: Adaptive Domain Randomization via Probabilistic Inference for Robotics Simulators",
+   "authors": "F. Ramos, R. C. Possas, D. Fox",
+   "year": 2019,
+   "venue": "RSS",
+   "note": "Likelihood-free posterior over simulator parameters.",
+   "pdf": false,
+   "arxiv": "1906.01728"
+  },
+  {
+   "key": "muratore2021bayrn",
+   "cat": "02-domain-randomization",
+   "title": "Data-efficient Domain Randomization with Bayesian Optimization",
+   "authors": "F. Muratore, C. Eilers, M. Gienger, J. Peters",
+   "year": 2021,
+   "venue": "RA-L",
+   "note": "BayRn: Bayesian optimization of randomization parameters on real returns.",
+   "pdf": false,
+   "arxiv": "2003.02471"
+  },
+  {
+   "key": "tiboni2023dropo",
+   "cat": "02-domain-randomization",
+   "title": "DROPO: Sim-to-Real Transfer with Offline Domain Randomization",
+   "authors": "G. Tiboni, K. Arndt, V. Kyrki",
+   "year": 2023,
+   "venue": "Robotics and Autonomous Systems",
+   "note": "Estimate randomization distributions from offline real data.",
+   "pdf": false,
+   "arxiv": "2201.08434"
+  },
+  {
+   "key": "tan2018agile",
+   "cat": "03-sysid-actuators",
+   "title": "Sim-to-Real: Learning Agile Locomotion For Quadruped Robots",
+   "authors": "J. Tan et al.",
+   "year": 2018,
+   "venue": "RSS",
+   "note": "System ID, an accurate actuator model and simulated latency, plus randomization (Minitaur).",
+   "pdf": true,
+   "arxiv": "1804.10332"
+  },
+  {
+   "key": "hwangbo2019agile",
+   "cat": "03-sysid-actuators",
+   "title": "Learning Agile and Dynamic Motor Skills for Legged Robots",
+   "authors": "J. Hwangbo et al.",
+   "year": 2019,
+   "venue": "Science Robotics",
+   "note": "Actuator network learned from real motor data, inserted into the simulator (ANYmal).",
+   "pdf": true,
+   "arxiv": "1901.08652"
+  },
+  {
+   "key": "xie2019cassie",
+   "cat": "03-sysid-actuators",
+   "title": "Iterative Reinforcement Learning Based Design of Dynamic Locomotion Skills for Cassie",
+   "authors": "Z. Xie et al.",
+   "year": 2019,
+   "venue": "arXiv",
+   "note": "Iterative sim-to-real design for a biped.",
+   "pdf": false,
+   "arxiv": "1903.09537"
+  },
+  {
+   "key": "pratt1995sea",
+   "cat": "03-sysid-actuators",
+   "title": "Series Elastic Actuators",
+   "authors": "G. A. Pratt, M. M. Williamson",
+   "year": 1995,
+   "venue": "IROS",
+   "note": "Compliant actuators: torque sensing and shock tolerance.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/IROS.1995.525827"
+  },
+  {
+   "key": "wensing2017cheetah",
+   "cat": "03-sysid-actuators",
+   "title": "Proprioceptive Actuator Design in the MIT Cheetah: Impact Mitigation and High-Bandwidth Physical Interaction for Dynamic Legged Robots",
+   "authors": "P. M. Wensing et al.",
+   "year": 2017,
+   "venue": "IEEE Transactions on Robotics",
+   "note": "Low-gear-ratio actuators that are easier to model and transparent to forces.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/TRO.2016.2640183"
+  },
+  {
+   "key": "he2025asap",
+   "cat": "03-sysid-actuators",
+   "title": "ASAP: Aligning Simulation and Real-World Physics for Learning Agile Humanoid Whole-Body Skills",
+   "authors": "T. He et al.",
+   "year": 2025,
+   "venue": "RSS",
+   "note": "Delta (residual) action model learned from real data, then fine-tuning in the corrected simulator.",
+   "pdf": true,
+   "arxiv": "2502.01143"
+  },
+  {
+   "key": "li2025rwm",
+   "cat": "03-sysid-actuators",
+   "title": "Robotic World Model: A Neural Network Simulator for Robust Policy Optimization in Robotics",
+   "authors": "C. Li, A. Krause, M. Hutter",
+   "year": 2025,
+   "venue": "arXiv",
+   "note": "Learned neural simulator for policy training.",
+   "pdf": false,
+   "arxiv": "2501.10100"
+  },
+  {
+   "key": "li2025rwmu",
+   "cat": "03-sysid-actuators",
+   "title": "Uncertainty-Aware Robotic World Model Makes Offline Model-Based Reinforcement Learning Work on Real Robots",
+   "authors": "C. Li, A. Krause, M. Hutter",
+   "year": 2025,
+   "venue": "arXiv",
+   "note": "Offline learned model with uncertainty penalties.",
+   "pdf": false,
+   "arxiv": "2504.16680"
+  },
+  {
+   "key": "yu2017uposi",
+   "cat": "04-adaptation-robustness",
+   "title": "Preparing for the Unknown: Learning a Universal Policy with Online System Identification",
+   "authors": "W. Yu, J. Tan, C. K. Liu, G. Turk",
+   "year": 2017,
+   "venue": "RSS",
+   "note": "Policy conditioned on parameters estimated online (UP-OSI).",
+   "pdf": false,
+   "arxiv": "1702.02453"
+  },
+  {
+   "key": "pinto2017rarl",
+   "cat": "04-adaptation-robustness",
+   "title": "Robust Adversarial Reinforcement Learning",
+   "authors": "L. Pinto, J. Davidson, R. Sukthankar, A. Gupta",
+   "year": 2017,
+   "venue": "ICML",
+   "note": "An adversary applies disturbance forces during training.",
+   "pdf": false,
+   "arxiv": "1703.02702"
+  },
+  {
+   "key": "lee2020terrain",
+   "cat": "04-adaptation-robustness",
+   "title": "Learning Quadrupedal Locomotion over Challenging Terrain",
+   "authors": "J. Lee et al.",
+   "year": 2020,
+   "venue": "Science Robotics",
+   "note": "Privileged teacher, proprioceptive-history student; zero-shot to mud, snow, water.",
+   "pdf": false,
+   "arxiv": "2010.11251"
+  },
+  {
+   "key": "kumar2021rma",
+   "cat": "04-adaptation-robustness",
+   "title": "RMA: Rapid Motor Adaptation for Legged Robots",
+   "authors": "A. Kumar, Z. Fu, D. Pathak, J. Malik",
+   "year": 2021,
+   "venue": "RSS",
+   "note": "Adaptation module estimates environment latent from history in fractions of a second.",
+   "pdf": true,
+   "arxiv": "2107.04034"
+  },
+  {
+   "key": "miki2022perceptive",
+   "cat": "04-adaptation-robustness",
+   "title": "Learning Robust Perceptive Locomotion for Quadrupedal Robots in the Wild",
+   "authors": "T. Miki et al.",
+   "year": 2022,
+   "venue": "Science Robotics",
+   "note": "Belief encoder learns when to trust perception.",
+   "pdf": false,
+   "arxiv": "2201.08117"
+  },
+  {
+   "key": "siekmann2021stairs",
+   "cat": "04-adaptation-robustness",
+   "title": "Blind Bipedal Stair Traversal via Sim-to-Real Reinforcement Learning",
+   "authors": "J. Siekmann et al.",
+   "year": 2021,
+   "venue": "RSS",
+   "note": "Terrain randomization for Cassie stairs without vision.",
+   "pdf": false,
+   "arxiv": "2105.08328"
+  },
+  {
+   "key": "stewart1996timestepping",
+   "cat": "05-contact-simulators",
+   "title": "An Implicit Time-Stepping Scheme for Rigid Body Dynamics with Inelastic Collisions and Coulomb Friction",
+   "authors": "D. E. Stewart, J. C. Trinkle",
+   "year": 1996,
+   "venue": "International Journal for Numerical Methods in Engineering",
+   "note": "Velocity-level complementarity (LCP) time stepping.",
+   "pdf": false,
+   "url": "https://doi.org/10.1002/(sici)1097-0207(19960815)39:15<2673::aid-nme972>3.0.co;2-i"
+  },
+  {
+   "key": "todorov2012mujoco",
+   "cat": "05-contact-simulators",
+   "title": "MuJoCo: A Physics Engine for Model-Based Control",
+   "authors": "E. Todorov, T. Erez, Y. Tassa",
+   "year": 2012,
+   "venue": "IROS",
+   "note": "Soft, convex contact designed for optimization and control.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/IROS.2012.6386109"
+  },
+  {
+   "key": "todorov2014convex",
+   "cat": "05-contact-simulators",
+   "title": "Convex and Analytically-Invertible Dynamics with Contacts and Constraints: Theory and Implementation in MuJoCo",
+   "authors": "E. Todorov",
+   "year": 2014,
+   "venue": "ICRA",
+   "note": "The convex contact formulation behind MuJoCo.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/ICRA.2014.6907751"
+  },
+  {
+   "key": "erez2015comparison",
+   "cat": "05-contact-simulators",
+   "title": "Simulation Tools for Model-Based Robotics: Comparison of Bullet, Havok, MuJoCo, ODE and PhysX",
+   "authors": "T. Erez, Y. Tassa, E. Todorov",
+   "year": 2015,
+   "venue": "ICRA",
+   "note": "Speed-accuracy trade-offs across engines.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/ICRA.2015.7139807"
+  },
+  {
+   "key": "fazeli2017limitations",
+   "cat": "05-contact-simulators",
+   "title": "Fundamental Limitations in Performance and Interpretability of Common Planar Rigid-Body Contact Models",
+   "authors": "N. Fazeli et al.",
+   "year": 2017,
+   "venue": "ISRR",
+   "note": "Six contact models identified on real impact data; limits of the rigid-body paradigm.",
+   "pdf": true,
+   "arxiv": "1710.04979"
+  },
+  {
+   "key": "hwangbo2018raisim",
+   "cat": "05-contact-simulators",
+   "title": "Per-Contact Iteration Method for Solving Contact Dynamics",
+   "authors": "J. Hwangbo, J. Lee, M. Hutter",
+   "year": 2018,
+   "venue": "RA-L",
+   "note": "Hard-contact solver behind RaiSim.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/LRA.2018.2792536"
+  },
+  {
+   "key": "horak2019contact",
+   "cat": "05-contact-simulators",
+   "title": "On the Similarities and Differences Among Contact Models in Robot Simulation",
+   "authors": "P. C. Horak, J. C. Trinkle",
+   "year": 2019,
+   "venue": "RA-L",
+   "note": "Compares complementarity, convex and penalty formulations.",
+   "pdf": false,
+   "url": "https://doi.org/10.1109/LRA.2019.2891085"
+  },
+  {
+   "key": "acosta2022impacts",
+   "cat": "05-contact-simulators",
+   "title": "Validating Robotics Simulators on Real-World Impacts",
+   "authors": "B. Acosta, W. Yang, M. Posa",
+   "year": 2022,
+   "venue": "RA-L",
+   "note": "Drake, MuJoCo, Bullet vs real data: inelastic impacts captured, elastic ones not.",
+   "pdf": true,
+   "arxiv": "2110.00541"
+  },
+  {
+   "key": "makoviychuk2021isaacgym",
+   "cat": "05-contact-simulators",
+   "title": "Isaac Gym: High Performance GPU-Based Physics Simulation for Robot Learning",
+   "authors": "V. Makoviychuk et al.",
+   "year": 2021,
+   "venue": "NeurIPS Datasets and Benchmarks",
+   "note": "GPU-parallel simulation.",
+   "pdf": false,
+   "arxiv": "2108.10470"
+  },
+  {
+   "key": "zakka2025playground",
+   "cat": "05-contact-simulators",
+   "title": "MuJoCo Playground",
+   "authors": "K. Zakka et al.",
+   "year": 2025,
+   "venue": "arXiv / RSS",
+   "note": "MJX-based training and zero-shot sim-to-real for quadrupeds, humanoids, hands and arms.",
+   "pdf": true,
+   "arxiv": "2502.08844"
+  },
+  {
+   "key": "rudin2022walk",
+   "cat": "06-achievements",
+   "title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning",
+   "authors": "N. Rudin, D. Hoeller, P. Reist, M. Hutter",
+   "year": 2022,
+   "venue": "CoRL",
+   "note": "Minutes of GPU training, transferred to ANYmal.",
+   "pdf": false,
+   "arxiv": "2109.11978"
+  },
+  {
+   "key": "radosavovic2024humanoid",
+   "cat": "06-achievements",
+   "title": "Real-World Humanoid Locomotion with Reinforcement Learning",
+   "authors": "I. Radosavovic et al.",
+   "year": 2024,
+   "venue": "Science Robotics",
+   "note": "Transformer policy, zero-shot humanoid walking outdoors.",
+   "pdf": false,
+   "arxiv": "2303.03381"
+  },
+  {
+   "key": "haarnoja2024soccer",
+   "cat": "06-achievements",
+   "title": "Learning Agile Soccer Skills for a Bipedal Robot with Deep Reinforcement Learning",
+   "authors": "T. Haarnoja et al.",
+   "year": 2024,
+   "venue": "Science Robotics",
+   "note": "Zero-shot transfer via high-frequency control, targeted dynamics randomization and perturbations; walked 181% faster than a scripted baseline.",
+   "pdf": false,
+   "arxiv": "2304.13653"
+  },
+  {
+   "key": "hoeller2024parkour",
+   "cat": "06-achievements",
+   "title": "ANYmal Parkour: Learning Agile Navigation for Quadrupedal Robots",
+   "authors": "D. Hoeller et al.",
+   "year": 2024,
+   "venue": "Science Robotics",
+   "note": "Perceptive parkour trained in simulation.",
+   "pdf": false,
+   "arxiv": "2306.14874"
+  },
+  {
+   "key": "kaufmann2023swift",
+   "cat": "06-achievements",
+   "title": "Champion-Level Drone Racing Using Deep Reinforcement Learning",
+   "authors": "E. Kaufmann et al.",
+   "year": 2023,
+   "venue": "Nature",
+   "note": "Residual models of perception and dynamics fitted from real data.",
+   "pdf": false,
+   "url": "https://doi.org/10.1038/s41586-023-06419-4"
+  },
+  {
+   "key": "song2023reaching",
+   "cat": "06-achievements",
+   "title": "Reaching the Limit in Autonomous Racing: Optimal Control versus Reinforcement Learning",
+   "authors": "Y. Song et al.",
+   "year": 2023,
+   "venue": "Science Robotics",
+   "note": "RL with domain randomization beats optimal control at the limit.",
+   "pdf": false,
+   "arxiv": "2310.10943"
+  },
+  {
+   "key": "chen2023visualdexterity",
+   "cat": "06-achievements",
+   "title": "Visual Dexterity: In-Hand Reorientation of Novel and Complex Object Shapes",
+   "authors": "T. Chen et al.",
+   "year": 2023,
+   "venue": "Science Robotics",
+   "note": "Depth-camera in-hand reorientation trained in simulation; open-source hardware under $5,000.",
+   "pdf": false,
+   "arxiv": "2211.11744"
+  },
+  {
+   "key": "lum2024dextrahg",
+   "cat": "06-achievements",
+   "title": "DextrAH-G: Pixels-to-Action Dexterous Arm-Hand Grasping with Geometric Fabrics",
+   "authors": "T. G. W. Lum et al.",
+   "year": 2024,
+   "venue": "CoRL",
+   "note": "Sim-trained arm-hand grasping from depth.",
+   "pdf": false,
+   "arxiv": "2407.02274"
+  },
+  {
+   "key": "luo2024serl",
+   "cat": "06-achievements",
+   "title": "SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning",
+   "authors": "J. Luo et al.",
+   "year": 2024,
+   "venue": "ICRA",
+   "note": "RL directly in the real world, the alternative to sim-to-real.",
+   "pdf": false,
+   "arxiv": "2401.16013"
+  },
+  {
+   "key": "torne2024rialto",
+   "cat": "07-real2sim-generative",
+   "title": "Reconciling Reality through Simulation: A Real-to-Sim-to-Real Approach for Robust Manipulation (RialTo)",
+   "authors": "M. Torne et al.",
+   "year": 2024,
+   "venue": "RSS",
+   "note": "Scan the scene into a digital twin, fine-tune with RL; over 67% robustness gain.",
+   "pdf": true,
+   "arxiv": "2403.03949"
+  },
+  {
+   "key": "qureshi2024splatsim",
+   "cat": "07-real2sim-generative",
+   "title": "SplatSim: Zero-Shot Sim2Real Transfer of RGB Manipulation Policies Using Gaussian Splatting",
+   "authors": "M. N. Qureshi et al.",
+   "year": 2024,
+   "venue": "arXiv / ICRA 2025",
+   "note": "Gaussian-splat rendering; 86.25% zero-shot vs 97.5% real-data policies.",
+   "pdf": true,
+   "arxiv": "2409.10161"
+  },
+  {
+   "key": "wang2024robogen",
+   "cat": "07-real2sim-generative",
+   "title": "RoboGen: Towards Unleashing Infinite Data for Automated Robot Learning via Generative Simulation",
+   "authors": "Y. Wang et al.",
+   "year": 2024,
+   "venue": "ICML",
+   "note": "Foundation models propose tasks, scenes and rewards in simulation.",
+   "pdf": false,
+   "arxiv": "2311.01455"
+  }
+ ]
+}

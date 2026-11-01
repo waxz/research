@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sim-to-Real Gap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500;75..125,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a two-column reference book. A sticky recipe index on wide screens, one 72ch reading column;
+   recipe headings carry a mono "R" number tab, worked examples and pitfalls are set apart by colour. */
+:root {
+  --bg: #f5f5f1; --paper: #ffffff; --ink: #1c1f1d; --muted: #5f6662; --rule: #d9ddd7;
+  --accent: #3d4fb0; --accent-soft: #e8ebf8; --warm: #a85d0c; --warm-soft: #f7ecdc; --code-bg: #eef0ec;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Literata", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111412; --paper: #181c1a; --ink: #e3e8e4; --muted: #98a19c; --rule: #2d3430;
+    --accent: #95a4f3; --accent-soft: #1f2545; --warm: #efa652; --warm-soft: #3a2a16; --code-bg: #202623;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111412; --paper: #181c1a; --ink: #e3e8e4; --muted: #98a19c; --rule: #2d3430;
+  --accent: #95a4f3; --accent-soft: #1f2545; --warm: #efa652; --warm-soft: #3a2a16; --code-bg: #202623;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.62;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px; }
+.layout { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; }
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; max-height: 100vh; overflow-y: auto; padding: 32px 0 24px; font-family: var(--mono); font-size: .74rem; line-height: 1.45; }
+nav.toc .p { color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin: 14px 0 4px; font-size: .68rem; }
+nav.toc a { display: block; color: var(--ink); text-decoration: none; padding: 2px 6px; border-radius: 3px; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+main { min-width: 0; max-width: 74ch; padding-top: 36px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } nav.toc { display: none; } main { margin: 0 auto; } }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; }
+main > h1:first-child { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; font-stretch: 85%; margin: 0 0 .4rem; }
+main h1 { font-size: 1.9rem; font-weight: 800; font-stretch: 88%; margin: 3.4rem 0 .6rem; padding-top: .8rem; border-top: 3px solid var(--ink); }
+main h2 { font-size: 1.35rem; font-weight: 800; font-stretch: 92%; margin: 2.6rem 0 .5rem; scroll-margin-top: 12px; }
+main h2 .rno { font-family: var(--mono); font-size: .8rem; font-weight: 500; color: var(--paper); background: var(--accent); padding: 2px 7px; border-radius: 3px; margin-right: 10px; vertical-align: 3px; }
+main h3 { font-size: 1.05rem; }
+p { margin: .7rem 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+strong { font-weight: 600; }
+main > p:nth-of-type(1) em { color: var(--muted); }
+ul, ol { padding-left: 1.4em; } li { margin: .25rem 0; }
+li > p { margin: .3rem 0; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+code { font-family: var(--mono); font-size: .86em; background: var(--code-bg); padding: 1px 4px; border-radius: 3px; }
+pre { background: var(--code-bg); padding: 12px 14px; border-radius: 4px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+.tbl { overflow-x: auto; margin: 1rem 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; line-height: 1.42; }
+th, td { text-align: left; padding: 7px 11px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+p.we { background: var(--warm-soft); border-left: 3px solid var(--warm); padding: 8px 14px; border-radius: 0 4px 4px 0; }
+p.pit { color: var(--muted); font-size: .94rem; }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 4px 0; }
+.mermaid { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 12px; overflow-x: auto; text-align: center; }
+.loading { color: var(--muted); font-family: var(--mono); font-size: .85rem; }
+</style>
+<script>
+  window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'local' }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Recipes"></nav>
+  <main id="book"><p class="loading">Rendering the cookbook…</p></main>
+</div>
+<script type="text/markdown" id="src">
+# Sim-to-real: the reality gap in reinforcement learning
+
+*An analysis of why policies trained in simulation fail on real robots, and of what works to fix them: system identification, actuator and contact modelling, domain randomization, adaptation, residual and learned models, real-to-sim reconstruction. It covers the latest achievements and trends, in the same format as the other collections in this repository. Equations are derived in the companion [cookbook](cookbook/COOKBOOK.md) (recipes G1–G16), and every source is in the [catalog](CATALOG.md). Quoted results come from the papers' own abstracts, checked on 1 Nov 2026.*
+
+## Summary
+
+- **The gap is mostly in the parts simulators simplify most: actuators and contact.**
+  - Simulators often treat motors as ideal torque sources with no delay. Real actuators have torque–speed limits, friction, backlash and latency. In this collection's examples, a 10 ms delay turns a stable joint loop unstable, and 1 Nm of Coulomb friction leaves a 0.02 rad dead band (G1–G3).
+  - Contact is modelled with soft penalties, complementarity problems or convex approximations. All are fitted guesses: on real impact data, simulators capture inelastic impacts but fail on elastic ones (Acosta et al.), and rigid-body contact models have fundamental accuracy limits (Fazeli et al.).
+- **Successful systems combine three moves:**
+  1. **Make the simulator more real**: system identification, learned actuator models (Hwangbo et al. 2019), latency simulation (Tan et al. 2018), residual corrections learned from real data (Swift 2023, ASAP 2025).
+  2. **Make the policy robust**: domain randomization of visuals (Tobin et al. 2017) and dynamics (Peng et al. 2018), automatic randomization (OpenAI 2019), perturbations.
+  3. **Make the policy adaptive**: privileged teacher → history-based student (Lee et al. 2020), rapid motor adaptation (RMA 2021), online system identification.
+- **Randomization has a cost.** Ranges that are too wide make the policy conservative; ranges that are too narrow leave the real robot outside them (G10–G11). The trend since 2019 has been to *fit* the randomization to real data (SimOpt, BayesSim, BayRn, DROPO) or to grow it automatically (ADR), rather than guess it.
+- **Latest achievements (2023–2026):**
+  - zero-shot humanoid soccer (DeepMind, 2024): walked 181% faster than a scripted baseline;
+  - champion-level drone racing (Swift, 2023);
+  - humanoid whole-body tracking (BeyondMimic, SONIC, SuperMimic);
+  - ANYmal parkour;
+  - dexterous in-hand reorientation from a single depth camera.
+- **Trends.**
+  - GPU-parallel simulators make training take minutes to hours (Isaac Gym/Lab, MuJoCo Playground/Warp, Genesis).
+  - Delta-action and learned world models correct the simulator from real data.
+  - Real-to-sim pipelines build digital twins and photorealistic Gaussian-splat scenes (RialTo: over 67% robustness gain; SplatSim: 86% zero-shot success vs 97.5% with real data).
+  - Foundation models generate tasks and scenes (RoboGen).
+  - Researchers test sim-to-sim first, measuring whether simulation predicts reality at all: the sim-vs-real correlation was only 0.18 in Habitat's 2019 navigation challenge setup.
+
+---
+
+## 1. What the gap is
+
+A policy $\pi$ is trained to maximize return under simulated dynamics $P_{\text{sim}}(s'\mid s,a;\xi)$ and observations $O_{\text{sim}}$. It is deployed under $P_{\text{real}}$ and $O_{\text{real}}$. The gap is everything that differs. RL makes it worse, because an optimizer **exploits** any simulator flaw that pays: sliding along walls in navigation (Kadian et al.), contact artefacts in locomotion and manipulation.
+
+| Source | What simulators usually assume | What reality does | Typical effect | Cookbook |
+|---|---|---|---|---|
+| **Actuator torque limits** | Constant torque limit, or none | Available torque falls with speed (back-EMF); current and thermal limits | Fast motions fail or saturate | G1 |
+| **Latency** | Zero or one-step delay | Sensor, compute, bus and driver delays of ~5–40 ms | Overshoot, oscillation, instability | G2 |
+| **Friction, backlash, compliance** | Ideal joints | Coulomb and viscous friction, stiction, gear backlash, belt and harmonic-drive compliance | Dead bands, limit cycles, poor small motions | G3 |
+| **Low-level control** | Exact PD at sim rate | PD loop in the motor driver at its own rate and gains | Different effective stiffness and damping | G4 |
+| **Mass and inertia** | CAD values | Cables, batteries, payloads, manufacturing variation | Biased dynamics | G8 |
+| **Contact** | Rigid or soft contact with one friction coefficient | Compliant feet and ground, anisotropic friction, impacts, deformable terrain | Slipping, bouncing, wrong impact response | G5–G7 |
+| **Sensors** | Noise-free or Gaussian | Bias, drift, dropouts, rolling shutter, exposure, reflections | State-estimation errors | SLAM cookbook S2, S18 |
+| **Rendering** | Synthetic textures and lighting | Real lighting, materials, clutter | Vision policies fail | (Tobin 2017, SplatSim) |
+| **Numerics** | Large time step, few solver iterations | Continuous physics | Penetration, energy gain, jitter | G16 |
+| **Environment** | Flat ground, known objects | Terrain, unknown objects, people | Out-of-distribution states | G10–G12 |
+
+## 2. Contact: how simulators model it, and where it breaks
+
+| Formulation | Idea | Pros | Cons | Used by |
+|---|---|---|---|---|
+| **Penalty (spring-damper)** | Force $f_n=k\,\delta+c\,\dot\delta$ for penetration $\delta$ | Simple, smooth | Stiff: needs small time steps; tuning $k,c$ | Many game engines, early simulators |
+| **Complementarity (LCP/NCP)** | $0\le\lambda_n\perp\phi\ge0$, friction cone, solved per time step (Stewart & Trinkle 1996) | Hard contact, physically principled | Non-convex with exact friction; solver cost; non-unique solutions | ODE, Bullet, Drake (variants) |
+| **Convex soft contact** | Relax complementarity into a convex optimization (Todorov 2014) | Unique, fast, smooth, invertible; good for optimization | Small "soft" penetration and forces at a distance; parameters such as `solref` and `solimp` to tune | MuJoCo, MJX, MuJoCo Warp |
+| **Per-contact iteration** | Solve each contact exactly in turn (Hwangbo et al. 2018) | Hard contact, accurate friction cones | Iterative convergence | RaiSim |
+| **GPU solvers** | Iterative Gauss–Seidel-type solvers (projected or temporal Gauss–Seidel) for massive parallelism | Thousands of environments per GPU | Accuracy vs speed trade-offs | Isaac Gym/Sim/Lab (PhysX) |
+
+**Evidence that contact is the weak point.**
+- **Fazeli et al. (2017)** identified six common planar rigid-body contact models on real impact data. They found task-specific upper bounds on accuracy, and parameters that are hard to interpret physically.
+- **Acosta et al. (2022)** compared Drake, MuJoCo and Bullet against real data. For a cube tossed on a table they "capture inelastic impacts well while failing to capture elastic impacts". For a Cassie biped landing from a jump, accuracy is limited by "numerous model differences between the real robot and the simulators".
+- **Horak & Trinkle (2019)** show that different formulations make different physical assumptions, so the same scene behaves differently across simulators.
+- **Friction cones** are often linearized into pyramids, which under- or over-estimate tangential force by up to about 30–40% in some directions (G6).
+
+## 3. Actuators: the most underestimated part of the gap
+
+| Model level | What it captures | Used in |
+|---|---|---|
+| Ideal torque source | Nothing beyond a limit | Most default environments |
+| PD + torque limit + delay | Driver gains, saturation, latency | legged_gym-style setups; Tan et al. 2018 (latency) |
+| DC motor + gearbox model | Torque–speed curve ($\tau_{\max}$ falls with speed), friction, efficiency, backlash | Tan et al. 2018 (actuator model for Minitaur) |
+| **Learned actuator network** | Everything above, plus unmodelled effects, learned from real (command, error, velocity) histories | Hwangbo et al. 2019 (ANYmal series-elastic actuators) |
+| **Residual / delta action** | Whatever the simulator gets wrong, at the level of actions | ASAP 2025 (Unitree G1) |
+| Hardware designed for transfer | Low-gear-ratio, high-bandwidth "proprioceptive" actuators are transparent and easier to model | MIT Cheetah (Wensing et al. 2017) |
+
+In the cookbook's example (G4), a "torque = command" model has 3.8 Nm RMS error on held-out data from an actuator with delay, saturation and friction. A model learned from command history reduces that to 1.3 Nm. This is the core idea of Hwangbo et al.'s actuator network.
+
+## 4. Strategy families compared
+
+| Family | Idea | Examples | Needs | Strengths | Costs and risks |
+|---|---|---|---|---|---|
+| **System identification** | Fit simulator parameters (mass, friction, gains, delays) to real data | Classical least-squares or Bayesian ID (G8–G9); Tan 2018 | Exciting experiments on the robot | Physically meaningful; improves everything downstream | Only fits what the model can express; poor excitation gives nonsense (G8) |
+| **Learned actuator / residual dynamics** | Learn the part physics gets wrong | Actuator net (Hwangbo 2019); Swift's residual models; ASAP delta action (G14); RWM | Real logs | Captures unmodelled effects; targeted | Extrapolation outside the data; another model to maintain |
+| **Domain randomization** | Train over a distribution $p(\xi)$ so reality looks like one more sample | Visual (Tobin 2017, CAD2RL), dynamics (Peng 2018), Dactyl | Sensible ranges | Simple; no real data required | Too wide → conservative; too narrow → miss (G10–G11) |
+| **Adaptive / automatic randomization** | Learn or grow $p(\xi)$ | ADR (OpenAI 2019, G12); SimOpt; BayesSim; BayRn; DROPO | Success signals or a few real rollouts | Ranges fitted to reality | More machinery; still bounded by the simulator's expressiveness |
+| **Adaptation from history** | Infer the environment from recent observations and actions | UP-OSI (Yu 2017); teacher–student (Lee 2020); RMA (Kumar 2021); transformer in-context adaptation (Radosavovic 2024) | Randomized training | Adapts online in fractions of a second | Can only adapt within the training distribution |
+| **Robust / adversarial training** | Optimize against perturbations or an adversary | RARL (Pinto 2017); push perturbations (soccer 2024) | Perturbation models | Robust to forces and disturbances | Can be over-conservative |
+| **Real-world fine-tuning** | Finish learning on hardware | SERL (Luo 2024) | Safe resets, reward measurement | Closes residual gap directly | Time, wear, safety |
+| **Real-to-sim** | Reconstruct the real scene as a simulator | RialTo (digital twins, over 67% robustness gain); SplatSim (Gaussian splats, 86.25% zero-shot) | Scanning, calibration | Matches visuals and geometry | Physics of scanned objects still uncertain |
+| **Design around the gap** | Choose control rates, observations and hardware that transfer | High-frequency control (soccer 2024); compact observations (Tan 2018); proprioceptive actuators | Engineering judgement | Prevents problems rather than patching them | Requires hardware and system co-design |
+
+## 5. Close the gap, or design around it?
+
+The RSS 2020 workshop (Höfer et al.) framed the field's central debate: make the simulator match reality, or make policies that don't care. The evidence since says **both, in a specific order**:
+1. **Fix systematic errors first**: latency, actuator limits, mass, PD gains. Randomization can't cover an error the policy never sees in training.
+2. **Randomize the residual uncertainty**, with ranges fitted to real measurements (G9) or grown automatically (G12).
+3. **Give the policy memory or an adaptation module**, so it can identify where in the range reality lies (G13).
+4. **Correct what remains** with residual or delta models learned from real data (G14), and fine-tune if it's safe to.
+
+DeepMind's soccer study (Haarnoja et al. 2024) attributes its zero-shot transfer to exactly this kind of combination: "sufficiently high-frequency control, targeted dynamics randomization, and perturbations during training".
+
+## 6. Measuring the gap
+
+- **Sim-vs-real correlation (SRCC).** Rank several policies in simulation and in reality, then correlate the two. Kadian et al. found 0.18 for Habitat success in the CVPR19 challenge setup, because agents exploited collision sliding. Tuning the simulator raised it substantially (G15).
+- **Sim-to-sim transfer as a proxy.** Train in one simulator and test in another before touching hardware. ASAP evaluates IsaacGym → IsaacSim, IsaacGym → Genesis and IsaacGym → the real G1.
+- **Trajectory replay.** Replay real command logs in simulation and compare joint trajectories, contact timing and foot slip. This is the basis of system identification and residual models (G8, G14).
+- **Report the rate,** not just a video: success over N trials, falls, and the conditions excluded.
+
+## 7. Which approach for which task
+
+Fit: ●●● strong, ●● viable, ● niche, ○ rarely used. Columns: System ID / actuator model · Domain randomization · Adaptation · Residual / real data · Real-to-sim.
+
+| Task | Main gap | Best combination | Fit | Evidence |
+|---|---|---|---|---|
+| Quadruped locomotion | Actuators, terrain, latency | Actuator model or ID + dynamics/terrain randomization + teacher–student or adaptation | ●●● ●●● ●●● ● ● | Hwangbo 2019; Lee 2020; RMA 2021; Rudin 2022 |
+| Humanoid locomotion and whole-body skills | Actuators, contact, balance | ID + targeted randomization + history policies; delta-action correction for agile skills | ●●● ●●● ●●● ●●● ● | Radosavovic 2024; soccer 2024; ASAP 2025; BeyondMimic |
+| Dexterous in-hand manipulation | Contact-rich, many DoF, object properties | Heavy dynamics + visual randomization, ADR | ●● ●●● ●●● ● ● | Dactyl 2018; Rubik's cube 2019; Visual Dexterity 2023 |
+| Vision-based manipulation | Rendering and visual distribution | Visual randomization, canonical-view translation, Gaussian-splat or digital-twin scenes, real fine-tuning | ● ●●● ● ●● ●●● | Tobin 2017; RCAN 2019; RialTo 2024; SplatSim 2024 |
+| Drone racing and agile flight | Aerodynamics, perception latency | Residual dynamics and perception models from real data + randomization | ●● ●● ● ●●● ○ | Swift 2023; Song 2023 |
+| Indoor navigation (embodied AI) | Collision and rendering exploits | Simulator tuning against real scans; SRCC checks | ●● ●● ● ● ●●● | Kadian et al. 2020 |
+| Contact-rich assembly | Friction and tolerances | Identified contact parameters + randomization + real fine-tuning | ●● ●● ●● ●●● ● | SimOpt 2019; SERL 2024 |
+
+## 8. Breakthroughs, year by year
+
+| Year | Breakthrough | Problem it solved | Evidence |
+|---|---|---|---|
+| 1995 | "Noise and the reality gap" | Naming the problem; adding noise to simulation | Jakobi, Husbands & Harvey |
+| 1996 | Implicit time-stepping with complementarity | Stable rigid-body contact simulation | Stewart & Trinkle |
+| 2012 | MuJoCo | Fast, smooth contact for control and learning | Todorov, Erez & Tassa |
+| 2013 | Transferability approach | Optimizing for behaviours that transfer | Koos, Mouret & Doncieux |
+| 2017 | Domain randomization (visual); CAD2RL; RARL; UP-OSI | Sim-only vision; robustness to adversaries; online parameter inference | Tobin: 1.5 cm detector from synthetic images |
+| 2018 | Dynamics randomization; Minitaur actuator model + latency; Dactyl | Transfer of control, not just perception | Peng et al.; Tan et al.; OpenAI |
+| 2019 | Actuator networks (ANYmal); ADR (Rubik's cube); SimOpt; BayesSim; RCAN | Learned actuator models; automatic and data-fitted randomization | Science Robotics; OpenAI; Chebotar; Ramos |
+| 2020–21 | Teacher–student terrain locomotion; RMA; legged_gym; Isaac Gym; SRCC | Zero-shot rough terrain; online adaptation; minutes of training; measuring predictivity | Lee 2020; Kumar 2021; Rudin 2022; Kadian 2020 |
+| 2022 | Perceptive locomotion in the wild; DROPO; simulator impact validation | Trusting perception selectively; offline DR fitting; evidence on contact accuracy | Miki 2022; Tiboni; Acosta et al. |
+| 2023 | Swift drone racing; Visual Dexterity; humanoid RL locomotion | Residual models from real data; vision-based dexterity; humanoid sim-to-real | Kaufmann (Nature); Chen; Radosavovic |
+| 2024 | Humanoid soccer; ANYmal parkour; RialTo; SplatSim; SERL; DextrAH-G | Agile zero-shot humanoid skills; real-to-sim; photorealistic sim; real-world RL suite | 181% faster walking; over 67% robustness; 86.25% zero-shot |
+| 2025 | ASAP delta-action; MuJoCo Playground; robotic world models | Correcting simulators from real data; minutes-to-hours GPU training for many robots; neural simulators | He et al.; Zakka et al.; Li et al. |
+| 2026 | Humanoid whole-body trackers at scale (BeyondMimic, SONIC, SuperMimic) | One policy for whole motion libraries deployed on hardware | See the robot-learning collection |
+
+## 9. Latest trends
+
+1. **Simulation at GPU scale.** Isaac Gym/Lab, MJX and MuJoCo Playground, MuJoCo Warp and Genesis make randomizing over thousands of environments cheap. MuJoCo Playground reports training "in minutes on a single GPU" with zero-shot transfer for quadrupeds, humanoids, hands and arms.
+2. **From guessing ranges to fitting them.** Bayesian and likelihood-free inference of simulator parameters (BayesSim, DROPO, BayRn) and ADR replace hand-chosen uniform ranges.
+3. **Learned corrections on top of physics.** Actuator networks, residual dynamics (Swift), delta actions (ASAP) and full neural simulators (RWM, and the world model in SuperMimic) learn from real or simulator logs.
+4. **Real-to-sim reconstruction.** Phone or scanner captures become digital twins (RialTo) or Gaussian-splat renderers (SplatSim), shrinking the visual gap for camera policies.
+5. **Generative simulation.** Foundation models propose tasks, assets and rewards (RoboGen), scaling the diversity of training environments.
+6. **Adaptation by memory.** Transformer and recurrent policies adapt in context (Radosavovic 2024) instead of through explicit parameter estimates.
+7. **Evaluation discipline.** Sim-to-sim checks, sim-vs-real correlation and trajectory replay are becoming standard before hardware runs.
+
+## 10. A practical checklist
+
+1. **Measure** latency end to end, PD gains, torque limits and the torque–speed curve. Model them, or randomize around measured values.
+2. **Identify** masses, inertias, friction and armature with exciting trajectories (G8). Check the regressor's conditioning.
+3. **Replay** real logs in simulation and compare; fix systematic errors before adding randomization.
+4. **Randomize** what remains, with ranges from measurements (G9). Add sensor noise, delays and push perturbations.
+5. **Give the policy history** (or train a teacher–student pair) so it can adapt within the range (G13).
+6. **Test sim-to-sim**, then on hardware with a safety harness; track success rates and SRCC across policy versions.
+7. **Close the residual** with delta-action or residual models from real data (G14), or fine-tune on hardware if safe.
+
+## 11. Quick start: reading and tools
+
+| Resource | Access | Start with | Covers |
+|---|---|---|---|
+| [Sim-to-real survey](papers/00-surveys/zhao2020survey.pdf), Zhao et al. 2020 | Local PDF | The whole survey | Families of methods |
+| [Robot Learning from Randomized Simulations](papers/00-surveys/muratore2022review.pdf), Muratore et al. 2022 | Local PDF | Taxonomy of randomization | G9–G12 |
+| [Sim-to-real in the foundation-model era](papers/00-surveys/da2025survey.pdf), Da et al. 2025 | Local PDF | Trends sections | Section 9 |
+| [Validating Robotics Simulators on Real-World Impacts](papers/05-contact-simulators/acosta2022impacts.pdf) and [Fazeli et al.](papers/05-contact-simulators/fazeli2017limitations.pdf) | Local PDFs | Experimental sections | G5–G7 |
+| [MuJoCo documentation](https://mujoco.readthedocs.io/) | Free | Computation chapter (contact model, `solref`/`solimp`) | G5, G6, G16 |
+| [MuJoCo Playground](https://playground.mujoco.org/) | Free, runnable | Locomotion and manipulation environments with randomization | G10–G12 |
+| [Isaac Lab](https://isaac-sim.github.io/IsaacLab/) | Free | Actuator models, domain randomization, sim-to-real guides | G1–G4, G10 |
+| [legged_gym](https://github.com/leggedrobotics/legged_gym) | Free | Terrain curriculum, randomization, actuator net support | G10–G13 |
+
+Background maths: Kalman filters and system identification in the [control cookbook](../control-estimation-theory/cookbook/COOKBOOK.md) (C12, E1, E3); contact dynamics in the [Control-to-Learning cookbook](../robot-learning-control/cookbook/COOKBOOK.md) (R10, R33).
+
+## 12. Sources and caveats
+
+- All 55 entries in [CATALOG.md](CATALOG.md) have arXiv IDs (checked against the arXiv API) or DOIs (checked through Crossref). 16 open-access PDFs are stored locally, and online PDF links are listed for every arXiv entry.
+- Quoted results are the authors' own, from their abstracts: soccer 181%, RialTo over 67%, SplatSim 86.25%, SRCC 0.18.
+- **The cookbook's numbers are illustrative,** not measurements of any specific robot: the latency stability threshold, dead bands, actuator-model errors and randomization trade-offs.
+- **Contact formulation descriptions summarize the cited papers and documentation.** Engine internals change between versions.
+
+</script>
+<script>
+(function () {
+  var src = document.getElementById('src').textContent;
+  var store = [];
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  // protect math from the Markdown parser
+  src = src.replace(/\$\$([\s\S]+?)\$\$/g, function (_, m) { store.push('\\[' + esc(m) + '\\]'); return '@@M' + (store.length - 1) + '@@'; });
+  src = src.replace(/\$([^\n$]+?)\$/g, function (_, m) { store.push('\\(' + esc(m) + '\\)'); return '@@M' + (store.length - 1) + '@@'; });
+  var html = marked.parse(src, { gfm: true });
+  html = html.replace(/@@M(\d+)@@/g, function (_, i) { return store[+i]; });
+  var book = document.getElementById('book');
+  book.innerHTML = html;
+  function slug(t) { return t.trim().toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-'); }
+  var toc = document.getElementById('toc');
+  book.querySelectorAll('h1, h2').forEach(function (h) {
+    h.id = slug(h.textContent);
+    if (h.tagName === 'H1' && h !== book.firstElementChild) {
+      var p = document.createElement('div'); p.className = 'p'; p.textContent = h.textContent; toc.appendChild(p);
+    }
+    if (h.tagName === 'H2') {
+      var m = h.textContent.match(/^([A-Z]\d+)\.\s*(.*)$/);
+      if (m) { h.innerHTML = '<span class="rno">' + m[1] + '</span>' + h.innerHTML.replace(/^[A-Z]\d+\.\s*/, ''); }
+      var a = document.createElement('a'); a.href = '#' + h.id; a.textContent = m ? m[1] + ' · ' + m[2] : h.textContent; toc.appendChild(a);
+    }
+  });
+  book.querySelectorAll('table').forEach(function (t) { var w = document.createElement('div'); w.className = 'tbl'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
+  book.querySelectorAll('p').forEach(function (p) {
+    var s = p.firstElementChild;
+    if (s && s.tagName === 'STRONG' && p.firstChild === s) {
+      if (/^Worked example/.test(s.textContent)) p.className = 'we';
+      if (/^Pitfalls/.test(s.textContent)) p.className = 'pit';
+    }
+  });
+  book.querySelectorAll('pre code.language-mermaid').forEach(function (c) { var d = document.createElement('div'); d.className = 'mermaid'; d.textContent = c.textContent; c.parentNode.replaceWith(d); });
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark' || (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  try { mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'neutral' }); mermaid.run({ querySelector: '.mermaid' }); } catch (e) {}
+  if (location.hash) { var t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); }
+  MathJax.startup.promise.then(function () { return MathJax.typesetPromise([book]); });
+})();
+</script>
+</body>
+</html>
