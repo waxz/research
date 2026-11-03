@@ -1,18 +1,19 @@
 # Paper catalog
 
-55 entries in 8 categories. **42** have a PDF available online (PDF ↗) and **16** also have a local copy in this repository (PDF).
+72 entries in 9 categories. **59** have a PDF available online (PDF ↗) and **19** also have a local copy in this repository (PDF).
 Generated from `catalog.json` by `tools/build_catalog.py`. Do not edit by hand.
 
 | Category | Entries | PDF online | Local PDF |
 |---|---:|---:|---:|
-| [Surveys and reviews](#00-surveys) | 6 | 4 | 3 |
+| [Surveys and reviews](#00-surveys) | 7 | 5 | 3 |
 | [The reality gap: foundations and measurement](#01-reality-gap) | 3 | 1 | 1 |
-| [Domain randomization and adaptive randomization](#02-domain-randomization) | 10 | 10 | 3 |
-| [System identification and actuator modelling](#03-sysid-actuators) | 8 | 6 | 3 |
+| [Domain randomization and adaptive randomization](#02-domain-randomization) | 11 | 11 | 3 |
+| [System identification and actuator modelling](#03-sysid-actuators) | 15 | 13 | 5 |
 | [Adaptation and robust policies](#04-adaptation-robustness) | 6 | 6 | 1 |
-| [Contact models and simulators](#05-contact-simulators) | 10 | 4 | 3 |
+| [Contact models and simulators](#05-contact-simulators) | 16 | 10 | 3 |
 | [Landmark sim-to-real results](#06-achievements) | 9 | 8 | 0 |
-| [Real-to-sim, photorealistic and generative simulation](#07-real2sim-generative) | 3 | 3 | 2 |
+| [Real-to-sim, photorealistic and generative simulation](#07-real2sim-generative) | 4 | 4 | 3 |
+| [Real-robot datasets for modelling and benchmarking](#08-datasets-benchmarks) | 1 | 1 | 0 |
 
 <a id="00-surveys"></a>
 ## Surveys and reviews
@@ -21,6 +22,7 @@ Overviews of sim-to-real transfer, randomized simulation and the reality gap.
 
 | Year | Paper | Venue | Links | Why it is here |
 |---:|---|---|---|---|
+| 2020 | **The frontier of simulation-based inference**<br>K. Cranmer, J. Brehmer, G. Louppe | PNAS | [PDF ↗](https://arxiv.org/pdf/1911.01429) · [arXiv](https://arxiv.org/abs/1911.01429) | Review of likelihood-free inference: the toolbox behind BayesSim and neural posterior calibration. |
 | 2020 | **Perspectives on Sim2Real Transfer for Robotics: A Summary of the R:SS 2020 Workshop**<br>S. Hofer et al. | RSS workshop summary | [PDF ↗](https://arxiv.org/pdf/2012.03806) · [arXiv](https://arxiv.org/abs/2012.03806) | Debate on whether to close the gap or design around it. |
 | 2020 | **Sim-to-Real Transfer in Deep Reinforcement Learning for Robotics: a Survey**<br>W. Zhao, J. P. Queralta, T. Westerlund | IEEE SSCI | [PDF](papers/00-surveys/zhao2020survey.pdf) · [PDF ↗](https://arxiv.org/pdf/2009.13303) · [arXiv](https://arxiv.org/abs/2009.13303) | Domain randomization, adaptation, imitation, meta-learning for transfer. |
 | 2021 | **Sim2Real in Robotics and Automation: Applications and Challenges**<br>S. Hofer et al. | IEEE Transactions on Automation Science and Engineering | [link](https://doi.org/10.1109/TASE.2021.3064065) | Expert perspectives on where sim-to-real works and fails. |
@@ -56,6 +58,7 @@ Visual and dynamics randomization, automatic and data-driven randomization range
 | 2019 | **BayesSim: Adaptive Domain Randomization via Probabilistic Inference for Robotics Simulators**<br>F. Ramos, R. C. Possas, D. Fox | RSS | [PDF ↗](https://arxiv.org/pdf/1906.01728) · [arXiv](https://arxiv.org/abs/1906.01728) | Likelihood-free posterior over simulator parameters. |
 | 2021 | **Data-efficient Domain Randomization with Bayesian Optimization**<br>F. Muratore, C. Eilers, M. Gienger, J. Peters | RA-L | [PDF ↗](https://arxiv.org/pdf/2003.02471) · [arXiv](https://arxiv.org/abs/2003.02471) | BayRn: Bayesian optimization of randomization parameters on real returns. |
 | 2023 | **DROPO: Sim-to-Real Transfer with Offline Domain Randomization**<br>G. Tiboni, K. Arndt, V. Kyrki | Robotics and Autonomous Systems | [PDF ↗](https://arxiv.org/pdf/2201.08434) · [arXiv](https://arxiv.org/abs/2201.08434) | Estimate randomization distributions from offline real data. |
+| 2025 | **Neural Fidelity Calibration for Informative Sim-to-Real Adaptation**<br>Y. Yu, L. Liu | arXiv | [PDF ↗](https://arxiv.org/pdf/2504.08604) · [arXiv](https://arxiv.org/abs/2504.08604) | Diffusion posterior over simulator parameters plus residual dynamics and residual terrain; anomaly-triggered fine-tuning on a Jackal. Reviewed in reports/01. Linked, not stored (30 MB). |
 
 <a id="03-sysid-actuators"></a>
 ## System identification and actuator modelling
@@ -69,9 +72,16 @@ Identifying simulator parameters, actuator networks, latency, residual and learn
 | 2018 | **Sim-to-Real: Learning Agile Locomotion For Quadruped Robots**<br>J. Tan et al. | RSS | [PDF](papers/03-sysid-actuators/tan2018agile.pdf) · [PDF ↗](https://arxiv.org/pdf/1804.10332) · [arXiv](https://arxiv.org/abs/1804.10332) | System ID, an accurate actuator model and simulated latency, plus randomization (Minitaur). |
 | 2019 | **Learning Agile and Dynamic Motor Skills for Legged Robots**<br>J. Hwangbo et al. | Science Robotics | [PDF](papers/03-sysid-actuators/hwangbo2019agile.pdf) · [PDF ↗](https://arxiv.org/pdf/1901.08652) · [arXiv](https://arxiv.org/abs/1901.08652) | Actuator network learned from real motor data, inserted into the simulator (ANYmal). |
 | 2019 | **Iterative Reinforcement Learning Based Design of Dynamic Locomotion Skills for Cassie**<br>Z. Xie et al. | arXiv | [PDF ↗](https://arxiv.org/pdf/1903.09537) · [arXiv](https://arxiv.org/abs/1903.09537) | Iterative sim-to-real design for a biped. |
+| 2021 | **NeuralSim: Augmenting Differentiable Simulators with Neural Networks**<br>E. Heiden, D. Millard, E. Coumans, Y. Sheng, G. S. Sukhatme | ICRA | [PDF ↗](https://arxiv.org/pdf/2011.04217) · [arXiv](https://arxiv.org/abs/2011.04217) | Hybrid differentiable simulator: neural networks inserted where analytical models fall short, including frictional contact. |
+| 2022 | **Probabilistic Inference of Simulation Parameters via Parallel Differentiable Simulation**<br>E. Heiden, C. E. Denniston, D. Millard, F. Ramos, G. S. Sukhatme | ICRA | [PDF ↗](https://arxiv.org/pdf/2109.08815) · [arXiv](https://arxiv.org/abs/2109.08815) | Posterior over simulator parameters with Stein variational gradient descent and a multiple-shooting likelihood. |
+| 2024 | **Identifying Terrain Physical Parameters from Vision: Towards Physical-Parameter-Aware Locomotion and Navigation**<br>J. Chen, J. Frey, R. Zhou, T. Miki, G. Martius, M. Hutter | IEEE RA-L | [PDF ↗](https://arxiv.org/pdf/2408.16567) · [arXiv](https://arxiv.org/abs/2408.16567) | Friction and stiffness decoded from proprioception in simulation, then used to label images for a visual predictor (ANYmal). |
 | 2025 | **ASAP: Aligning Simulation and Real-World Physics for Learning Agile Humanoid Whole-Body Skills**<br>T. He et al. | RSS | [PDF](papers/03-sysid-actuators/he2025asap.pdf) · [PDF ↗](https://arxiv.org/pdf/2502.01143) · [arXiv](https://arxiv.org/abs/2502.01143) | Delta (residual) action model learned from real data, then fine-tuning in the corrected simulator. |
+| 2025 | **Achieving Precise and Reliable Locomotion with Differentiable Simulation-Based System Identification**<br>V. Kovalev, E. Chaikovskaia, E. Davydenko, R. Gorbachev | arXiv | [PDF](papers/03-sysid-actuators/kovalev2025diffsysid.pdf) · [PDF ↗](https://arxiv.org/pdf/2508.04696) · [arXiv](https://arxiv.org/abs/2508.04696) | Earlier version: MJX fit of armature, friction loss and damping; +46% distance, -75% rotation error on a small humanoid. Reviewed in reports/01. |
 | 2025 | **Robotic World Model: A Neural Network Simulator for Robust Policy Optimization in Robotics**<br>C. Li, A. Krause, M. Hutter | arXiv | [PDF ↗](https://arxiv.org/pdf/2501.10100) · [arXiv](https://arxiv.org/abs/2501.10100) | Learned neural simulator for policy training. |
 | 2025 | **Uncertainty-Aware Robotic World Model Makes Offline Model-Based Reinforcement Learning Work on Real Robots**<br>C. Li, A. Krause, M. Hutter | arXiv | [PDF ↗](https://arxiv.org/pdf/2504.16680) · [arXiv](https://arxiv.org/abs/2504.16680) | Offline learned model with uncertainty penalties. |
+| 2025 | **Learned Perceptive Forward Dynamics Model for Safe and Platform-aware Robotic Navigation**<br>P. Roth, J. Frey, C. Cadena, M. Hutter | RSS | [PDF ↗](https://arxiv.org/pdf/2504.19322) · [arXiv](https://arxiv.org/abs/2504.19322) | Forward dynamics model trained on simulated and real experience, used inside MPPI planning. |
+| 2025 | **Sampling-Based System Identification with Active Exploration for Legged Robot Sim2Real Learning**<br>N. Sobanbabu, G. He, T. He, Y. Yang, G. Shi | arXiv | [PDF ↗](https://arxiv.org/pdf/2505.14266) · [arXiv](https://arxiv.org/abs/2505.14266) | SPI-Active: parallel sampling instead of gradients, Fisher-information exploration; 42-63% better than baselines on locomotion tasks. |
+| 2026 | **Trajectory-based actuator identification via differentiable simulation**<br>V. Kovalev, E. Chaikovskaia, E. Davydenko, R. Gorbachev | arXiv | [PDF](papers/03-sysid-actuators/kovalev2026trajid.pdf) · [PDF ↗](https://arxiv.org/pdf/2604.10351) · [arXiv](https://arxiv.org/abs/2604.10351) | Encoder-only actuator ID through MJX: TrajID-NN 7.54 mrad vs bench model 14.20; 23x faster than an ASAP-like residual. Reviewed in reports/01. |
 
 <a id="04-adaptation-robustness"></a>
 ## Adaptation and robust policies
@@ -101,8 +111,14 @@ Rigid-body contact formulations, simulator comparisons and validation against re
 | 2017 | **Fundamental Limitations in Performance and Interpretability of Common Planar Rigid-Body Contact Models**<br>N. Fazeli et al. | ISRR | [PDF](papers/05-contact-simulators/fazeli2017limitations.pdf) · [PDF ↗](https://arxiv.org/pdf/1710.04979) · [arXiv](https://arxiv.org/abs/1710.04979) | Six contact models identified on real impact data; limits of the rigid-body paradigm. |
 | 2018 | **Per-Contact Iteration Method for Solving Contact Dynamics**<br>J. Hwangbo, J. Lee, M. Hutter | RA-L | [link](https://doi.org/10.1109/LRA.2018.2792536) | Hard-contact solver behind RaiSim. |
 | 2019 | **On the Similarities and Differences Among Contact Models in Robot Simulation**<br>P. C. Horak, J. C. Trinkle | RA-L | [link](https://doi.org/10.1109/LRA.2019.2891085) | Compares complementarity, convex and penalty formulations. |
+| 2020 | **ContactNets: Learning Discontinuous Contact Dynamics with Smooth, Implicit Representations**<br>S. Pfrommer, M. Halm, M. Posa | CoRL | [PDF ↗](https://arxiv.org/pdf/2009.11193) · [arXiv](https://arxiv.org/abs/2009.11193) | Learns signed distances and contact Jacobians with a complementarity-inspired loss; realistic impact and stiction from 60 s of real data. |
+| 2021 | **Learning Contact Dynamics using Physically Structured Neural Networks**<br>A. Hochlehnert, A. Terenin, S. Sæmundsson, M. P. Deisenroth | AISTATS | [PDF ↗](https://arxiv.org/pdf/2102.11206) · [arXiv](https://arxiv.org/abs/2102.11206) | Physically structured networks learn discontinuous contact data-efficiently; touch feedback makes the problem tractable. |
 | 2021 | **Isaac Gym: High Performance GPU-Based Physics Simulation for Robot Learning**<br>V. Makoviychuk et al. | NeurIPS Datasets and Benchmarks | [PDF ↗](https://arxiv.org/pdf/2108.10470) · [arXiv](https://arxiv.org/abs/2108.10470) | GPU-parallel simulation. |
 | 2022 | **Validating Robotics Simulators on Real-World Impacts**<br>B. Acosta, W. Yang, M. Posa | RA-L | [PDF](papers/05-contact-simulators/acosta2022impacts.pdf) · [PDF ↗](https://arxiv.org/pdf/2110.00541) · [arXiv](https://arxiv.org/abs/2110.00541) | Drake, MuJoCo, Bullet vs real data: inelastic impacts captured, elastic ones not. |
+| 2022 | **Dojo: A Differentiable Physics Engine for Robotics**<br>T. A. Howell, S. Le Cleac'h, J. Brüdigam, Q. Chen, J. Sun, J. Z. Kolter, M. Schwager, Z. Manchester | arXiv | [PDF ↗](https://arxiv.org/pdf/2203.00806) · [arXiv](https://arxiv.org/abs/2203.00806) | Hard contact as a nonlinear complementarity problem with cone constraints; tunable smoothing gives useful gradients. |
+| 2024 | **DiffSim2Real: Deploying Quadrupedal Locomotion Policies Purely Trained in Differentiable Simulation**<br>J. Bagajo, C. Schwarke, V. Klemm, I. Georgiev, J.-P. Sleiman, J. Tordesillas, A. Garg, M. Hutter | arXiv | [PDF ↗](https://arxiv.org/pdf/2411.02189) · [arXiv](https://arxiv.org/abs/2411.02189) | Smooth contact model that keeps both gradients and accuracy; real quadruped walking from analytic-gradient training. |
+| 2024 | **Contact Models in Robotics: a Comparative Analysis**<br>Q. Le Lidec, W. Jallet, L. Montaut, I. Laptev, C. Schmid, J. Carpentier | IEEE T-RO | [PDF ↗](https://arxiv.org/pdf/2304.06372) · [arXiv](https://arxiv.org/abs/2304.06372) | Physical relaxations of each simulator's contact model, with quantitative benchmarks. |
+| 2024 | **Learning Deployable Locomotion Control via Differentiable Simulation**<br>C. Schwarke, V. Klemm, J. Bagajo, J.-P. Sleiman, I. Georgiev, J. Tordesillas, M. Hutter | arXiv | [PDF ↗](https://arxiv.org/pdf/2404.02887) · [arXiv](https://arxiv.org/abs/2404.02887) | Differentiable contact model with informative gradients; first legged policy trained entirely in a differentiable simulator and deployed. |
 | 2025 | **MuJoCo Playground**<br>K. Zakka et al. | arXiv / RSS | [PDF](papers/05-contact-simulators/zakka2025playground.pdf) · [PDF ↗](https://arxiv.org/pdf/2502.08844) · [arXiv](https://arxiv.org/abs/2502.08844) | MJX-based training and zero-shot sim-to-real for quadrupeds, humanoids, hands and arms. |
 
 <a id="06-achievements"></a>
@@ -132,3 +148,13 @@ Digital twins, Gaussian-splat rendering, generated tasks and scenes.
 | 2024 | **SplatSim: Zero-Shot Sim2Real Transfer of RGB Manipulation Policies Using Gaussian Splatting**<br>M. N. Qureshi et al. | arXiv / ICRA 2025 | [PDF](papers/07-real2sim-generative/qureshi2024splatsim.pdf) · [PDF ↗](https://arxiv.org/pdf/2409.10161) · [arXiv](https://arxiv.org/abs/2409.10161) | Gaussian-splat rendering; 86.25% zero-shot vs 97.5% real-data policies. |
 | 2024 | **Reconciling Reality through Simulation: A Real-to-Sim-to-Real Approach for Robust Manipulation (RialTo)**<br>M. Torne et al. | RSS | [PDF](papers/07-real2sim-generative/torne2024rialto.pdf) · [PDF ↗](https://arxiv.org/pdf/2403.03949) · [arXiv](https://arxiv.org/abs/2403.03949) | Scan the scene into a digital twin, fine-tune with RL; over 67% robustness gain. |
 | 2024 | **RoboGen: Towards Unleashing Infinite Data for Automated Robot Learning via Generative Simulation**<br>Y. Wang et al. | ICML | [PDF ↗](https://arxiv.org/pdf/2311.01455) · [arXiv](https://arxiv.org/abs/2311.01455) | Foundation models propose tasks, scenes and rewards in simulation. |
+| 2026 | **RoboSimStudio: An Interactive Toolkit for Human and Agent Rapid Real2Sim of Robot Manipulation Tasks**<br>K. Chen, S. Xie, U. Yoo, X. Zhu, C. Magner, A. Zhu, D. Kim, E. Heiden, E. Coumans, M. Macklin, S. Huang, K. Goldberg | arXiv | [PDF](papers/07-real2sim-generative/chen2026robosimstudio.pdf) · [PDF ↗](https://arxiv.org/pdf/2610.18835) · [arXiv](https://arxiv.org/abs/2610.18835) | Editable solver, contact model and parameters on Newton; humans and coding agents tune simulations against video. Stored PDF is v1. Reviewed in reports/01. |
+
+<a id="08-datasets-benchmarks"></a>
+## Real-robot datasets for modelling and benchmarking
+
+Large logs of real proprioception, contact estimates and ground truth that actuator, contact and state-estimation models can be fitted and tested on.
+
+| Year | Paper | Venue | Links | Why it is here |
+|---:|---|---|---|---|
+| 2026 | **GrandTour: A Legged Robotics Dataset in the Wild for Multi-Modal Perception and State Estimation**<br>T. Tuna, J. Frey, F. Fu, K. Patterson, T. Xu, M. Fallon, C. Cadena, M. Hutter | arXiv | [PDF ↗](https://arxiv.org/pdf/2602.18164) · [arXiv](https://arxiv.org/abs/2602.18164) | ANYmal-D: 49 missions, >10 km, 12 actuators' position, velocity and torque, estimator contacts, RTK-GNSS and total-station ground truth. Reviewed in reports/01. Linked, not stored (28 MB). |

@@ -13,6 +13,8 @@ flowchart LR
   R --> D["G13<br/>adaptation from history"]
   D --> X["G14<br/>residual / delta action"]
   X --> E["G15<br/>measuring the gap"]
+  I --> T["G17–G19<br/>learning actuator and contact models from trajectories"]
+  T --> X
 ```
 
 ## Contents
@@ -22,6 +24,7 @@ flowchart LR
 - **Identification:** [G8 Least-squares ID](#g8-least-squares-system-identification-and-excitation) · [G9 Bayesian ID](#g9-bayesian-identification-and-fitted-randomization)
 - **Randomization and adaptation:** [G10 Domain randomization](#g10-domain-randomization-as-robust-optimization) · [G11 Range trade-off](#g11-the-randomization-range-trade-off) · [G12 Automatic DR](#g12-automatic-domain-randomization) · [G13 Online adaptation](#g13-adaptation-from-history)
 - **Correction and measurement:** [G14 Delta action](#g14-residual-and-delta-action-models) · [G15 Sim-vs-real correlation](#g15-measuring-the-gap-sim-vs-real-correlation)
+- **Learning models from trajectories:** [G17 Trajectory matching](#g17-trajectory-matching-through-a-differentiable-simulator) · [G18 Latency in instantaneous models](#g18-what-an-instantaneous-model-hides-latency) · [G19 Contact-law transfer](#g19-contact-parameters-are-only-as-general-as-the-contact-law)
 
 ---
 
@@ -320,6 +323,92 @@ Ranges grow with the policy's competence, giving an automatic curriculum. OpenAI
 
 **Pitfalls.** Too few policies for a meaningful correlation. A high SRCC can still hide a large absolute gap.
 
+# Learning models from trajectories
+
+These three recipes go with the [review of learned and differentiable actuator and contact models](../reports/01-learned-actuator-contact-models.md). They reproduce, on a toy joint and a toy ball, the effects that the reviewed papers report or leave open.
+
+## G17. Trajectory matching through a differentiable simulator
+
+**Problem.** Identify an actuator from what the robot already measures: commanded and measured joint positions. There is no torque sensor and no current sensing. This is the setting of Kovalev et al. (2025, 2026), who fit MuJoCo actuator parameters or a small network through MJX.
+
+**Recipe.**
+- **Segmented rollout loss.** Cut the logs into $M$ windows of $N$ steps. Roll each out in simulation from the *measured* state $s_{i,0}$ and compare positions:
+  $$\mathcal L(\theta)=\frac{1}{MN}\sum_{i=1}^{M}\sum_{j=1}^{N}\big\lVert W\big(\hat s_{i,j}(\theta)-s_{i,j}\big)\big\rVert^2,\qquad \hat s_{i,j+1}=\Phi(\hat s_{i,j},a_{i,j};\theta).$$
+  The gradient $\partial\mathcal L/\partial\theta$ comes from a differentiable simulator (MJX, Warp, Dojo) or from finite differences when the parameters are few. Weighting position only, $W=\mathrm{diag}(1,0)$, avoids fitting the noise in differentiated velocity.
+- **Horizon $N$.** With $N=1$ the next position barely depends on $\theta$: it is mostly $q_0+\dot q_0\Delta t$, and $\dot q_0$ is noisy. Longer windows make the parameters visible, but they make the loss harder to optimize and accumulate model error.
+- **Model class.** Fit a parametric model, such as MuJoCo's position actuator $\tau=k_p(q^{\text{des}}-q)-k_v\dot q$ with armature, or a structured or neural model $\tau=f_\theta(q^{\text{des}},q,\dot q)$.
+- **What positions can identify.** Positions alone identify the ratios $k_p/J$, $k_v/J$ and $\tau_{\max}/J$, not their scale, where $J=J_{\text{arm}}+J_{\text{load}}$. Multiplying every torque term and $J$ by the same constant leaves the motion unchanged. A known load does not fix this while the armature is free. Two different known loads, a gravity load, or one torque measurement does.
+
+**Worked example (`g17`).** The "real" joint is a PD servo with a 0.2 Nm torque limit and Coulomb friction. It is logged at 500 Hz for 40 s, with 0.5 mrad encoder noise and random Fourier-mode commands. The table gives held-out error over a 10 s test rollout; the true model scores 0.39 mrad.
+
+| Segment length $N$ | 1 | 3 | 10 | 50 |
+|---|---:|---:|---:|---:|
+| Linear PD ($k_p$, $k_v$, armature) | 249 | 56.3 | 65.1 | 49.1 |
+| PD + torque limit + friction | 69.4 | 23.7 | 2.0 | 0.7 |
+
+- **One known load.** The fit returns $k_p=2.23$ and armature 0 (true 3.70 and 0.0012). The ratios are close: $k_p/J=1117$, $k_v/J=166$, $\tau_{\max}/J=63$ (true 1156, 172, 62).
+- **Two known loads.** The fit returns $k_p=3.44$, $k_v=0.510$, armature 0.0012, $\tau_{\max}=0.203$ and Coulomb friction 0.122.
+
+**Used in.** Kovalev et al. 2025 and 2026 (MJX, ROKI-2 and HTDW-5047 actuators); Heiden et al. 2021 and 2022 (NeuralSim; posterior inference with multiple shooting); SPI-Active (Sobanbabu et al. 2025, sampling-based instead of gradients).
+
+**Pitfalls.**
+- $N=1$ fails, for every model class. Kovalev et al. see the same: their free-torque "oracle" scores 612 mrad at horizon 1.
+- A hard saturation or dead zone has zero gradient while it is inactive. Start its parameter inside the operating range, or smooth it while fitting.
+- The rollouts start from a measured velocity that is noisy. This biases the fit slightly (errors-in-variables). Here $k_p/J$ comes out 3% low. Multiple shooting, which estimates the start states too, removes this bias.
+- "Consistent across seeds" shows the optimizer is repeatable, not that the parameters are physical.
+
+## G18. What an instantaneous model hides: latency
+
+**Problem.** Kovalev et al. list it as a limitation: models fed only the current $(q^{\text{des}},q,\dot q)$ cannot represent delay, hysteresis or thermal state. What goes wrong when the real actuator has one of these?
+
+**Recipe.**
+- Give the model history: $\tau_t=f_\theta(q^{\text{des}}_{t-d:t},q_{t-k:t},\dot q_{t-k:t})$. Hwangbo et al.'s actuator network uses this form (G4).
+- Fit a delay explicitly: sweep $d$, or make it a parameter with a fractional-delay interpolation.
+- Judge a model by its **parameters and its behaviour in new regimes**, not only by held-out error on similar commands.
+
+**Worked example (`g18`).** The same joint as G17, but the servo acts on the command from 3 steps (6 ms) earlier. The fit uses $N=50$.
+
+| Delay in the model (steps) | 0 | 1 | 2 | 3 (true) | 4 |
+|---|---:|---:|---:|---:|---:|
+| Held-out error (mrad) | 3.78 | 2.06 | 1.24 | 1.50 | 2.24 |
+| $k_v/J$ (true 172) | 83 | 99 | 125 | 169 | 269 |
+| $k_p/J$ (true 1156) | 540 | 651 | 827 | 1139 | 1832 |
+
+- **Ignoring the delay.** The error stays small (3.8 mrad), but both gains drop to about half their true values. Softer gains mimic the lag on these commands.
+- **Error doesn't pick the delay.** Held-out error barely separates delays of 2 and 3 steps.
+- **The right delay recovers the gains** to within 2%.
+- **Why it matters.** A policy trained on the half-stiff model sees the wrong closed-loop bandwidth as soon as it commands faster motions than those in the log.
+
+**Used in.** Tan et al. 2018 (latency); Hwangbo et al. 2019 (history-based actuator network); the latency recipe G2.
+
+**Pitfalls.** Parameters that compensate for missing physics look fine on data like the training set and fail elsewhere. Compare the parameters across excitation types, loads and temperatures before trusting them.
+
+## G19. Contact parameters are only as general as the contact law
+
+**Problem.** Identify a contact model, such as MuJoCo's spring–damper style `solref` or a penalty model, from motion data. Then use it for impacts at other speeds.
+
+**Recipe.**
+- A **linear spring–damper** $f=k\delta+c\dot\delta$ has a restitution that is roughly independent of impact speed.
+- Real contacts are closer to **Hertz with Hunt–Crossley damping**, $f=k\delta^{3/2}(1+c\dot\delta)$. There the restitution falls as impact speed rises.
+- So linear-law parameters fitted at one impact speed are *operating-point dependent*. Fit across the speeds the policy will produce, or use a contact law with the right speed dependence.
+- Treat friction the same way. A friction coefficient is only identifiable from data in which sliding actually happens.
+
+**Worked example (`g19`).** The "real" ground is Hunt–Crossley. A 0.5 kg ball dropped from 0.05, 0.3 and 1.0 m rebounds with restitution 0.643, 0.415 and 0.266. A linear spring–damper is fitted to the 0.3 m drop, sampled at 500 Hz with 0.5 mm noise. The fit drives the stiffness to the largest value the integrator allows ($3.2\times10^7$ N/m), with $c=2294$ Ns/m. It then predicts:
+
+| Drop height | 0.05 m | 0.3 m (fitted) | 1.0 m |
+|---|---:|---:|---:|
+| Restitution, real / model | 0.643 / 0.543 | 0.415 / 0.410 | 0.266 / 0.385 |
+| Rebound trajectory RMS error | 4.9 mm | 1.7 mm | 42.6 mm |
+
+**Used in.** These are the real-data versions of this effect:
+- Fazeli et al. 2017 found task-specific accuracy limits, and identified parameters that are hard to interpret physically.
+- Acosta et al. 2022 found that Drake, MuJoCo and Bullet capture inelastic impacts but not elastic ones.
+- ContactNets (Pfrommer et al. 2020) learns contact geometry, not only coefficients.
+
+**Pitfalls.**
+- A good fit at the identification speed says little about others.
+- Parameters pinned at a bound, as stiffness is here, signal that the model class is wrong, not that the contact is "very stiff".
+
 ---
 
 # Appendix · Quick reference
@@ -338,3 +427,6 @@ Ranges grow with the policy's competence, giving an automatic curriculum. OpenAI
 | Domain randomization | $\max_\theta\mathbb E_{\xi\sim p(\xi)}J(\theta;\xi)$ |
 | Delta action | $f_{\text{sim}}(s,a+\Delta a)\approx f_{\text{real}}(s,a)$ |
 | SRCC | $\mathrm{corr}(\text{score}_{\text{sim}},\text{score}_{\text{real}})$ over policies |
+| Trajectory matching | $\min_\theta\frac{1}{MN}\sum_{i,j}\lVert W(\hat s_{i,j}(\theta)-s_{i,j})\rVert^2$, rolled out from measured $s_{i,0}$ |
+| Position-only identifiability | only $\tau/J$ ratios, unless a known torque or two loads fix the scale |
+| Hunt–Crossley contact | $f=k\delta^{3/2}(1+c\dot\delta)$; restitution falls with impact speed |

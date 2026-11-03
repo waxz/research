@@ -250,6 +250,162 @@ def g16_integrator():
         print(f"{name:20s}: energy after {n} steps of a stiff contact spring = {E / E0:.3g} x initial")
 
 
+# ---------- shared helpers for G17–G18: one joint, 500 Hz, encoder-only data ----------
+DT17 = 0.002
+
+
+def _fourier_cmd(T, r):
+    t = np.arange(int(T / DT17)) * DT17
+    A, w, ph = r.uniform(1, 5, 6), r.uniform(1, 25, 6), r.uniform(0, 2 * np.pi, 6)
+    return np.cumsum(np.clip((A[:, None] * np.sin(w[:, None] * t + ph[:, None])).sum(0), -12, 12)) * DT17
+
+
+def _torque(th, e, v):  # th = [kp, kv, armature, tau_max, coulomb]; param model uses only the first three
+    tau = th[0] * e - th[1] * v
+    return tau if len(th) == 3 else np.clip(tau, -th[3], th[3]) - th[4] * np.tanh(v / 0.05)
+
+
+def _rollout(th, q0, v0, qdes, JL, delay=0):
+    # qdes carries `delay` samples of command history in front: the actuator at step i sees qdes[i] = command at i - delay
+    n = qdes.shape[-1] - delay
+    q, v = np.empty(qdes.shape[:-1] + (n,)), np.empty(qdes.shape[:-1] + (n,))
+    q[..., 0], v[..., 0] = q0, v0
+    for i in range(n - 1):
+        e = qdes[..., i] - q[..., i]
+        v[..., i + 1] = v[..., i] + DT17 * _torque(th, e, v[..., i]) / (th[2] + JL)
+        q[..., i + 1] = q[..., i] + DT17 * v[..., i + 1]
+    return q
+
+
+REAL17 = np.array([3.7, 0.55, 0.0012, 0.2, 0.12])  # true kp, kv, armature, torque limit, Coulomb friction
+
+
+def _pad(qdes, delay):
+    return np.r_[np.zeros(delay), qdes]
+
+
+def _log(qdes, JL, r, delay=0):  # "real" experiment: rollout of the true actuator + 0.5 mrad encoder noise
+    q = _rollout(REAL17, 0.0, 0.0, _pad(qdes, delay), JL, delay)
+    qm = q + r.normal(0, 5e-4, q.shape)
+    return qm, np.gradient(qm, DT17)
+
+
+def _fit(th0, logs, N, delay=0, iters=60):
+    # Segmented trajectory matching: roll out N steps from each measured state, penalise position error only.
+    r = np.random.default_rng(0)
+    segs = []
+    for qdes, JL, (qm, vm) in logs:
+        s = r.integers(0, len(qm) - N - 1, 1500)
+        idx = s[:, None] + np.arange(N + 1)
+        segs.append((qm[s], vm[s], _pad(qdes, delay)[s[:, None] + np.arange(N + 1 + delay)], qm[idx], JL))
+
+    def resid(th):
+        return np.concatenate([(_rollout(th, a, b, c, JL, delay)[:, 1:] - d[:, 1:]).ravel() for a, b, c, d, JL in segs])
+
+    th, lam = np.array(th0, float), 1e-2
+    for _ in range(iters):  # Levenberg–Marquardt on log-parameters (keeps them positive)
+        res = resid(th)
+        Jm = np.stack([(resid(th * np.where(np.arange(th.size) == k, 1 + 1e-4, 1)) - res) / 1e-4 for k in range(th.size)], 1)
+        A = Jm.T @ Jm
+        cand = th * np.exp(np.clip(np.linalg.solve(A + lam * np.diag(np.diag(A) + 1e-12), -Jm.T @ res), -1, 1))
+        if (resid(cand) ** 2).sum() < (res ** 2).sum():
+            th, lam = cand, lam * 0.3
+        else:
+            lam *= 10
+    return th
+
+
+def _test_mae(th, qdes, JL, qm, delay=0):  # full 10 s rollout from rest, mean |error| in mrad
+    return 1e3 * np.abs(_rollout(th, 0.0, 0.0, _pad(qdes, delay), JL, delay) - qm).mean()
+
+
+def g17_trajectory_matching():
+    r = np.random.default_rng(5)
+    JL = 0.002
+    qtr, qte = _fourier_cmd(40, r), _fourier_cmd(10, r)
+    tr, te = _log(qtr, JL, r), _log(qte, JL, r)
+    print("held-out 10 s rollout error (mrad) by segment length N   [true actuator model: "
+          f"{_test_mae(REAL17, qte, JL, te[0]):.2f}]")
+    for name, th0 in [("linear PD (kp, kv, armature)", [1, 0.1, 0.01]), ("PD + torque limit + friction", [1, 0.1, 0.01, 0.1, 0.01])]:
+        row = []
+        for N in [1, 3, 10, 50]:
+            th = _fit(th0, [(qtr, JL, tr)], N)
+            row.append(f"N={N}: {_test_mae(th, qte, JL, te[0]):6.1f}")
+        print(f"  {name:30s} " + "  ".join(row))
+    th = _fit([1, 0.1, 0.01, 0.1, 0.01], [(qtr, JL, tr)], 50)
+    J = th[2] + JL
+    print(f"one known load : kp={th[0]:.2f} kv={th[1]:.3f} armature={th[2]:.4f}  (true 3.70, 0.550, 0.0012)")
+    print(f"                 but ratios kp/J={th[0]/J:.0f} kv/J={th[1]/J:.0f} tau_max/J={th[3]/J:.0f}  (true 1156, 172, 62)")
+    JL2 = 0.006
+    q2 = _fourier_cmd(40, r)
+    th = _fit([1, 0.1, 0.01, 0.1, 0.01], [(qtr, JL, tr), (q2, JL2, _log(q2, JL2, r))], 50)
+    print(f"two known loads: kp={th[0]:.2f} kv={th[1]:.3f} armature={th[2]:.4f} tau_max={th[3]:.3f} coulomb={th[4]:.3f}"
+          "  (true 3.70, 0.550, 0.0012, 0.200, 0.120)")
+
+
+def g18_unmodelled_delay():
+    r = np.random.default_rng(6)
+    JL, true_delay = 0.002, 3  # 3 steps = 6 ms of communication + driver latency
+    qtr, qte = _fourier_cmd(40, r), _fourier_cmd(10, r)
+    tr, te = _log(qtr, JL, r, true_delay), _log(qte, JL, r, true_delay)
+    th0 = [1, 0.1, 0.01, 0.1, 0.01]
+    for d in [0, 1, 2, 3, 4]:
+        th = _fit(th0, [(qtr, JL, tr)], 50, delay=d)
+        J = th[2] + JL
+        print(f"model delay {d} steps: held-out error {_test_mae(th, qte, JL, te[0], d):6.2f} mrad   "
+              f"kv/J={th[1]/J:5.0f} (true 172)  kp/J={th[0]/J:5.0f} (true 1156)")
+
+
+# ---------- G19: contact parameters are only as general as the contact law ----------
+def _drop(k, c, h0, law="linear", m=0.5, T=None, dt=1e-4, rate=500):
+    # One impact of a 0.5 kg ball, sampled at `rate` Hz. law="linear": f = k d + c d' (spring-damper, MuJoCo/penalty-like)
+    # law="hunt-crossley": f = k d^1.5 (1 + c d')  (Hertz stiffness with Hunt–Crossley damping, a common "real" contact law)
+    T = T or 2.2 * np.sqrt(2 * h0 / 9.81)  # long enough for one impact and the rebound
+    every, z, v, out, vin, vout = int(1 / (rate * dt)), h0, 0.0, [], None, None
+    for i in range(int(T / dt)):
+        f = 0.0
+        if z < 0:
+            vin = v if vin is None else vin
+            d, dd = -z, -v
+            f = max(k * d + c * dd if law == "linear" else k * d ** 1.5 * (1 + c * dd), 0.0)
+        elif vin is not None and vout is None:
+            vout = v
+        v += dt * (f / m - 9.81)
+        z += dt * v
+        if i % every == 0:
+            out.append(z)
+    return np.array(out), (-vout / vin if vout is not None else 0.0)
+
+
+def _fit_linear(meas, h0):
+    best = (np.inf, None)
+    for k in np.logspace(4, 7.5, 15):
+        lo, hi = np.log(0.1), np.log(5000.0)
+        f = lambda lc: np.sqrt(np.mean((_drop(k, np.exp(lc), h0)[0] - meas) ** 2))
+        for _ in range(50):  # golden-section search on log(c)
+            a, b = hi - 0.618 * (hi - lo), lo + 0.618 * (hi - lo)
+            hi, lo = (b, lo) if f(a) < f(b) else (hi, a)
+        c = np.exp((lo + hi) / 2)
+        best = min(best, (f(np.log(c)), (k, c)), key=lambda t: t[0])
+    return best
+
+
+def g19_contact_law_transfer():
+    r = np.random.default_rng(7)
+    K_HC, C_HC = 3e7, 0.8  # "real" Hunt–Crossley ground: N/m^1.5 and s/m
+    heights = [0.05, 0.3, 1.0]
+    for h in heights:
+        print(f"real restitution after a drop from {h:4.2f} m: {_drop(K_HC, C_HC, h, 'hunt-crossley')[1]:.3f}")
+    meas = _drop(K_HC, C_HC, 0.3, "hunt-crossley")[0]
+    rms, (k, c) = _fit_linear(meas + r.normal(0, 5e-4, meas.size), 0.3)
+    print(f"linear spring-damper fitted to the 0.3 m drop: k={k:.1e} N/m, c={c:.1f} Ns/m, fit RMS {1e3*rms:.2f} mm")
+    for h in heights:
+        real = _drop(K_HC, C_HC, h, "hunt-crossley")
+        sim = _drop(k, c, h)
+        print(f"  drop from {h:4.2f} m: restitution real {real[1]:.3f} vs fitted model {sim[1]:.3f}; "
+              f"rebound-trajectory RMS error {1e3*np.sqrt(np.mean((sim[0]-real[0])**2)):5.2f} mm")
+
+
 RECIPES = {name: fn for name, fn in globals().items() if name.startswith("g") and name[1:3].isdigit()}
 
 if __name__ == "__main__":

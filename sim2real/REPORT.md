@@ -1,6 +1,6 @@
 # Sim-to-real: the reality gap in reinforcement learning
 
-*An analysis of why policies trained in simulation fail on real robots, and of what works to fix them: system identification, actuator and contact modelling, domain randomization, adaptation, residual and learned models, real-to-sim reconstruction. It covers the latest achievements and trends, in the same format as the other collections in this repository. Equations are derived in the companion [cookbook](cookbook/COOKBOOK.md) (recipes G1–G16), and every source is in the [catalog](CATALOG.md). Quoted results come from the papers' own abstracts, checked on 1 Nov 2026.*
+*An analysis of why policies trained in simulation fail on real robots, and of what works to fix them: system identification, actuator and contact modelling, domain randomization, adaptation, residual and learned models, real-to-sim reconstruction. It covers the latest achievements and trends, in the same format as the other collections in this repository. Equations are derived in the companion [cookbook](cookbook/COOKBOOK.md) (recipes G1–G19), and every source is in the [catalog](CATALOG.md). A critical review of recent learned and differentiable actuator and contact models is in [reports/01](reports/01-learned-actuator-contact-models.md). Quoted results come from the papers' own abstracts, checked on 1 Nov 2026.*
 
 ## Summary
 
@@ -134,7 +134,7 @@ Fit: ●●● strong, ●● viable, ● niche, ○ rarely used. Columns: Syste
 | 2023 | Swift drone racing; Visual Dexterity; humanoid RL locomotion | Residual models from real data; vision-based dexterity; humanoid sim-to-real | Kaufmann (Nature); Chen; Radosavovic |
 | 2024 | Humanoid soccer; ANYmal parkour; RialTo; SplatSim; SERL; DextrAH-G | Agile zero-shot humanoid skills; real-to-sim; photorealistic sim; real-world RL suite | 181% faster walking; over 67% robustness; 86.25% zero-shot |
 | 2025 | ASAP delta-action; MuJoCo Playground; robotic world models | Correcting simulators from real data; minutes-to-hours GPU training for many robots; neural simulators | He et al.; Zakka et al.; Li et al. |
-| 2026 | Humanoid whole-body trackers at scale (BeyondMimic, SONIC, SuperMimic) | One policy for whole motion libraries deployed on hardware | See the robot-learning collection |
+| 2026 | Humanoid whole-body trackers at scale (BeyondMimic, SONIC, SuperMimic); encoder-only actuator ID through differentiable simulation; GrandTour; agent-assisted real-to-sim (RoboSimStudio) | One policy for whole motion libraries deployed on hardware; actuator models from motion logs in minutes; public legged proprioception at scale; editable solver and contact choices | See the robot-learning collection; Kovalev et al.; Tuna et al.; Chen et al. ([review](reports/01-learned-actuator-contact-models.md)) |
 
 ## 9. Latest trends
 
@@ -145,6 +145,7 @@ Fit: ●●● strong, ●● viable, ● niche, ○ rarely used. Columns: Syste
 5. **Generative simulation.** Foundation models propose tasks, assets and rewards (RoboGen), scaling the diversity of training environments.
 6. **Adaptation by memory.** Transformer and recurrent policies adapt in context (Radosavovic 2024) instead of through explicit parameter estimates.
 7. **Evaluation discipline.** Sim-to-sim checks, sim-vs-real correlation and trajectory replay are becoming standard before hardware runs.
+8. **Learned and differentiable actuator and contact models.** Encoder-only actuator identification through MJX, diffusion-posterior calibration with residual models, large public proprioceptive logs, and agent-assisted real-to-sim. Contact laws remain unidentified and validation is thin. See the critical review in [reports/01](reports/01-learned-actuator-contact-models.md) and recipes G17–G19.
 
 ## 10. A practical checklist
 
@@ -173,7 +174,7 @@ Background maths: Kalman filters and system identification in the [control cookb
 
 ## 12. Sources and caveats
 
-- All 55 entries in [CATALOG.md](CATALOG.md) have arXiv IDs (checked against the arXiv API) or DOIs (checked through Crossref). 16 open-access PDFs are stored locally, and online PDF links are listed for every arXiv entry.
+- All 72 entries in [CATALOG.md](CATALOG.md) have arXiv IDs (checked against the arXiv API) or DOIs (checked through Crossref). 19 open-access PDFs are stored locally, and online PDF links are listed for every arXiv entry.
 - Quoted results are the authors' own, from their abstracts: soccer 181%, RialTo over 67%, SplatSim 86.25%, SRCC 0.18.
 - **The cookbook's numbers are illustrative,** not measurements of any specific robot: the latency stability threshold, dead bands, actuator-model errors and randomization trade-offs.
 - **Contact formulation descriptions summarize the cited papers and documentation.** Engine internals change between versions.

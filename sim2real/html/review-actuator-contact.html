@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Actuator and Contact Models</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500;75..125,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a two-column reference book. A sticky recipe index on wide screens, one 72ch reading column;
+   recipe headings carry a mono "R" number tab, worked examples and pitfalls are set apart by colour. */
+:root {
+  --bg: #f5f5f1; --paper: #ffffff; --ink: #1c1f1d; --muted: #5f6662; --rule: #d9ddd7;
+  --accent: #3d4fb0; --accent-soft: #e8ebf8; --warm: #a85d0c; --warm-soft: #f7ecdc; --code-bg: #eef0ec;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Literata", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111412; --paper: #181c1a; --ink: #e3e8e4; --muted: #98a19c; --rule: #2d3430;
+    --accent: #95a4f3; --accent-soft: #1f2545; --warm: #efa652; --warm-soft: #3a2a16; --code-bg: #202623;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111412; --paper: #181c1a; --ink: #e3e8e4; --muted: #98a19c; --rule: #2d3430;
+  --accent: #95a4f3; --accent-soft: #1f2545; --warm: #efa652; --warm-soft: #3a2a16; --code-bg: #202623;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.62;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px; }
+.layout { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; }
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; max-height: 100vh; overflow-y: auto; padding: 32px 0 24px; font-family: var(--mono); font-size: .74rem; line-height: 1.45; }
+nav.toc .p { color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin: 14px 0 4px; font-size: .68rem; }
+nav.toc a { display: block; color: var(--ink); text-decoration: none; padding: 2px 6px; border-radius: 3px; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+main { min-width: 0; max-width: 74ch; padding-top: 36px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } nav.toc { display: none; } main { margin: 0 auto; } }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; }
+main > h1:first-child { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; font-stretch: 85%; margin: 0 0 .4rem; }
+main h1 { font-size: 1.9rem; font-weight: 800; font-stretch: 88%; margin: 3.4rem 0 .6rem; padding-top: .8rem; border-top: 3px solid var(--ink); }
+main h2 { font-size: 1.35rem; font-weight: 800; font-stretch: 92%; margin: 2.6rem 0 .5rem; scroll-margin-top: 12px; }
+main h2 .rno { font-family: var(--mono); font-size: .8rem; font-weight: 500; color: var(--paper); background: var(--accent); padding: 2px 7px; border-radius: 3px; margin-right: 10px; vertical-align: 3px; }
+main h3 { font-size: 1.05rem; }
+p { margin: .7rem 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+strong { font-weight: 600; }
+main > p:nth-of-type(1) em { color: var(--muted); }
+ul, ol { padding-left: 1.4em; } li { margin: .25rem 0; }
+li > p { margin: .3rem 0; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+code { font-family: var(--mono); font-size: .86em; background: var(--code-bg); padding: 1px 4px; border-radius: 3px; }
+pre { background: var(--code-bg); padding: 12px 14px; border-radius: 4px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+.tbl { overflow-x: auto; margin: 1rem 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; line-height: 1.42; }
+th, td { text-align: left; padding: 7px 11px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+p.we { background: var(--warm-soft); border-left: 3px solid var(--warm); padding: 8px 14px; border-radius: 0 4px 4px 0; }
+p.pit { color: var(--muted); font-size: .94rem; }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 4px 0; }
+.mermaid { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 12px; overflow-x: auto; text-align: center; }
+.loading { color: var(--muted); font-family: var(--mono); font-size: .85rem; }
+</style>
+<script>
+  window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'local' }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Recipes"></nav>
+  <main id="book"><p class="loading">Rendering the cookbook…</p></main>
+</div>
+<script type="text/markdown" id="src">
+# Learned and differentiable actuator and contact models: where the field stands
+
+*A critical review of five recent papers on closing the sim-to-real gap with data. It covers actuators identified through differentiable simulation, neural posterior calibration with residual models, a large real-robot dataset, and an agent-assisted real-to-sim toolkit. Their advances, limitations and trends are set against the rest of this collection. Companion to [REPORT.md](../REPORT.md). Recipes [G17–G19](../cookbook/COOKBOOK.md#learning-models-from-trajectories) reproduce the key effects in runnable code.*
+
+## Summary
+
+**Verdict in one paragraph.** Data-driven actuator modelling has become *cheap*. A few minutes of encoder logs and a differentiable simulator now give an actuator model that beats a dynamometer-built one on held-out motion (Kovalev et al.). Simulator calibration has become *probabilistic and residual-aware*: a diffusion posterior over parameters, plus learned corrections for what the simulator cannot express (Yu & Liu). Real-to-sim has become *interactive and agent-assisted* (RoboSimStudio), and *large real logs* are now public (GrandTour). Contact remains the weak link. None of the five papers identifies a contact model from contact measurements and validates it quantitatively. Contact parameters are folded into black-box calibration, tuned by eye, left as future work, or available only as estimator outputs. Across the board, evidence for real-world benefit rests on few trials, weak baselines or qualitative comparisons.
+
+- **Advances**
+  - Encoder-only actuator identification by trajectory matching. It is 23× faster than an ASAP-style residual policy, which is slightly more accurate.
+  - Explicit separation of *calibration* error (wrong parameters) from *fidelity* error (missing physics), with a residual model for each.
+  - Uncertainty-aware calibration triggered by anomalies, such as a broken wheel axle.
+  - Editable solver, contact-model and parameter choices that humans and coding agents can tune.
+  - Public proprioceptive data at scale: 12 actuators, >5 h, >10 km.
+- **Limitations shared by the papers**
+  - One actuator class; models without history.
+  - Calibration validated mainly sim-to-sim.
+  - Contact-law structure never identified.
+  - Few real trials (9–10 per condition), no domain-randomization or system-ID baselines on hardware, qualitative real2sim agreement.
+  - No ground-truth contact or ground-reaction-force (GRF) labels in the dataset.
+- **Trends**
+  1. Differentiable and GPU-parallel simulators as identification tools (MJX, Warp/Newton).
+  2. Hybrid models: physics plus a learned residual.
+  3. Posteriors instead of point estimates.
+  4. Agents in the modelling loop.
+  5. Shared real-robot logs.
+  6. A slow move from "tune the parameter" to "fix the model structure".
+
+## 1. The five papers at a glance
+
+| Paper | What it is | Gap layer | Real-robot evidence | Main number |
+|---|---|---|---|---|
+| **Kovalev et al. 2026**, *Trajectory-based actuator identification via differentiable simulation* ([arXiv 2604.10351](https://arxiv.org/abs/2604.10351), [PDF](../papers/03-sysid-actuators/kovalev2026trajid.pdf)) | MJX trajectory matching of a parametric or neural actuator model, from encoder data only | Actuator | One ROKI-2 actuator on a test stand; miniPi humanoid walking, 10 × 7 s runs per policy | Held-out MAE 7.54 mrad (neural) vs 14.20 (bench-fitted model) |
+| **Kovalev et al. 2025**, *Achieving Precise and Reliable Locomotion with Differentiable Simulation-Based System Identification* ([arXiv 2508.04696](https://arxiv.org/abs/2508.04696), [PDF](../papers/03-sysid-actuators/kovalev2025diffsysid.pdf)) | Earlier version: MJX fit of armature, friction loss and damping | Actuator, joint friction | Same robot class; open-loop drift and the same locomotion test | Sim-vs-real drift 1.13 m → 0.16 m |
+| **Yu & Liu 2025**, *Neural Fidelity Calibration for Informative Sim-to-Real Adaptation* ([arXiv 2504.08604](https://arxiv.org/abs/2504.08604)) | Diffusion-model posterior over simulator parameters *and* residual dynamics and terrain, with anomaly-triggered fine-tuning | Whole-system dynamics, terrain perception | Clearpath Jackal with a broken wheel axle, lab and snow/mud/grass; 9 trials per scenario | Rough-terrain success 72% vs 53% (no residual) and 25% (no calibration) |
+| **Tuna, Frey et al. 2026**, *GrandTour* ([arXiv 2602.18164](https://arxiv.org/abs/2602.18164)) | Multi-modal legged dataset with full proprioception and survey-grade ground truth | Data for actuator, contact and state-estimation models | ANYmal-D: 49 missions, >10 km, >5 h | 63 state estimators benchmarked |
+| **Chen, Xie et al. 2026**, *RoboSimStudio* ([arXiv 2610.18835](https://arxiv.org/abs/2610.18835), [PDF v1](../papers/07-real2sim-generative/chen2026robosimstudio.pdf)) | Interactive multi-physics toolkit (Newton, MuJoCo-Warp, VBD, SuperDex) in which humans and coding agents edit solver, contact model and parameters | Contact, deformation, scene structure | 18 tasks built; one real sim-to-real task (bimanual sponge wiping) | Agent-built simulation verified in 56 min; simulated wiped area 0% → 100% over 14 policy iterations |
+
+```mermaid
+flowchart LR
+  A["Actuator<br/>gains, saturation, friction,<br/>delay, thermal"] --> B["Joint and transmission<br/>armature, damping, backlash"]
+  B --> C["Contact<br/>stiffness, damping, friction,<br/>restitution, geometry"]
+  C --> D["Environment<br/>terrain, objects, constraints"]
+  K1["Kovalev 2025/2026"] -.-> A
+  K1 -.-> B
+  N["NFC (Yu & Liu)"] -.-> B
+  N -.-> C
+  N -.-> D
+  G["GrandTour data"] -.-> A
+  G -.-> C
+  R["RoboSimStudio"] -.-> C
+  R -.-> D
+```
+
+## 2. Paper-by-paper evaluation
+
+### 2.1 Kovalev et al. 2026: trajectory-based actuator identification
+
+**What it does.**
+- **Data.** Commanded position $q^{\text{des}}$, measured $q$ and $\dot q$ at 500 Hz: 40 s of random Fourier-mode commands for training, one 10 s trajectory for testing. A rigid bar load of 0.24 kg.
+- **Hardware.** A ROKI-2 actuator: 210:1 gearbox, embedded hand-tuned PD to PWM, 12 V.
+- **Loss.** A segmented loss through MJX rollouts: $M=2000$ segments of $N=3$ steps (6 ms), position-weighted only (G17).
+- **Models compared:**
+
+| Model | What is learned | Held-out MAE (mrad) | Train time |
+|---|---|---:|---:|
+| Bench-Sup | MLP on steady-state dynamometer data (8,705 parameters) | 14.20 ± 11.50 | — |
+| Param-ES | $k_p$, $k_v$, armature by gradient-free evolution strategy | 8.73 ± 5.31 | 1.43 min |
+| TrajID-Param | same parameters by MJX gradients | 8.73 ± 5.31 | — |
+| TrajID-NN | $[q^{\text{des}},q,\dot q]\to\tau$ MLP (1,217 parameters) | 7.54 ± 4.57 | 1.98 min |
+| Residual-RL | ASAP-inspired PPO residual on the command | 7.17 ± 4.56 | 46.34 min |
+| Torque-Oracle | free torque per step (an upper bound, not deployable) | 2.86 ± 2.12 | — |
+
+- **Downstream test.** A LeggedGym policy, trained *without domain randomization*, on the identified model vs the default model. On the miniPi robot, travel rose from 1.12 ± 0.13 m to 1.64 ± 0.08 m (+46%) and heading deviation fell from 109° ± 14.3 to 27° ± 6.4 (−75%), over 10 runs of 7 s.
+
+**What is genuinely new.**
+- Hwangbo et al.'s actuator network (2019) needed measured torque.
+- Kovalev et al. need only the encoders every robot already has. Gradients flow through the full simulator, so the model is fitted to what the *closed loop* does, not to bench torque maps.
+- The same pipeline fits physical parameters or a network.
+- It runs in about 2 minutes on a GPU, against 46 minutes for the RL-based residual.
+
+**Strengths.**
+- **Bench model in the comparison.** The baselines include a model fitted on a dynamometer, the industry habit. The finding that it underperforms on motion is useful, even if the bench data were limited (below).
+- **Sensitivity analyses.** The paper studies the horizon and the position/velocity weighting:
+  - every model fails at horizon 1 (the oracle scores 612 mrad);
+  - weighting velocity makes flexible models overfit;
+  - position-only weighting is robust.
+- **Honest scope.** The paper states that the evidence covers "only the tested actuator class with embedded PD control".
+
+**Limitations and critique.**
+1. **One actuator, one test trajectory.** The ± values are spreads over time within one 10 s rollout, not over actuators, loads or sessions. The neural model's edge over the parametric one (7.54 vs 8.73 mrad) is small compared with that spread.
+2. **The bench baseline is handicapped.**
+   - Shaft damage above 7–8 Nm limited test-stand data to 5–6 Nm, so the braking regime is under-sampled. The authors say this coverage gap "likely biases the comparison".
+   - The bench model is also fitted to steady-state data, while the test is dynamic.
+3. **Residual-RL is a proxy, not ASAP.** The paper says it is reimplemented in the same stack. It is slightly *more* accurate than TrajID-NN. The real advantage is training time, not accuracy.
+4. **"Consistent across seeds" is not "physically correct".**
+   - Over 25 seeds the fitted $k_p=3.684\pm0.013$ is repeatable.
+   - But positions alone identify only gain/inertia ratios (G17).
+   - The absolute values are pinned only by the known bar inertia and the simulator's own model structure.
+5. **Instantaneous models.** No history, so no delay, hysteresis, thermal drift or voltage sag. G18 shows that a model missing a 6 ms delay still reaches a small error while its gains come out about half their true values.
+6. **The downstream test is weak evidence.**
+   - **Baseline.** The baseline is the *default* MuJoCo actuator (armature, friction loss and damping left at default values). There is no domain-randomized policy, no bench-model policy and no DR-plus-ID policy.
+   - **Trials.** 10 runs of 7 s, one robot, one terrain.
+   - **Changed command.** The yaw-rate command was halved on hardware "to account for IMU velocity scaling due to noise". This is a change between simulation and reality that affects the very heading metric reported.
+   - **Reused result.** The same +46% / −75% result appears in the 2025 paper.
+7. **Contact is out of scope.** Foot–ground contact uses MuJoCo defaults throughout. The authors list contact-rich tasks as future work.
+
+### 2.2 Kovalev et al. 2025: the earlier version
+
+- **Robot and parameters.** The same group, earlier on the Mini π robot (HTDW-5047-36-NE motors). It identifies MuJoCo's armature, friction loss and damping with $K_p=20$, $K_d=1$ and Fourier-mode velocity commands.
+- **Implementation findings.**
+  - Explicit Euler converged about 4× faster than RK4.
+  - The loss fell about 20% from the initial guess.
+  - Test MSE was about 8× lower than a zero-parameter baseline.
+  - Sim-vs-real drift fell from 1.13 m to 0.16 m.
+- **Stated problems:**
+  - MJX optimization was sensitive to the initial parameters;
+  - the neural variant had high variance where data was sparse.
+
+**Assessment.** The 2026 paper is a more careful version of the same idea, with stronger baselines and sensitivity studies. The two should not be counted as two independent locomotion confirmations.
+
+### 2.3 Yu & Liu 2025: Neural Fidelity Calibration (NFC)
+
+**What it does.**
+- **Dynamics model.** NFC models the dynamics as
+
+$$s_{t+1}=\underbrace{f_\psi(s_t,a_t\mid e)}_{\text{calibration}}+\underbrace{g_\phi(s_t,a_t\mid e)}_{\text{fidelity}}+\epsilon ,$$
+
+  - $\psi$: simulator parameters. For the Jackal these are masses of the body and four wheels, damping of the four wheel joints, and friction and restitution of the four wheels (17 values).
+  - $\phi=\{\Delta s,\Delta e\}$: a residual on the next state (15-dimensional) and a residual on the perceived 128×128 elevation map.
+- **Inference.** A conditional score-based diffusion model, on top of a causal temporal-convolution (TCN) encoder of trajectories, samples $p(\psi,\phi\mid\tau)$.
+- **Adaptation loop:**
+  - fine-tuning is triggered only when a contrastive TCN anomaly detector fires;
+  - the posterior is updated sequentially;
+  - a "hallucinated" policy chooses where in the posterior to explore, following the optimism-under-uncertainty principle.
+- **Sim-to-sim results** (IsaacGym → MuJoCo, five robots):
+  - **Calibration.** NFC has the best average log-posterior on every robot and terrain.
+  - **Policy return.** Normalized return with NFC beats "without residual fidelity", "without NFC" and TD-MPC2 (e.g., Jackal rough 0.82 vs 0.69, 0.20 and 0.41).
+- **Real Jackal, broken front-left axle, 9 trials per scenario:**
+
+| Rough terrain | PPO + NFC | without residual | without NFC | TD-MPC2 | Falco planner |
+|---|---:|---:|---:|---:|---:|
+| Success rate (%) | 72 | 53 | 25 | 42 | 28 |
+| Orientation jerk (rad/s³) | 3.19 | 8.49 | 26.99 | 8.98 | 41.93 |
+
+**What is genuinely new.**
+- **Two error types, named and separated.** *Calibration shift* means wrong values; *fidelity shift* means missing physics. Earlier simulation-based inference (BayesSim, SimOpt, DROPO) assumes the simulator can reproduce reality with the right parameters.
+- **A residual on perception.** Modelling the residual on the *perceived terrain* as well as on the dynamics is unusual and practical.
+- **Real-time inference** with diffusion posteriors on a Jetson Orin: the policy runs at 25 Hz, against 6 Hz for TD-MPC2.
+
+**Limitations and critique.**
+1. **Calibration accuracy is shown only sim-to-sim.**
+   - IsaacGym → MuJoCo is an *engine* gap with known ground truth, not a reality gap.
+   - On the real robot there is no ground truth. The calibrated values (front-left wheel damping ≈ 0, friction ≈ 0.4 on snow) are plausible, but they are evidence of consistency, not of accuracy.
+2. **The residual is unstructured.**
+   - $\Delta s$ is an additive state correction, so it can absorb any discrepancy: actuator, contact or estimator.
+   - It is not an actuator or contact model that transfers to new motions. G18's lesson applies: compensation can look right and generalize poorly.
+3. **Contact is a few coefficients inside a black box.** Wheel friction and restitution are calibrated, but the contact *law* is whatever MuJoCo or IsaacGym implements.
+4. **The baselines are partly handicapped.** The authors note that the kernel baselines do not see perception, and that a 256× larger MLP would surpass them. The comparison mostly shows that a TCN + diffusion model beats small models on high-dimensional inputs.
+5. **Small real-world sample.**
+   - 9 trials per scenario, one platform, figure-8 paths of 3 m diameter.
+   - Anomaly detection is "100% success", but the false-positive rate is not reported in the real world.
+   - The anomaly rates in simulation come from *injected* synthetic anomalies.
+6. **Compute.** Policy optimization runs off-board on a laptop RTX 3080 Ti, so "online" means online with a tethered GPU.
+7. **Trajectory ratio.** The authors note a deficiency on flat ground: the fine-tuned policy's path efficiency is not better. They trace it to the reward lacking a path-length penalty.
+
+### 2.4 Tuna, Frey et al. 2026: GrandTour
+
+**What it is.**
+- **Robot and sensors.** An ANYmal-D with the Boxi payload: 3 LiDARs, 10 RGB cameras, 7 depth cameras, several IMUs, GNSS.
+- **Proprioception.** 12 series-elastic actuators logging joint position, velocity and torque.
+- **Contact data.** Leg odometry and contact states from the onboard estimator.
+- **Ground truth.** RTK-GNSS/INS at centimetre level, and a Leica MS60 total station at millimetre level.
+- **Scale.** 49 missions, >10 km, >5 h, across alpine, forest, urban, industrial and indoor sites.
+- **Benchmark.** 63 estimation methods (LO, LIO, multi-LiDAR, VIO, kinematic-inertial). Data in ROS and HuggingFace formats.
+
+**Why it matters for sim-to-real.**
+- **Real logs at scale for actuator models.** Before this, actuator-network training data were proprietary or a few minutes long. GrandTour logs torque, velocity and position for every joint, over long missions, on varied ground (snow, gravel, stairs, metal).
+- **Contact definitions are model-dependent.** In the kinematic-inertial benchmark, learned contacts (Deep Contact Estimator) consistently start and end *earlier* than the onboard TSIF estimator's contacts. The authors checked that this is not a timing artefact but "how the contact modelling is done". Accuracy also differs drastically between in-plane motion and vertical (z) motion. The authors conclude that this "implies the importance of contact estimation and environment agnostic contact dynamic formulation".
+- **It already feeds the sim-to-real loop:**
+  - terrain friction and stiffness inferred from proprioception, then predicted from images (Chen et al. 2024);
+  - a learned perceptive forward-dynamics model for planning (Roth et al. 2025);
+  - real-to-sim scene reconstruction (GaussGym).
+
+**Limitations for modelling work.**
+1. **No measured contacts or forces.** The contact labels are estimator outputs, not measurements. There are no force plates or foot force sensors, so contact models cannot be validated against measured ground-reaction force.
+2. **One controller, teleoperated.** All data come from one RL locomotion policy (Miki et al. 2022), so the excitation covers that policy's gait distribution only. That is poor for identification, which needs diverse, exciting inputs (G8).
+3. **Missing actuator signals.** There are no logged motor currents, temperatures or battery voltage, which are needed for thermal and voltage-sag modelling.
+4. **Scope.** Switzerland only, no repeated visits across seasons. That is a perception limitation more than a dynamics one.
+
+### 2.5 Chen, Xie et al. 2026: RoboSimStudio
+
+**What it is.**
+- **Architecture.** A toolkit on Newton. It uses MuJoCo-Warp for articulated and rigid bodies and Vertex Block Descent for cables and cloth, and co-simulates external engines such as SuperDex (FEM soft bodies) by exchanging contact wrenches. Solver, coupling, contact model and material parameters are explicit, editable entries.
+- **Interfaces.** A browser studio (Viser) with live sliders. An agent interface that turns simulator state into spatio-temporal text feedback: contact events, slipping, target error.
+- **Force feedback.** A Gello leader arm renders simulated contact back to the operator, with a speed-dependent deadband so that simulation lag isn't felt as contact.
+- **Demonstrations.**
+  - 18 contact-rich tasks: connector insertion with sub-millimetre clearance, leaf pressing, strip polishing with Preston's material-removal law, cloth, cables, film peeling.
+  - A pilot study: from a smartphone video, two off-the-shelf coding agents each built a sponge-wiping simulation in about an hour, one verified in 56 min.
+  - A Graph-as-Policy improved in simulation (wiped area 0% → 100% over 14 iterations, across 30 layouts and sponge stiffnesses of 6, 20 and 100 kPa) ran on the real robot.
+
+**What is genuinely new.**
+- **Modelling choices become first-class, editable objects.** Real2sim usually means fitting *parameters* of a fixed scene. Here the solver and contact model can be changed as well, and coding agents are included in the loop.
+- **The key failure was structural.** In the pilot, the important real-world failure was not a wrong coefficient. A bar support that was *fixed* in simulation moved in reality. The agent fixed the model *structure*, replacing the fixed constraint with a free rigid body.
+  - This is a sharp example of a point the other papers miss: structural errors (missing degrees of freedom, wrong constraints, wrong contact law) often dominate parameter errors.
+  - No amount of parameter calibration (NFC) or actuator fitting (Kovalev) would have found this one.
+
+**Limitations and critique.**
+1. **Qualitative only, by the authors' own statement.** Agreement between simulation and reality is judged "primarily through qualitative observations". There are no contact-force, trajectory or deformation error metrics.
+2. **Tiny real-world sample.** One real task. The number of real trials and the real success rate are not reported.
+3. **Tuning by eye.** Contact and material parameters are tuned visually, or by a human's feel through the leader arm. That makes the process fast, but neither repeatable nor statistically grounded.
+4. **Bounded by the solvers.** The agent can only choose among the solvers and material models provided. Co-simulation adds overhead.
+5. **The arXiv record has moved on.** The stored PDF is v1. The current arXiv version (v2) carries the longer title "…for Human and Agent Rapid Real2Sim…".
+
+## 3. Cross-paper assessment
+
+| Criterion | Kovalev 2026 | Kovalev 2025 | NFC | GrandTour | RoboSimStudio |
+|---|---|---|---|---|---|
+| Quantitative real-world metric | ✓ MAE on a test stand; locomotion distance and heading | ✓ drift; locomotion | ✓ success rate, jerk | ✓ ATE/RTE for estimators | ✗ qualitative |
+| Strong real-world baseline | ~ bench model (handicapped) and an RL residual; locomotion vs default only | ✗ zero-parameter / default | ✓ ablations, TD-MPC2, classical planner | ✓ 63 methods | ✗ |
+| Real trials per condition | 10 | 10 | 9 | 49 missions | not reported |
+| Generality tested | 1 actuator | 1 robot | 1 real robot (5 in sim) | 1 robot, many sites | 18 sim tasks, 1 real |
+| Contact modelled explicitly | ✗ defaults | ✗ defaults | ~ friction and restitution as calibrated coefficients | ~ estimator contacts, no ground truth | ✓ editable, tuned by eye |
+| Code or data open | ✓ code | — | — | ✓ data and tools | ✓ project site |
+
+**The state of the art in one table.**
+
+| Question | Before about 2023 | Now (these papers and the related work) | Still open |
+|---|---|---|---|
+| How do we model an actuator? | Analytical DC-motor and PD models (Tan 2018); actuator nets from torque-sensor data (Hwangbo 2019) | Trajectory matching from encoders through differentiable simulation (Kovalev); residual-action models (ASAP); sampling-based identification with active excitation (SPI-Active) | History, thermal and voltage effects; multi-joint coupling; identifiability of the absolute scale; transfer to unseen command regimes |
+| How do we calibrate a simulator? | Hand-tuned ranges; BayesSim, SimOpt, DROPO, BayRn | Diffusion posteriors with residual fidelity (NFC); SVGD with multiple shooting through differentiable simulators (Heiden 2022) | Real-world validation of the posteriors; posteriors that know when the model class is wrong |
+| How do we model contact? | Fixed engine laws (LCP, soft convex, penalty) with hand-set coefficients; evidence that real impacts don't fit (Fazeli 2017, Acosta 2022) | Differentiable contact with useful gradients that transfers (Schwarke 2024, DiffSim2Real, Dojo); learned contact geometry (ContactNets); systematic comparisons of contact models (Le Lidec 2024); editable multi-physics with coupled solvers (RoboSimStudio) | Identifying contact *laws*, not only coefficients, from real data; contact ground truth in public datasets; speed and material dependence (G19) |
+| What data do we learn from? | Lab logs of minutes, rarely released | Large public proprioceptive datasets (GrandTour); terrain parameters labelled from proprioception (Chen 2024) | Force ground truth; designed excitation; many robots |
+| Who does the modelling? | Experts editing XML or URDF files | Interactive studios and coding agents (RoboSimStudio) | Quantitative acceptance tests for agent-built simulations |
+
+## 4. Actuator models: what the evidence supports
+
+1. **Fit the closed loop, not the motor alone.**
+   - A model fitted to motion through the simulator beat one fitted to steady-state bench torque (Kovalev 2026).
+   - This matches the experience behind ASAP and actuator networks: the effective actuator includes firmware, driver and filters.
+   - Take the specific factor of 1.88 with care, because of the bench model's under-sampling.
+2. **The structure matters more than the optimizer.**
+   - Gradient-based (TrajID-Param) and gradient-free (Param-ES) fits of the same model land on the same error (8.73 mrad).
+   - The gains come from the model class: a network, a residual, or in G17 the torque limit and friction (49 → 0.7 mrad).
+3. **Short horizons, position loss.** One-step losses are uninformative, and velocity targets are noisy. Every result here (the paper, G17, G18) supports multi-step, position-weighted losses.
+4. **Watch identifiability.**
+   - Without a torque reference, the data fix ratios to inertia, not absolute torques (G17).
+   - A missing delay is absorbed by wrong gains (G18).
+   - So check parameters across loads and excitations, not only the error.
+5. **Speed is now a feature.** About 2 min for an MJX fit against about 46 min for an RL residual makes re-identification after maintenance, temperature change or a payload change practical.
+
+## 5. Contact models: the open frontier
+
+None of the five papers closes the contact gap, and two say so explicitly:
+- Kovalev et al. list "contact mismatch" as unmodelled;
+- GrandTour's authors call contact estimation and the contact formulation important open issues.
+
+The obstacles are structural:
+
+1. **No ground truth.** Contact force is rarely measured on mobile robots. GrandTour's contacts are estimator outputs, and two estimators disagree on contact timing.
+2. **The law, not only the coefficients.** A linear spring–damper fitted at one impact speed mispredicts restitution at others: 0.385 vs 0.266 real at 1 m in G19. Its stiffness is also pushed to the bound the integrator allows, a sign of the wrong model class. Real-data studies (Fazeli 2017, Acosta 2022) show the same pattern.
+3. **Gradients through contact are poorly behaved.** Hard contact gives zero or exploding gradients. Smoothing trades accuracy for gradient quality.
+   - Dojo exposes this trade-off as a tunable parameter.
+   - Schwarke 2024 and DiffSim2Real design contact models that keep both well enough to transfer a quadruped policy.
+   - The MJX identification in Kovalev et al. avoids the problem by fitting a free-swinging actuator.
+4. **Friction appears only when sliding.** A friction coefficient is unidentifiable from data without slip, and normal locomotion logs are mostly no-slip by design.
+5. **Structure errors dominate.** RoboSimStudio's key failure was a fixed support that should have been free, not a coefficient.
+
+**What to try instead.**
+- **Learn the geometry and law.** ContactNets learns signed distances and contact Jacobians; physically structured networks (Hochlehnert 2021) learn discontinuous contact.
+- **Estimate terrain properties from proprioception and transfer them to vision** (Chen 2024, trained and demonstrated on ANYmal).
+- **Choose the formulation knowingly.** Use the comparative criteria of Le Lidec et al. 2024 to choose among a simulator's contact relaxations.
+- **Agent-assisted structural edits.** Let an agent propose changes to constraints and degrees of freedom (RoboSimStudio), then test them quantitatively.
+
+## 6. Trends
+
+1. **Differentiable, GPU-parallel simulators as identification engines.**
+   - MJX, MuJoCo-Warp, Newton and Warp make trajectory matching a two-minute job.
+   - Gradient-free sampling at GPU scale (SPI-Active, Param-ES) is a strong competitor when contact makes gradients unreliable.
+2. **Hybrid models: physics plus learned residuals at every layer.**
+   - Actuator networks (actuator); NFC's $\Delta s$ (state); NFC's $\Delta e$ (perception); delta actions (action); full neural simulators (RWM).
+   - The trend is to keep a physics core and learn only what it misses (NeuralSim). This generalizes better than fully learned models.
+3. **Posteriors, not point estimates.** Diffusion and SVGD posteriors feed fitted, not guessed, domain randomization.
+4. **Calibrating only when something goes wrong.** Calibration is triggered by detected anomalies, not run once. Compute goes where the model has demonstrably failed.
+5. **Agents and humans in the modelling loop.** Coding agents build and repair simulations from video and from failure reports. Interactive studios expose modelling choices.
+6. **Shared real-robot data.** GrandTour-scale logs turn actuator and contact modelling from one-off lab work into shared benchmarks.
+7. **From parameters to structure.** The most consequential fixes are moving from "which value?" to "which model?": history in actuators, the contact law, the constraint topology.
+
+## 7. What a convincing next study would include
+
+| Ingredient | Why | Who already does part of it |
+|---|---|---|
+| Several actuators, loads and sessions, with confidence intervals over units | Separates model quality from unit-to-unit variation | — |
+| Models with history and thermal/voltage inputs, compared on fast commands outside the training regime | Catches compensating parameters (G18) | Hwangbo 2019 (history) |
+| A torque reference (one load cell, two known loads or a gravity load) | Fixes the absolute scale (G17) | Bench test in Kovalev 2026 |
+| Hardware policies from the default model, DR, ID, ID + DR, and ID + residual, with at least 20 trials each | Shows what identification adds beyond randomization | NFC (ablations) |
+| Contact validation against measured forces (force plate, instrumented foot) at several impact speeds | Tests the contact *law*, not only one operating point (G19) | Acosta 2022 (impacts) |
+| Sim-vs-real correlation across policies (G15) | Shows whether the calibrated simulator *ranks* policies correctly | Kadian 2020 |
+| Released logs and fitted models | Lets others check the claims | GrandTour (data), Kovalev 2026 (code) |
+
+## 8. Where to go next in this collection
+
+- **Recipes.**
+  - [G4](../cookbook/COOKBOOK.md#g4-learned-actuator-models): actuator networks;
+  - [G8–G9](../cookbook/COOKBOOK.md#g8-least-squares-system-identification-and-excitation): identification and posteriors;
+  - [G14](../cookbook/COOKBOOK.md#g14-residual-and-delta-action-models): residual and delta-action models;
+  - [G17](../cookbook/COOKBOOK.md#g17-trajectory-matching-through-a-differentiable-simulator): trajectory matching;
+  - [G18](../cookbook/COOKBOOK.md#g18-what-an-instantaneous-model-hides-latency): what instantaneous models hide;
+  - [G19](../cookbook/COOKBOOK.md#g19-contact-parameters-are-only-as-general-as-the-contact-law): contact-law transfer.
+- **Catalog.** All five papers and the related work cited here are in [CATALOG.md](../CATALOG.md): differentiable contact, learned contact, simulation-based inference, terrain parameters and forward-dynamics models.
+- **Background.** REPORT.md [§2 Contact](../REPORT.md#2-contact-how-simulators-model-it-and-where-it-breaks) and [§3 Actuators](../REPORT.md#3-actuators-the-most-underestimated-part-of-the-gap).
+
+## 9. Sources and caveats
+
+- **Sources.** All figures for the five papers come from the PDFs provided: arXiv 2604.10351v2, 2508.04696v1, 2504.08604v1, 2602.18164v3 and 2610.18835v1. The critique is this review's own reading.
+- **Verification.** All arXiv IDs were checked against the arXiv API on 3 Nov 2026. Venues of the related work were checked through Crossref where available.
+- **Local copies.** NFC and GrandTour are linked, not stored, because their PDFs are 30 MB and 28 MB.
+- **The recipes are toys.** G17–G19 illustrate mechanisms, not measurements of the robots in these papers.
+
+</script>
+<script>
+(function () {
+  var src = document.getElementById('src').textContent;
+  var store = [];
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  // protect math from the Markdown parser
+  src = src.replace(/\$\$([\s\S]+?)\$\$/g, function (_, m) { store.push('\\[' + esc(m) + '\\]'); return '@@M' + (store.length - 1) + '@@'; });
+  src = src.replace(/\$([^\n$]+?)\$/g, function (_, m) { store.push('\\(' + esc(m) + '\\)'); return '@@M' + (store.length - 1) + '@@'; });
+  var html = marked.parse(src, { gfm: true });
+  html = html.replace(/@@M(\d+)@@/g, function (_, i) { return store[+i]; });
+  var book = document.getElementById('book');
+  book.innerHTML = html;
+  function slug(t) { return t.trim().toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-'); }
+  var toc = document.getElementById('toc');
+  book.querySelectorAll('h1, h2').forEach(function (h) {
+    h.id = slug(h.textContent);
+    if (h.tagName === 'H1' && h !== book.firstElementChild) {
+      var p = document.createElement('div'); p.className = 'p'; p.textContent = h.textContent; toc.appendChild(p);
+    }
+    if (h.tagName === 'H2') {
+      var m = h.textContent.match(/^([A-Z]\d+)\.\s*(.*)$/);
+      if (m) { h.innerHTML = '<span class="rno">' + m[1] + '</span>' + h.innerHTML.replace(/^[A-Z]\d+\.\s*/, ''); }
+      var a = document.createElement('a'); a.href = '#' + h.id; a.textContent = m ? m[1] + ' · ' + m[2] : h.textContent; toc.appendChild(a);
+    }
+  });
+  book.querySelectorAll('table').forEach(function (t) { var w = document.createElement('div'); w.className = 'tbl'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
+  book.querySelectorAll('p').forEach(function (p) {
+    var s = p.firstElementChild;
+    if (s && s.tagName === 'STRONG' && p.firstChild === s) {
+      if (/^Worked example/.test(s.textContent)) p.className = 'we';
+      if (/^Pitfalls/.test(s.textContent)) p.className = 'pit';
+    }
+  });
+  book.querySelectorAll('pre code.language-mermaid').forEach(function (c) { var d = document.createElement('div'); d.className = 'mermaid'; d.textContent = c.textContent; c.parentNode.replaceWith(d); });
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark' || (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  try { mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'neutral' }); mermaid.run({ querySelector: '.mermaid' }); } catch (e) {}
+  if (location.hash) { var t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); }
+  MathJax.startup.promise.then(function () { return MathJax.typesetPromise([book]); });
+})();
+</script>
+</body>
+</html>

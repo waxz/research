@@ -39,6 +39,11 @@
    "id": "07-real2sim-generative",
    "name": "Real-to-sim, photorealistic and generative simulation",
    "about": "Digital twins, Gaussian-splat rendering, generated tasks and scenes."
+  },
+  {
+   "id": "08-datasets-benchmarks",
+   "name": "Real-robot datasets for modelling and benchmarking",
+   "about": "Large logs of real proprioception, contact estimates and ground truth that actuator, contact and state-estimation models can be fitted and tested on."
   }
  ],
  "papers": [
@@ -646,6 +651,179 @@
    "note": "Foundation models propose tasks, scenes and rewards in simulation.",
    "pdf": false,
    "arxiv": "2311.01455"
+  },
+  {
+   "key": "kovalev2026trajid",
+   "cat": "03-sysid-actuators",
+   "title": "Trajectory-based actuator identification via differentiable simulation",
+   "authors": "V. Kovalev, E. Chaikovskaia, E. Davydenko, R. Gorbachev",
+   "year": 2026,
+   "venue": "arXiv",
+   "note": "Encoder-only actuator ID through MJX: TrajID-NN 7.54 mrad vs bench model 14.20; 23x faster than an ASAP-like residual. Reviewed in reports/01.",
+   "pdf": true,
+   "arxiv": "2604.10351"
+  },
+  {
+   "key": "kovalev2025diffsysid",
+   "cat": "03-sysid-actuators",
+   "title": "Achieving Precise and Reliable Locomotion with Differentiable Simulation-Based System Identification",
+   "authors": "V. Kovalev, E. Chaikovskaia, E. Davydenko, R. Gorbachev",
+   "year": 2025,
+   "venue": "arXiv",
+   "note": "Earlier version: MJX fit of armature, friction loss and damping; +46% distance, -75% rotation error on a small humanoid. Reviewed in reports/01.",
+   "pdf": true,
+   "arxiv": "2508.04696"
+  },
+  {
+   "key": "yu2025nfc",
+   "cat": "02-domain-randomization",
+   "title": "Neural Fidelity Calibration for Informative Sim-to-Real Adaptation",
+   "authors": "Y. Yu, L. Liu",
+   "year": 2025,
+   "venue": "arXiv",
+   "note": "Diffusion posterior over simulator parameters plus residual dynamics and residual terrain; anomaly-triggered fine-tuning on a Jackal. Reviewed in reports/01. Linked, not stored (30 MB).",
+   "arxiv": "2504.08604"
+  },
+  {
+   "key": "tuna2026grandtour",
+   "cat": "08-datasets-benchmarks",
+   "title": "GrandTour: A Legged Robotics Dataset in the Wild for Multi-Modal Perception and State Estimation",
+   "authors": "T. Tuna, J. Frey, F. Fu, K. Patterson, T. Xu, M. Fallon, C. Cadena, M. Hutter",
+   "year": 2026,
+   "venue": "arXiv",
+   "note": "ANYmal-D: 49 missions, >10 km, 12 actuators' position, velocity and torque, estimator contacts, RTK-GNSS and total-station ground truth. Reviewed in reports/01. Linked, not stored (28 MB).",
+   "arxiv": "2602.18164"
+  },
+  {
+   "key": "chen2026robosimstudio",
+   "cat": "07-real2sim-generative",
+   "title": "RoboSimStudio: An Interactive Toolkit for Human and Agent Rapid Real2Sim of Robot Manipulation Tasks",
+   "authors": "K. Chen, S. Xie, U. Yoo, X. Zhu, C. Magner, A. Zhu, D. Kim, E. Heiden, E. Coumans, M. Macklin, S. Huang, K. Goldberg",
+   "year": 2026,
+   "venue": "arXiv",
+   "note": "Editable solver, contact model and parameters on Newton; humans and coding agents tune simulations against video. Stored PDF is v1. Reviewed in reports/01.",
+   "pdf": true,
+   "arxiv": "2610.18835"
+  },
+  {
+   "key": "heiden2021neuralsim",
+   "cat": "03-sysid-actuators",
+   "title": "NeuralSim: Augmenting Differentiable Simulators with Neural Networks",
+   "authors": "E. Heiden, D. Millard, E. Coumans, Y. Sheng, G. S. Sukhatme",
+   "year": 2021,
+   "venue": "ICRA",
+   "note": "Hybrid differentiable simulator: neural networks inserted where analytical models fall short, including frictional contact.",
+   "arxiv": "2011.04217"
+  },
+  {
+   "key": "heiden2022probabilistic",
+   "cat": "03-sysid-actuators",
+   "title": "Probabilistic Inference of Simulation Parameters via Parallel Differentiable Simulation",
+   "authors": "E. Heiden, C. E. Denniston, D. Millard, F. Ramos, G. S. Sukhatme",
+   "year": 2022,
+   "venue": "ICRA",
+   "note": "Posterior over simulator parameters with Stein variational gradient descent and a multiple-shooting likelihood.",
+   "arxiv": "2109.08815"
+  },
+  {
+   "key": "sobanbabu2025spiactive",
+   "cat": "03-sysid-actuators",
+   "title": "Sampling-Based System Identification with Active Exploration for Legged Robot Sim2Real Learning",
+   "authors": "N. Sobanbabu, G. He, T. He, Y. Yang, G. Shi",
+   "year": 2025,
+   "venue": "arXiv",
+   "note": "SPI-Active: parallel sampling instead of gradients, Fisher-information exploration; 42-63% better than baselines on locomotion tasks.",
+   "arxiv": "2505.14266"
+  },
+  {
+   "key": "chen2024terrain",
+   "cat": "03-sysid-actuators",
+   "title": "Identifying Terrain Physical Parameters from Vision: Towards Physical-Parameter-Aware Locomotion and Navigation",
+   "authors": "J. Chen, J. Frey, R. Zhou, T. Miki, G. Martius, M. Hutter",
+   "year": 2024,
+   "venue": "IEEE RA-L",
+   "note": "Friction and stiffness decoded from proprioception in simulation, then used to label images for a visual predictor (ANYmal).",
+   "arxiv": "2408.16567"
+  },
+  {
+   "key": "roth2025fdm",
+   "cat": "03-sysid-actuators",
+   "title": "Learned Perceptive Forward Dynamics Model for Safe and Platform-aware Robotic Navigation",
+   "authors": "P. Roth, J. Frey, C. Cadena, M. Hutter",
+   "year": 2025,
+   "venue": "RSS",
+   "note": "Forward dynamics model trained on simulated and real experience, used inside MPPI planning.",
+   "arxiv": "2504.19322"
+  },
+  {
+   "key": "pfrommer2020contactnets",
+   "cat": "05-contact-simulators",
+   "title": "ContactNets: Learning Discontinuous Contact Dynamics with Smooth, Implicit Representations",
+   "authors": "S. Pfrommer, M. Halm, M. Posa",
+   "year": 2020,
+   "venue": "CoRL",
+   "note": "Learns signed distances and contact Jacobians with a complementarity-inspired loss; realistic impact and stiction from 60 s of real data.",
+   "arxiv": "2009.11193"
+  },
+  {
+   "key": "hochlehnert2021contact",
+   "cat": "05-contact-simulators",
+   "title": "Learning Contact Dynamics using Physically Structured Neural Networks",
+   "authors": "A. Hochlehnert, A. Terenin, S. Sæmundsson, M. P. Deisenroth",
+   "year": 2021,
+   "venue": "AISTATS",
+   "note": "Physically structured networks learn discontinuous contact data-efficiently; touch feedback makes the problem tractable.",
+   "arxiv": "2102.11206"
+  },
+  {
+   "key": "howell2022dojo",
+   "cat": "05-contact-simulators",
+   "title": "Dojo: A Differentiable Physics Engine for Robotics",
+   "authors": "T. A. Howell, S. Le Cleac'h, J. Brüdigam, Q. Chen, J. Sun, J. Z. Kolter, M. Schwager, Z. Manchester",
+   "year": 2022,
+   "venue": "arXiv",
+   "note": "Hard contact as a nonlinear complementarity problem with cone constraints; tunable smoothing gives useful gradients.",
+   "arxiv": "2203.00806"
+  },
+  {
+   "key": "lelidec2024contact",
+   "cat": "05-contact-simulators",
+   "title": "Contact Models in Robotics: a Comparative Analysis",
+   "authors": "Q. Le Lidec, W. Jallet, L. Montaut, I. Laptev, C. Schmid, J. Carpentier",
+   "year": 2024,
+   "venue": "IEEE T-RO",
+   "note": "Physical relaxations of each simulator's contact model, with quantitative benchmarks.",
+   "arxiv": "2304.06372"
+  },
+  {
+   "key": "schwarke2024diffsim",
+   "cat": "05-contact-simulators",
+   "title": "Learning Deployable Locomotion Control via Differentiable Simulation",
+   "authors": "C. Schwarke, V. Klemm, J. Bagajo, J.-P. Sleiman, I. Georgiev, J. Tordesillas, M. Hutter",
+   "year": 2024,
+   "venue": "arXiv",
+   "note": "Differentiable contact model with informative gradients; first legged policy trained entirely in a differentiable simulator and deployed.",
+   "arxiv": "2404.02887"
+  },
+  {
+   "key": "bagajo2024diffsim2real",
+   "cat": "05-contact-simulators",
+   "title": "DiffSim2Real: Deploying Quadrupedal Locomotion Policies Purely Trained in Differentiable Simulation",
+   "authors": "J. Bagajo, C. Schwarke, V. Klemm, I. Georgiev, J.-P. Sleiman, J. Tordesillas, A. Garg, M. Hutter",
+   "year": 2024,
+   "venue": "arXiv",
+   "note": "Smooth contact model that keeps both gradients and accuracy; real quadruped walking from analytic-gradient training.",
+   "arxiv": "2411.02189"
+  },
+  {
+   "key": "cranmer2020sbi",
+   "cat": "00-surveys",
+   "title": "The frontier of simulation-based inference",
+   "authors": "K. Cranmer, J. Brehmer, G. Louppe",
+   "year": 2020,
+   "venue": "PNAS",
+   "note": "Review of likelihood-free inference: the toolbox behind BayesSim and neural posterior calibration.",
+   "arxiv": "1911.01429"
   }
  ]
 }
