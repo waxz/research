@@ -40,3 +40,7 @@ To rebuild: `python3 tools/build_catalog.py --download --check`, then `python3 t
 - The NFC and GrandTour PDFs (30 MB and 28 MB) are linked, not stored. Quoted results come from the papers' abstracts.
 - The cookbook's numbers are illustrative models, not measurements of specific robots.
 - Fit ratings and the task map are a synthesis, not measurements.
+
+## See also
+
+- [stability-analysis/](../stability-analysis/): Lyapunov, robust and learned stability certificates, from classical control to neural-network controllers.

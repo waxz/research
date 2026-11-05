@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stability Analysis Cookbook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500;75..125,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a two-column reference book. A sticky recipe index on wide screens, one 72ch reading column;
+   recipe headings carry a mono "R" number tab, worked examples and pitfalls are set apart by colour. */
+:root {
+  --bg: #f5f5f1; --paper: #ffffff; --ink: #1c1f1d; --muted: #5f6662; --rule: #d9ddd7;
+  --accent: #3d4fb0; --accent-soft: #e8ebf8; --warm: #a85d0c; --warm-soft: #f7ecdc; --code-bg: #eef0ec;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Literata", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111412; --paper: #181c1a; --ink: #e3e8e4; --muted: #98a19c; --rule: #2d3430;
+    --accent: #95a4f3; --accent-soft: #1f2545; --warm: #efa652; --warm-soft: #3a2a16; --code-bg: #202623;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111412; --paper: #181c1a; --ink: #e3e8e4; --muted: #98a19c; --rule: #2d3430;
+  --accent: #95a4f3; --accent-soft: #1f2545; --warm: #efa652; --warm-soft: #3a2a16; --code-bg: #202623;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.62;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px; }
+.layout { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; }
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; max-height: 100vh; overflow-y: auto; padding: 32px 0 24px; font-family: var(--mono); font-size: .74rem; line-height: 1.45; }
+nav.toc .p { color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin: 14px 0 4px; font-size: .68rem; }
+nav.toc a { display: block; color: var(--ink); text-decoration: none; padding: 2px 6px; border-radius: 3px; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+main { min-width: 0; max-width: 74ch; padding-top: 36px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } nav.toc { display: none; } main { margin: 0 auto; } }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; }
+main > h1:first-child { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; font-stretch: 85%; margin: 0 0 .4rem; }
+main h1 { font-size: 1.9rem; font-weight: 800; font-stretch: 88%; margin: 3.4rem 0 .6rem; padding-top: .8rem; border-top: 3px solid var(--ink); }
+main h2 { font-size: 1.35rem; font-weight: 800; font-stretch: 92%; margin: 2.6rem 0 .5rem; scroll-margin-top: 12px; }
+main h2 .rno { font-family: var(--mono); font-size: .8rem; font-weight: 500; color: var(--paper); background: var(--accent); padding: 2px 7px; border-radius: 3px; margin-right: 10px; vertical-align: 3px; }
+main h3 { font-size: 1.05rem; }
+p { margin: .7rem 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+strong { font-weight: 600; }
+main > p:nth-of-type(1) em { color: var(--muted); }
+ul, ol { padding-left: 1.4em; } li { margin: .25rem 0; }
+li > p { margin: .3rem 0; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+code { font-family: var(--mono); font-size: .86em; background: var(--code-bg); padding: 1px 4px; border-radius: 3px; }
+pre { background: var(--code-bg); padding: 12px 14px; border-radius: 4px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+.tbl { overflow-x: auto; margin: 1rem 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; line-height: 1.42; }
+th, td { text-align: left; padding: 7px 11px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+p.we { background: var(--warm-soft); border-left: 3px solid var(--warm); padding: 8px 14px; border-radius: 0 4px 4px 0; }
+p.pit { color: var(--muted); font-size: .94rem; }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 4px 0; }
+.mermaid { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 12px; overflow-x: auto; text-align: center; }
+.loading { color: var(--muted); font-family: var(--mono); font-size: .85rem; }
+</style>
+<script>
+  window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'local' }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Recipes"></nav>
+  <main id="book"><p class="loading">Rendering the cookbook…</p></main>
+</div>
+<script type="text/markdown" id="src">
+# The Stability Analysis Cookbook
+
+*How to show that a controller is stable, from Lyapunov's 1892 method to certificates for neural-network controllers. A companion to [REPORT.md](../REPORT.md). Related recipes: the [control cookbook](../../control-estimation-theory/cookbook/COOKBOOK.md) (C2 stability, C10 nonlinear control, L4 safe learning) and the [sim-to-real cookbook](../../sim2real/cookbook/COOKBOOK.md) (G2 latency, G17–G19 actuator models).*
+
+Each recipe has the same parts: **Problem**, **Recipe**, **Worked example**, **Used in** and **Pitfalls**. The worked examples come from [`examples.py`](examples.py): `python3 examples.py s05` runs recipe S5. Only NumPy is needed. The numbers come from small illustrative systems, not from measurements of a specific robot.
+
+```mermaid
+flowchart LR
+  A["S1–S5<br/>classical: eigenvalues, Lyapunov equation,<br/>LaSalle, region of attraction, margins"] --> B["S6–S10<br/>robust and nonlinear: circle/Popov,<br/>describing function, passivity, ISS, small gain"]
+  B --> C["S11–S14<br/>design with certificates: CLF, CBF,<br/>Poincaré maps, contraction"]
+  C --> D["S15–S17<br/>learning: neural Lyapunov functions,<br/>bound propagation, safe policy updates"]
+```
+
+## Contents
+
+- **Classical:** [S1 Linearization](#s1-linearization-and-eigenvalues) · [S2 Lyapunov equation](#s2-the-lyapunov-equation) · [S3 Direct method and LaSalle](#s3-the-direct-method-and-lasalles-invariance-principle) · [S4 Region of attraction](#s4-estimating-the-region-of-attraction) · [S5 Margins and delay](#s5-gain-phase-and-delay-margins)
+- **Robust and nonlinear:** [S6 Circle and Popov](#s6-absolute-stability-circle-and-popov-criteria) · [S7 Describing function](#s7-describing-functions-and-limit-cycles) · [S8 Passivity](#s8-passivity-pd-control-with-gravity-compensation) · [S9 ISS](#s9-input-to-state-stability-and-bounded-residuals) · [S10 Small gain](#s10-small-gain-and-neural-network-lipschitz-bounds)
+- **Design with certificates:** [S11 CLF](#s11-control-lyapunov-functions-and-sontags-formula) · [S12 CBF](#s12-control-barrier-functions-a-joint-limit-safety-filter) · [S13 Poincaré maps](#s13-periodic-gaits-poincaré-maps) · [S14 Contraction](#s14-contraction-analysis)
+- **Learning and verification:** [S15 Learned Lyapunov functions](#s15-learning-a-lyapunov-function-learner-and-falsifier) · [S16 Bound propagation](#s16-verifying-a-neural-network-bound-propagation-and-branching) · [S17 Safe policy updates](#s17-lyapunov-checked-policy-updates)
+
+---
+
+# Classical stability
+
+> **Quick start.** Khalil, *Nonlinear Systems*, ch. 4 (Lyapunov stability). Åström & Murray, *Feedback Systems* (free online), ch. 4–5 and 10 (eigenvalues, Lyapunov functions, Nyquist and margins). Tedrake, *Underactuated Robotics* (free online), the Lyapunov analysis chapter.
+
+## S1. Linearization and eigenvalues
+
+**Problem.** Is an equilibrium stable, at least for small deviations?
+
+**Recipe.**
+- Linearize $\dot x=f(x)$ at the equilibrium: $\dot{\delta x}=A\,\delta x$ with $A=\partial f/\partial x$.
+- **Lyapunov's indirect method:**
+  - all eigenvalues of $A$ in the open left half plane: locally exponentially stable;
+  - any eigenvalue in the right half plane: unstable;
+  - eigenvalues on the imaginary axis: the test is inconclusive.
+- **Routh–Hurwitz:** for $s^2+c_1s+c_0$, stability needs $c_1>0$ and $c_0>0$. Higher orders use the Routh table.
+
+**Worked example (`s01`).** An inverted pendulum ($m=l=1$, $g=9.81$, damping 0.1) with PD control $u=-K_p\theta-K_d\dot\theta$:
+- $K_p=5$, $K_d=2$: eigenvalues $1.382$ and $-3.482$, so the pendulum falls. The Routh coefficient $c_0=K_p-mgl=-4.81$ is negative.
+- $K_p=20$, $K_d=5$: eigenvalues $-2.55\pm1.92j$, stable.
+
+**Used in.** Every PID and LQR design; checking a simulator's closed loop before training.
+
+**Pitfalls.** It is a *local* statement: it says nothing about how large a disturbance the loop survives (S4). It does not apply at a marginal case (zero real part).
+
+## S2. The Lyapunov equation
+
+**Problem.** Build a Lyapunov function for a stable linear system, with a guaranteed decay rate.
+
+**Recipe.** Choose $Q\succ0$ and solve
+
+$$A^\top P+PA=-Q .$$
+
+- If $A$ is stable, $P\succ0$ exists and is unique. Then $V=x^\top Px$ satisfies $\dot V=-x^\top Qx\le-\frac{\lambda_{\min}(Q)}{\lambda_{\max}(P)}V$.
+- This $P$ is the starting point for region-of-attraction estimates (S4), ISS bounds (S9) and CLFs (S11).
+- Solve it with `scipy.linalg.solve_continuous_lyapunov`, or by vectorizing as in `examples.py`.
+
+**Worked example (`s02`).** For the stable pendulum of S1 and $Q=I$: $P=\begin{bmatrix}1.347&0.049\\0.049&0.108\end{bmatrix}$, with eigenvalues 0.106 and 1.349. The guaranteed decay is $\lVert x\rVert\propto e^{-0.371t}$, while the true slowest rate is 2.55.
+
+**Used in.** LQR (the Riccati equation is its optimal-control relative); robustness analysis; terminal costs in MPC.
+
+**Pitfalls.** The guaranteed rate depends on $Q$ and can be far below the true rate (here 7× slower). A bound is not an estimate.
+
+## S3. The direct method and LaSalle's invariance principle
+
+**Problem.** Show stability of a *nonlinear* system without solving it.
+
+**Recipe.**
+- **Lyapunov's direct method:** find $V(x)>0$ for $x\ne0$, $V(0)=0$, with $\dot V=\nabla V^\top f(x)\le0$. Then the origin is stable. If $\dot V<0$ for $x\neq0$, it is asymptotically stable. If also $V\to\infty$ as $\lVert x\rVert\to\infty$, the stability is global.
+- **Physical energy is a natural first candidate.**
+- **LaSalle (1960):** if $\dot V\le0$ only, trajectories converge to the largest invariant set inside $\{\dot V=0\}$. When that set is just the equilibrium, asymptotic stability follows.
+
+**Worked example (`s03`).** A hanging pendulum with damping 0.5, started at 2.5 rad.
+- The energy $E=\tfrac12ml^2\dot\theta^2+mgl(1-\cos\theta)$ falls from 17.669 J to $1.1\times10^{-3}$ J in 20 s and never increases.
+- Its derivative $\dot E=-b\dot\theta^2$ is zero whenever $\dot\theta=0$, so the direct method alone gives only stability.
+- LaSalle's principle supplies the convergence: the pendulum cannot stay at $\dot\theta=0$ unless $\theta=0$.
+
+**Used in.** Mechanical systems, adaptive control proofs, PD control of robot arms (S8).
+
+**Pitfalls.**
+- Failing to find a $V$ proves nothing; only finding one does.
+- The energy of a *driven* system can grow.
+
+## S4. Estimating the region of attraction
+
+**Problem.** How far from the equilibrium can the system start and still return?
+
+**Recipe.**
+- Take a Lyapunov function from S2, using the linearization.
+- Find the largest $c$ such that $\dot V<0$ everywhere in $\{V\le c\}\setminus\{0\}$. That sublevel set is an inner estimate of the region of attraction.
+- Sampling a grid gives an estimate. Sum-of-squares programs (Parrilo 2000) or interval bounds (S16) give a proof.
+- Better $V$ (higher-degree polynomials, neural networks) give larger regions.
+
+**Worked example (`s04`).** Reversed-time Van der Pol oscillator; its stable origin is surrounded by an unstable limit cycle.
+- The quadratic estimate $V<2.335$ has area 6.55, and every point in it converges.
+- The true region of attraction, found by simulating a grid, has area 13.57. The quadratic certificate covers 48% of it.
+
+**Used in.** LQR-trees (Tedrake et al. 2010); certifying the operating envelope of a balance controller; neural Lyapunov methods (Chang 2019 reports larger regions than LQR and SOS).
+
+**Pitfalls.** A grid check can miss thin regions where $\dot V\ge0$. The estimate is only as good as the model.
+
+## S5. Gain, phase and delay margins
+
+**Problem.** How much extra gain or delay can a linear loop tolerate?
+
+**Recipe.**
+- For the loop transfer function $L(j\omega)$, find the gain crossover $\omega_c$ where $\lvert L\rvert=1$. The phase margin is $\mathrm{PM}=180^\circ+\angle L(j\omega_c)$.
+- A pure delay $T_d$ subtracts $\omega T_d$ of phase. The **delay margin** is $T_d^{\max}=\mathrm{PM}/\omega_c$ (in radians).
+- For nonlinear and time-varying delays, use Lyapunov–Krasovskii functionals (Fridman 2014).
+
+**Worked example (`s05`).** A joint with inertia $J=0.01$ and damping $0.05$ under PD control ($K_p=10$, $K_d=0.3$):
+- crossover 39.1 rad/s, phase margin 56.8°, delay margin 25.4 ms;
+- with 20.3 ms of delay (0.8× the margin) the joint settles;
+- with 30.4 ms (1.2×) it oscillates and diverges.
+
+**Used in.** Joint servo tuning; latency budgets for sim-to-real (the [sim-to-real cookbook](../../sim2real/cookbook/COOKBOOK.md#g2-latency-and-stability), G2).
+
+**Pitfalls.**
+- Margins describe one loop at a time.
+- Saturation and friction change the effective gain (S6, S7).
+
+---
+
+# Robust and nonlinear stability
+
+> **Quick start.** Khalil, *Nonlinear Systems*, ch. 5–7 (input–output stability, passivity, circle and Popov criteria). Slotine & Li, *Applied Nonlinear Control*, ch. 5 (describing functions). Fridman, "Tutorial on Lyapunov-based methods for time-delay systems" (2014). Megretski & Rantzer (1997) on integral quadratic constraints.
+
+## S6. Absolute stability: circle and Popov criteria
+
+**Problem.** A linear system in feedback with a nonlinearity known only to lie in a sector $0\le\phi(y)/y\le k$, such as saturation or a dead zone. Is the loop stable for *every* such nonlinearity?
+
+**Recipe.**
+- **Circle criterion** (sector $[0,k]$, stable $G$): the loop is globally stable if $\mathrm{Re}\,G(j\omega)>-1/k$ for all $\omega$.
+- **Popov criterion** (time-invariant $\phi$): it is enough that some $q\ge0$ gives $\mathrm{Re}\,[(1+j\omega q)G(j\omega)]>-1/k$ for all $\omega$.
+- Both are frequency-domain tests that come from Lyapunov functions (the Kalman–Yakubovich–Popov lemma).
+
+**Worked example (`s06`).** $G(s)=K/((s+1)(s+2)(s+3))$ with a unit saturation in the loop (sector $[0,1]$):
+- **Linear loop:** stable for $K<60$.
+- **Circle criterion:** certifies $K<27.9$.
+- **Popov criterion:** certifies $K<60$, the full linear range.
+- **Simulation:** starting far outside the linear range (state 5), $K=26.5$ reaches $\lVert x\rVert\approx10^{-28}$, and $K=50$ reaches $10^{-6}$ after 150 s (slowly).
+
+**Used in.** Actuator saturation and dead zones; anti-windup design; the quadratic-constraint analysis of neural-network controllers (Yin et al. 2022 treat activation functions as sector nonlinearities).
+
+**Pitfalls.** These tests are sufficient, not necessary. The circle criterion is often conservative.
+
+## S7. Describing functions and limit cycles
+
+**Problem.** Will a loop with a hard nonlinearity (relay, backlash, Coulomb friction) settle, or oscillate forever?
+
+**Recipe.**
+- Replace the nonlinearity by its gain for a sinusoid of amplitude $A$. For a relay of height $M$: $N(A)=4M/(\pi A)$.
+- A limit cycle is predicted where $G(j\omega)=-1/N(A)$. The frequency is where $\angle G=-180^\circ$, and the amplitude is $A=4M\lvert G\rvert/\pi$.
+
+**Worked example (`s07`).** A relay with $M=1$ and $G(s)=6/(s(s+1)(s+2))$:
+- **Predicted:** $\omega=\sqrt2$, amplitude 1.273, period 4.443 s.
+- **Simulated:** amplitude 1.321, period 4.552 s, so the approximation is within about 4%.
+
+**Used in.** Diagnosing hunting from friction or backlash; relay autotuning of PID controllers.
+
+**Pitfalls.** It is an approximation (it assumes $G$ filters out harmonics), not a proof. Use it to predict oscillations, not to certify their absence.
+
+## S8. Passivity: PD control with gravity compensation
+
+**Problem.** Show that a multi-joint robot arm converges under PD control, despite its nonlinear coupled dynamics.
+
+**Recipe.**
+- Robot dynamics $M(q)\ddot q+C(q,\dot q)\dot q+G(q)=\tau$ are passive: $\dot M-2C$ is skew-symmetric.
+- With $\tau=-K_pe-K_d\dot q+G(q)$ and $e=q-q_d$, take $V=\tfrac12\dot q^\top M\dot q+\tfrac12e^\top K_pe$. Then $\dot V=-\dot q^\top K_d\dot q\le0$, and LaSalle (S3) gives global convergence (Takegaki & Arimoto 1981).
+- Passive subsystems in feedback stay passive. This lets energy arguments compose across subsystems.
+
+**Worked example (`s08`).** A two-link planar arm driven to $q_d=(0.8,-0.5)$ rad:
+- **With gravity compensation:** $V$ falls from 24.20 to $7\times10^{-7}$, never rises, and the final error is 0.
+- **Without it:** a steady-state error of $(-0.460,-0.227)$ rad remains.
+
+**Used in.** Manipulator control, teleoperation, impedance control, physical human–robot interaction.
+
+**Pitfalls.**
+- Passivity is broken by delays, discrete-time control and non-collocated sensing.
+- Gravity compensation needs an accurate model.
+
+## S9. Input-to-state stability and bounded residuals
+
+**Problem.** A model error or disturbance, such as a learned actuator residual $r$, enters the loop. Can the tracking error be bounded?
+
+**Recipe.**
+- **Input-to-state stability** (Sontag 1989): $\lVert x(t)\rVert\le\beta(\lVert x_0\rVert,t)+\gamma(\sup\lVert r\rVert)$.
+- **Lyapunov version:** $\dot V\le-\alpha(\lVert x\rVert)$ whenever $\lVert x\rVert\ge\chi(\lVert r\rVert)$.
+- For a stable linear loop with $\lVert r\rVert\le\delta$, the error enters a ball whose radius is proportional to $\delta$. If $\delta$ is unbounded, nothing can be said.
+- **The tight linear bound** is the peak-to-peak gain: the L1 norm of the impulse response from $r$ to $e$, times $\delta$.
+
+**Worked example (`s09`).** The joint of S5 with residual torque $\lvert r\rvert\le\delta$:
+
+| $\delta$ (N m) | Lyapunov ISS bound on $\lvert e\rvert$ | Tight L1 bound | Reached by the worst-case residual |
+|---:|---:|---:|---:|
+| 0.05 | 5.33 rad | 0.0073 rad | 0.0073 rad |
+| 0.20 | 21.3 rad | 0.0290 rad | 0.0290 rad |
+
+Both bounds grow linearly with $\delta$. The generic Lyapunov bound (with $Q=I$) is valid but about 730× loose; the L1 bound is exact.
+
+**Used in.** Robust MPC, disturbance observers, and the argument for *bounded* learned residuals in actuator models ([sim-to-real review](../../sim2real/reports/01-learned-actuator-contact-models.md)); ISSf-CBFs for humanoid whole-body control (Lee et al. 2026).
+
+**Pitfalls.** Generic Lyapunov ISS bounds can be extremely conservative. Tune $Q$, or use a tight linear bound where possible.
+
+## S10. Small gain and neural-network Lipschitz bounds
+
+**Problem.** A neural network $\phi$ in feedback with a plant $P$. Is the loop stable?
+
+**Recipe.**
+- **Small-gain theorem** (Zames 1966): if $\gamma(P)\,\gamma(\phi)<1$, the loop is stable. Here $\gamma(P)$ is the $H_\infty$ norm of the plant.
+- For a network, $\gamma(\phi)\le\mathrm{Lip}(\phi)\le\prod_i\lVert W_i\rVert_2$, the product of the layers' spectral norms (for 1-Lipschitz activations such as ReLU and tanh). LipSDP (Fazlyab et al. 2019) gives tighter upper bounds by convex optimization.
+- **To make a network certifiable:** penalize spectral norms (spectral normalization), or make the plant faster.
+
+**Worked example (`s10`).** A one-hidden-layer ReLU network (32 units). Its spectral-norm product is 9.10; its true Lipschitz constant is 1.20.
+
+| Plant | $H_\infty$ norm | Bound × plant | Verdict | True constant × plant |
+|---|---:|---:|---|---:|
+| $1/(s+20)$ | 0.05 | 0.46 | certified | 0.06 |
+| $1/(s+5)$ | 0.20 | 1.82 | not certified | 0.24 |
+
+The loop with $1/(s+5)$ is in fact stable (true product 0.24), but the loose bound cannot show it.
+
+**Used in.** Robustness of RL controllers; Lipschitz-constrained policies.
+
+**Pitfalls.** Products of layer norms grow quickly with depth and are very conservative. Small gain ignores phase, so it is conservative even when tight.
+
+---
+
+# Design with certificates
+
+> **Quick start.** Ames et al., "Control Barrier Functions: Theory and Applications" (ECC 2019). Sontag, *Mathematical Control Theory* (free online), ch. 5 (control Lyapunov functions). Westervelt et al., *Feedback Control of Dynamic Bipedal Robot Locomotion* (2007), and Tedrake, *Underactuated Robotics*, "Simple models of walking". Tsukamoto, Chung & Slotine, contraction tutorial (Annual Reviews in Control 2021).
+
+## S11. Control Lyapunov functions and Sontag's formula
+
+**Problem.** Design a controller *from* a Lyapunov function instead of checking one afterwards.
+
+**Recipe.**
+- **Control Lyapunov function (CLF):** for $\dot x=f(x)+g(x)u$, a $V$ with $\inf_u[L_fV+L_gV\,u]<0$ for $x\ne0$. Artstein (1983) showed that such a $V$ implies stabilizability.
+- **Sontag's universal formula** (1989), with $a=L_fV$, $b=L_gV$:
+$$u=-\frac{a+\sqrt{a^2+b^4}}{b}\quad(b\ne0),\qquad u=0\ (b=0).$$
+- **CLF-QP** (Ames et al. 2014): at every step, solve $\min_u\lVert u\rVert^2$ s.t. $L_fV+L_gVu\le-\lambda V$. This adds input limits and other constraints easily.
+
+**Worked example (`s11`).** A double integrator from $x=(1,0)$, with the CLF taken from the LQR Riccati solution:
+- **LQR:** reaches $\lVert x\rVert<0.01$ after 5.27 s, with peak $\lvert u\rvert=1.00$.
+- **Sontag's formula:** reaches it after 5.67 s, with peak $\lvert u\rvert=2.00$.
+
+**Used in.** Bipedal walking (CLF-QPs on hybrid zero dynamics); CLF-shaped rewards for RL humanoid walking (Olkin et al. 2026 prove exponential stability for the optimal CLF-RL policy).
+
+**Pitfalls.** Finding a CLF for a complex system is the hard part. The formula can demand large inputs when $L_gV$ is small.
+
+## S12. Control barrier functions: a joint-limit safety filter
+
+**Problem.** Keep the state inside a safe set (for example, a joint limit) whatever the nominal or learned controller asks for.
+
+**Recipe.**
+- The safe set is $\{h(x)\ge0\}$. If $\dot h\ge-\alpha(h)$ always holds, the set is forward invariant (Ames et al. 2017).
+- For relative degree 2 (position limits under acceleration control), constrain $\ddot h+(a_1+a_2)\dot h+a_1a_2h\ge0$.
+- **Safety filter:** $u=\arg\min\lVert u-u_{\text{nominal}}\rVert^2$ subject to the CBF constraint. With one constraint the solution is a clip.
+
+**Worked example (`s12`).** A joint $\ddot q=u$ with limit $q\le1$, and a PD controller aiming at $q=1.5$:
+- **Without the filter**, the peak is $q=1.744$.
+- **With a second-order CBF** ($a_1=a_2=5$), the peak is $q=1.0000$. The filter stays active because the nominal controller keeps pushing.
+
+**Used in.** Collision avoidance; joint, velocity and torque limits for RL policies on hardware. Acc-CBF-QP (Muraccioli et al. 2026) cut constraint violations of a Safe-RL policy on a real Unitree H1 humanoid by 92%, from 10.04 to 0.80 violations/s.
+
+**Pitfalls.**
+- CBFs certify *safety* (staying inside a set), not convergence.
+- Model errors break the guarantee unless the CBF is made robust (input-to-state safe CBFs).
+- Conflicting constraints can make the QP infeasible.
+
+## S13. Periodic gaits: Poincaré maps
+
+**Problem.** Walking and running are periodic orbits with impacts, not equilibria. How is their stability analysed?
+
+**Recipe.**
+- Sample the state once per step: $x_{k+1}=P(x_k)$, the Poincaré (return) map.
+- A gait is a fixed point $x^*=P(x^*)$. It is locally stable if all eigenvalues of $\partial P/\partial x$ at $x^*$ lie inside the unit circle.
+- **Hybrid zero dynamics** (Westervelt et al. 2003) reduce this map to a low-dimensional one for underactuated bipeds.
+
+**Worked example (`s13`).** The rimless wheel (spoke half-angle $\pi/8$, slope 0.08 rad, $l=1$). Its step map is $\omega_{k+1}^2=\cos^2(2\alpha)\,\omega_k^2+4\frac{g}{l}\sin\alpha\sin\gamma$.
+- **Fixed point:** $\omega^*=1.549$ rad/s, with map slope 0.500 (stable). The post-impact speed of 1.095 rad/s exceeds the 0.975 needed to vault over the next spoke.
+- **Convergence:** starts at 0.6 and 3.0 rad/s converge to $\omega^*$ within a few steps.
+
+**Used in.** Passive and powered walking; humanoid gait design; CLF-RL humanoids that converge to stable periodic orbits (Olkin et al. 2026).
+
+**Pitfalls.**
+- A local test only: large disturbances can leave the basin, for example by not clearing the next step.
+- Numerical Poincaré maps of real robots are noisy.
+
+## S14. Contraction analysis
+
+**Problem.** Show that *all* trajectories converge to each other (so to whatever trajectory the inputs dictate), not just to one equilibrium.
+
+**Recipe.**
+- **Contraction** (Lohmiller & Slotine 1998): if the symmetric part of the Jacobian satisfies $\tfrac12(J+J^\top)\preceq-cI$ for some $c>0$, then any two trajectories under the same input approach each other as $e^{-ct}$. A general metric $M(x)$ allows $\dot M+J^\top M+MJ\preceq-2cM$.
+- **For networks:** $\dot x=-x+\tanh(Wx)+u$ is contracting with rate $1-\lVert W\rVert_2$ when $\lVert W\rVert_2<1$. This makes stability by construction possible for learned dynamics and controllers.
+
+**Worked example (`s14`).** Two trajectories of a four-unit network, started 5.00 apart under the same input:
+- **Random $W$ with $\lVert W\rVert=0.6$:** distance falls to $1.1\times10^{-4}$ after 10 s; the guaranteed bound is $9.2\times10^{-2}$.
+- **$W=2.5I$:** the system is not contracting (bistable), and the distance stays at 3.94.
+
+**Used in.** Neural contraction metrics (Tsukamoto & Chung 2020); stable learned dynamics models (Manek & Kolter 2019); tracking controllers for robots and drones.
+
+**Pitfalls.** Uniform contraction is a strong property, and many useful systems with several equilibria cannot have it.
+
+---
+
+# Learning and verification
+
+> **Quick start.** Dawson, Gao & Fan, "Safe Control with Learned Certificates" (T-RO 2023). Li et al., "Bridging Control with Neural Network Verifier α,β-CROWN: A Tutorial" (2026). Brunke et al., "Safe Learning in Robotics" (Annual Review of Control, Robotics, and Autonomous Systems, 2022).
+
+## S15. Learning a Lyapunov function: learner and falsifier
+
+**Problem.** No hand-made Lyapunov function works. Learn one from samples.
+
+**Recipe** (counterexample-guided synthesis, as in Chang et al. 2019):
+1. Parameterize $V_\theta$ so that $V>0$ by construction: here $V=\mu\lVert x\rVert^2+\lVert L^\top z(x)\rVert^2$, where $z$ are monomials. Networks with positive outputs also work.
+2. **Learner:** minimize the hinge loss $\sum\max(0,\dot V_\theta+\epsilon V_\theta)$ on sampled states.
+3. **Falsifier:** search for states that violate $\dot V\le-\epsilon V$ and add them to the samples. Use a dense grid, gradient search or, for a proof, an SMT, mixed-integer or bound-propagation solver (S16).
+4. Repeat until the falsifier finds nothing. The controller can be learned in the same loop.
+
+**Worked example (`s15`).** A damped pendulum on $[-2,2]^2$ with $\epsilon=0.05$:
+- A plain quadratic $V=\lVert x\rVert^2$ violates the decrease condition at 11% of a 161×161 grid.
+- After 4 learner–falsifier rounds (533 samples), the learned $V$ has no counterexamples left on the grid.
+
+**Used in.**
+- Neural Lyapunov Control (Chang 2019, SMT falsifier); Lyapunov-stable neural control (Dai 2021, mixed-integer programs);
+- GPU bound propagation (Yang 2024, which avoids SOS, MIP and SMT solvers);
+- unknown dynamics (Zhou 2022); discrete-time systems (Wu 2023);
+- switched systems (Huang et al. 2026, neural multiple Lyapunov functions).
+
+**Pitfalls.**
+- A grid check is a falsifier, not a proof.
+- Verification cost grows steeply with state dimension and network size.
+- A certificate holds only for the model used.
+
+## S16. Verifying a neural network: bound propagation and branching
+
+**Problem.** Bound a network's output, or $\dot V$ of a closed loop, over a whole region, not just at samples.
+
+**Recipe.**
+- **Interval bound propagation:** push the input box $[\underline x,\overline x]$ through each layer. For $y=Wx+b$: centre $Wc+b$, radius $\lvert W\rvert r$. ReLU clips both ends at 0.
+- **Linear relaxations:** CROWN and α,β-CROWN replace intervals with linear bounds that are much tighter.
+- **Branch and bound:** split boxes (or neurons) until each sub-problem is proven or a counterexample is found. Reluplex (Katz 2017) and mixed-integer programs are exact but slower.
+- **Use for Lyapunov conditions:** apply this to $V$ and $\dot V$ instead of to the output.
+
+**Worked example (`s16`).** A 2→16→16→1 ReLU controller on $[-1,1]^2$. Sampling 200,000 points shows outputs in $[-0.462, 2.523]$.
+
+| Boxes | Interval bounds | Width |
+|---:|---|---:|
+| 1 | [−6.002, 10.099] | 16.10 |
+| 16 | [−2.018, 3.871] | 5.89 |
+| 256 | [−1.087, 2.839] | 3.93 |
+| 4096 | [−0.628, 2.611] | 3.24 |
+
+The bounds are guaranteed and always contain the sampled range. Branching tightens them toward it.
+
+**Used in.** α,β-CROWN (winner of the VNN-COMP competitions); verified neural Lyapunov control (Yang 2024); reachability of neural feedback loops (Everett 2021).
+
+**Pitfalls.** Plain intervals are very loose for deep networks. The number of boxes grows exponentially with input dimension.
+
+## S17. Lyapunov-checked policy updates
+
+**Problem.** Improve a policy by learning without ever making the closed loop unstable during training.
+
+**Recipe.**
+- Take a policy-gradient step, then *check* the new policy before accepting it:
+  - in the linear case, the closed-loop spectral radius must be below 1 and a Lyapunov function must still decrease;
+  - in general, use a certified region (Berkenkamp 2017), a Lyapunov constraint in a constrained MDP (Chow 2018), or a Lyapunov critic (Han 2020).
+- If the check fails, shorten the step (backtracking), or keep the old policy.
+
+**Worked example (`s17`).** A discrete double integrator with a linear policy $u=-Kx$, normalized gradient steps of size 6 on the LQR cost:
+- **Plain steps:** the closed loop goes unstable at step 2.
+- **Lyapunov-checked steps:** remain stable throughout and reach cost 18.789. The check shortened steps 213 times.
+
+**Used in.** Safe model-based RL (Berkenkamp 2017); Lyapunov-based safe RL (Chow 2018); actor-critic with stability guarantee (Han 2020); safe RL for legged robots with a recovery policy (Yang et al. 2022).
+
+**Pitfalls.**
+- The check is only as good as the model.
+- Conservative checks slow learning.
+- For deep RL policies on legged robots, no tractable exact check exists. Empirical stress tests and safety filters (S12) are used instead.
+
+---
+
+# Appendix · Quick reference
+
+| Idea | Condition |
+|---|---|
+| Indirect method | eigenvalues of $\partial f/\partial x$ in the open left half plane |
+| Lyapunov equation | $A^\top P+PA=-Q$, $P\succ0$ |
+| Direct method | $V>0$, $\dot V<0$; LaSalle when $\dot V\le0$ |
+| Region of attraction | largest $\{V\le c\}$ with $\dot V<0$ inside |
+| Delay margin | $\mathrm{PM}/\omega_c$ |
+| Circle criterion, sector $[0,k]$ | $\mathrm{Re}\,G(j\omega)>-1/k$ |
+| Popov criterion | $\mathrm{Re}\,[(1+j\omega q)G(j\omega)]>-1/k$ for some $q\ge0$ |
+| Describing function, relay | $N(A)=4M/(\pi A)$; limit cycle where $G=-1/N$ |
+| Passivity of robot dynamics | $\dot M-2C$ skew-symmetric |
+| ISS | $\lVert x\rVert\le\beta(\lVert x_0\rVert,t)+\gamma(\sup\lVert r\rVert)$ |
+| Small gain | $\gamma(P)\gamma(\phi)<1$; $\mathrm{Lip}(\phi)\le\prod\lVert W_i\rVert_2$ |
+| Sontag's formula | $u=-(a+\sqrt{a^2+b^4})/b$ |
+| Control barrier function | $\dot h\ge-\alpha(h)$ |
+| Poincaré stability | eigenvalues of $\partial P/\partial x$ inside the unit circle |
+| Contraction | $\tfrac12(J+J^\top)\preceq-cI$ |
+| Neural Lyapunov training | hinge loss on $\dot V+\epsilon V$, plus a falsifier |
+| Interval bounds | centre $Wc+b$, radius $\lvert W\rvert r$ |
+
+</script>
+<script>
+(function () {
+  var src = document.getElementById('src').textContent;
+  var store = [];
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  // protect math from the Markdown parser
+  src = src.replace(/\$\$([\s\S]+?)\$\$/g, function (_, m) { store.push('\\[' + esc(m) + '\\]'); return '@@M' + (store.length - 1) + '@@'; });
+  src = src.replace(/\$([^\n$]+?)\$/g, function (_, m) { store.push('\\(' + esc(m) + '\\)'); return '@@M' + (store.length - 1) + '@@'; });
+  var html = marked.parse(src, { gfm: true });
+  html = html.replace(/@@M(\d+)@@/g, function (_, i) { return store[+i]; });
+  var book = document.getElementById('book');
+  book.innerHTML = html;
+  function slug(t) { return t.trim().toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-'); }
+  var toc = document.getElementById('toc');
+  book.querySelectorAll('h1, h2').forEach(function (h) {
+    h.id = slug(h.textContent);
+    if (h.tagName === 'H1' && h !== book.firstElementChild) {
+      var p = document.createElement('div'); p.className = 'p'; p.textContent = h.textContent; toc.appendChild(p);
+    }
+    if (h.tagName === 'H2') {
+      var m = h.textContent.match(/^([A-Z]\d+)\.\s*(.*)$/);
+      if (m) { h.innerHTML = '<span class="rno">' + m[1] + '</span>' + h.innerHTML.replace(/^[A-Z]\d+\.\s*/, ''); }
+      var a = document.createElement('a'); a.href = '#' + h.id; a.textContent = m ? m[1] + ' · ' + m[2] : h.textContent; toc.appendChild(a);
+    }
+  });
+  book.querySelectorAll('table').forEach(function (t) { var w = document.createElement('div'); w.className = 'tbl'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
+  book.querySelectorAll('p').forEach(function (p) {
+    var s = p.firstElementChild;
+    if (s && s.tagName === 'STRONG' && p.firstChild === s) {
+      if (/^Worked example/.test(s.textContent)) p.className = 'we';
+      if (/^Pitfalls/.test(s.textContent)) p.className = 'pit';
+    }
+  });
+  book.querySelectorAll('pre code.language-mermaid').forEach(function (c) { var d = document.createElement('div'); d.className = 'mermaid'; d.textContent = c.textContent; c.parentNode.replaceWith(d); });
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark' || (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  try { mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'neutral' }); mermaid.run({ querySelector: '.mermaid' }); } catch (e) {}
+  if (location.hash) { var t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); }
+  MathJax.startup.promise.then(function () { return MathJax.typesetPromise([book]); });
+})();
+</script>
+</body>
+</html>

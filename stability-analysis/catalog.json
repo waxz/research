@@ -1,0 +1,686 @@
+{
+ "categories": [
+  {
+   "id": "00-surveys-books",
+   "name": "Surveys, tutorials and free books",
+   "about": "Overviews of learned certificates, safe learning, barrier functions, contraction and verification, plus free textbooks."
+  },
+  {
+   "id": "01-classical",
+   "name": "Classical stability",
+   "about": "The founding results: governors, polynomial criteria, Lyapunov's method, Nyquist, LaSalle."
+  },
+  {
+   "id": "02-robust-nonlinear",
+   "name": "Robust, nonlinear and hybrid stability",
+   "about": "Absolute stability, small gain, dissipativity, passivity, ISS, IQCs, contraction, switched systems and time delay."
+  },
+  {
+   "id": "03-computation-design",
+   "name": "Computation and design with certificates",
+   "about": "Sum-of-squares, control Lyapunov and barrier functions, LQR-trees, hybrid zero dynamics."
+  },
+  {
+   "id": "04-learning-with-guarantees",
+   "name": "Learning with stability and safety guarantees",
+   "about": "Lyapunov-constrained RL, learned Lyapunov, barrier and contraction certificates, stable learned dynamics."
+  },
+  {
+   "id": "05-nn-verification",
+   "name": "Neural-network verification for control",
+   "about": "Exact and bound-propagation verifiers, Lipschitz bounds, quadratic constraints and verified neural controllers."
+  },
+  {
+   "id": "06-robot-deployment",
+   "name": "Stability and safety on real robots",
+   "about": "Safety filters and stability-guided learning deployed on legged robots, humanoids and manipulators."
+  }
+ ],
+ "papers": [
+  {
+   "key": "dawson2023certificates",
+   "cat": "00-surveys-books",
+   "title": "Safe Control with Learned Certificates: A Survey of Neural Lyapunov, Barrier, and Contraction methods",
+   "authors": "C. Dawson, S. Gao, C. Fan",
+   "year": 2023,
+   "venue": "IEEE T-RO",
+   "note": "Survey of neural Lyapunov, barrier and contraction certificates learned with controllers.",
+   "arxiv": "2202.11762",
+   "pdf": true
+  },
+  {
+   "key": "brunke2022safelearning",
+   "cat": "00-surveys-books",
+   "title": "Safe Learning in Robotics: From Learning-Based Control to Safe Reinforcement Learning",
+   "authors": "L. Brunke, M. Greeff, A. W. Hall, Z. Yuan, S. Zhou et al.",
+   "year": 2022,
+   "venue": "Annual Review of Control, Robotics, and Autonomous Systems",
+   "note": "Safe learning in robotics, from learning-based control to safe RL.",
+   "arxiv": "2108.06266"
+  },
+  {
+   "key": "ames2019cbf",
+   "cat": "00-surveys-books",
+   "title": "Control Barrier Functions: Theory and Applications",
+   "authors": "A. D. Ames, S. Coogan, M. Egerstedt, G. Notomista, K. Sreenath, P. Tabuada",
+   "year": 2019,
+   "venue": "ECC",
+   "note": "Tutorial overview of control barrier functions and CLF–CBF quadratic programs.",
+   "arxiv": "1903.11199",
+   "pdf": true
+  },
+  {
+   "key": "tsukamoto2021contraction",
+   "cat": "00-surveys-books",
+   "title": "Contraction Theory for Nonlinear Stability Analysis and Learning-based Control: A Tutorial Overview",
+   "authors": "H. Tsukamoto, S.-J. Chung, J.-J. E. Slotine",
+   "year": 2021,
+   "venue": "Annual Reviews in Control",
+   "note": "Tutorial on contraction theory for stability analysis and learning-based control.",
+   "arxiv": "2110.00675"
+  },
+  {
+   "key": "hsu2023safetyfilter",
+   "cat": "00-surveys-books",
+   "title": "The Safety Filter: A Unified View of Safety-Critical Control in Autonomous Systems",
+   "authors": "K.-C. Hsu, H. Hu, J. F. Fisac",
+   "year": 2023,
+   "venue": "Annual Review of Control, Robotics, and Autonomous Systems",
+   "note": "Unified view of safety filters: barrier functions, reachability, predictive filters.",
+   "arxiv": "2309.05837"
+  },
+  {
+   "key": "li2026crowntutorial",
+   "cat": "00-surveys-books",
+   "title": "Bridging Control with Neural Network Verifier alpha-beta-CROWN: A Tutorial",
+   "authors": "H. Li, X. Zhong, H. Cheng, B. Hu, H. Zhang",
+   "year": 2026,
+   "venue": "arXiv",
+   "note": "Tutorial on using the α,β-CROWN verifier for Lyapunov, barrier and reachability problems in control.",
+   "arxiv": "2605.26577",
+   "pdf": true
+  },
+  {
+   "key": "quan2026stabilization",
+   "cat": "00-surveys-books",
+   "title": "Stabilization Learning: A Paradigm Transition Bridging Control Theory and Machine Learning",
+   "authors": "Q. Quan",
+   "year": 2026,
+   "venue": "arXiv",
+   "note": "Proposes 'stabilization learning': stability, not reward, as the primary objective of learned control.",
+   "arxiv": "2606.31562"
+  },
+  {
+   "key": "boyd1994lmi",
+   "cat": "00-surveys-books",
+   "title": "Linear Matrix Inequalities in System and Control Theory",
+   "authors": "S. Boyd, L. El Ghaoui, E. Feron, V. Balakrishnan",
+   "year": 1994,
+   "venue": "SIAM (free online)",
+   "note": "LMIs for Lyapunov functions, absolute stability and robust control.",
+   "url": "https://web.stanford.edu/~boyd/lmibook/"
+  },
+  {
+   "key": "sontag1998book",
+   "cat": "00-surveys-books",
+   "title": "Mathematical Control Theory: Deterministic Finite Dimensional Systems (2nd ed.)",
+   "authors": "E. D. Sontag",
+   "year": 1998,
+   "venue": "Springer (free PDF)",
+   "note": "Control Lyapunov functions, ISS and nonlinear stabilization.",
+   "url": "http://www.sontaglab.org/FTPDIR/sontag_mathematical_control_theory_springer98.pdf"
+  },
+  {
+   "key": "astrom2008feedback",
+   "cat": "00-surveys-books",
+   "title": "Feedback Systems: An Introduction for Scientists and Engineers",
+   "authors": "K. J. Åström, R. M. Murray",
+   "year": 2008,
+   "venue": "Princeton University Press (free online)",
+   "note": "Eigenvalues, Lyapunov functions, Nyquist criterion and margins.",
+   "url": "https://fbswiki.org/"
+  },
+  {
+   "key": "tedrake2023underactuated",
+   "cat": "00-surveys-books",
+   "title": "Underactuated Robotics",
+   "authors": "R. Tedrake",
+   "year": 2023,
+   "venue": "MIT course notes (free online)",
+   "note": "Lyapunov analysis, sum-of-squares, regions of attraction, walking models.",
+   "url": "https://underactuated.mit.edu/"
+  },
+  {
+   "key": "maxwell1868governors",
+   "cat": "01-classical",
+   "title": "On Governors",
+   "authors": "J. C. Maxwell",
+   "year": 1868,
+   "venue": "Proceedings of the Royal Society of London",
+   "note": "First mathematical stability analysis of a feedback mechanism.",
+   "doi": "10.1098/rspl.1867.0055",
+   "url": "https://doi.org/10.1098/rspl.1867.0055"
+  },
+  {
+   "key": "hurwitz1895criterion",
+   "cat": "01-classical",
+   "title": "Ueber die Bedingungen, unter welchen eine Gleichung nur Wurzeln mit negativen reellen Theilen besitzt",
+   "authors": "A. Hurwitz",
+   "year": 1895,
+   "venue": "Mathematische Annalen",
+   "note": "Hurwitz criterion: stability from polynomial coefficients.",
+   "doi": "10.1007/BF01446812",
+   "url": "https://doi.org/10.1007/BF01446812"
+  },
+  {
+   "key": "lyapunov1892stability",
+   "cat": "01-classical",
+   "title": "The General Problem of the Stability of Motion (1892; English translation 1992)",
+   "authors": "A. M. Lyapunov",
+   "year": 1992,
+   "venue": "International Journal of Control",
+   "note": "Lyapunov's thesis: the direct and indirect methods.",
+   "doi": "10.1080/00207179208934253",
+   "url": "https://doi.org/10.1080/00207179208934253"
+  },
+  {
+   "key": "nyquist1932regeneration",
+   "cat": "01-classical",
+   "title": "Regeneration Theory",
+   "authors": "H. Nyquist",
+   "year": 1932,
+   "venue": "Bell System Technical Journal",
+   "note": "Closed-loop stability from the open-loop frequency response.",
+   "doi": "10.1002/j.1538-7305.1932.tb02344.x",
+   "url": "https://doi.org/10.1002/j.1538-7305.1932.tb02344.x"
+  },
+  {
+   "key": "lasalle1960extensions",
+   "cat": "01-classical",
+   "title": "Some Extensions of Liapunov's Second Method",
+   "authors": "J. P. LaSalle",
+   "year": 1960,
+   "venue": "IRE Transactions on Circuit Theory",
+   "note": "Invariance principle: convergence from dV/dt <= 0.",
+   "doi": "10.1109/TCT.1960.1086720",
+   "url": "https://doi.org/10.1109/TCT.1960.1086720"
+  },
+  {
+   "key": "kalman1963lure",
+   "cat": "02-robust-nonlinear",
+   "title": "Lyapunov Functions for the Problem of Lur'e in Automatic Control",
+   "authors": "R. E. Kalman",
+   "year": 1963,
+   "venue": "PNAS",
+   "note": "KYP lemma: frequency-domain tests (Popov) linked to Lyapunov functions.",
+   "doi": "10.1073/pnas.49.2.201",
+   "url": "https://doi.org/10.1073/pnas.49.2.201"
+  },
+  {
+   "key": "zames1966io",
+   "cat": "02-robust-nonlinear",
+   "title": "On the Input-Output Stability of Time-Varying Nonlinear Feedback Systems, Part I",
+   "authors": "G. Zames",
+   "year": 1966,
+   "venue": "IEEE Transactions on Automatic Control",
+   "note": "Small-gain theorem and the circle criterion for feedback interconnections.",
+   "doi": "10.1109/TAC.1966.1098316",
+   "url": "https://doi.org/10.1109/TAC.1966.1098316"
+  },
+  {
+   "key": "willems1972dissipative",
+   "cat": "02-robust-nonlinear",
+   "title": "Dissipative Dynamical Systems Part I: General Theory",
+   "authors": "J. C. Willems",
+   "year": 1972,
+   "venue": "Archive for Rational Mechanics and Analysis",
+   "note": "Dissipativity and storage functions: the general theory of passivity.",
+   "doi": "10.1007/BF00276493",
+   "url": "https://doi.org/10.1007/BF00276493"
+  },
+  {
+   "key": "takegaki1981pd",
+   "cat": "02-robust-nonlinear",
+   "title": "A New Feedback Method for Dynamic Control of Manipulators",
+   "authors": "M. Takegaki, S. Arimoto",
+   "year": 1981,
+   "venue": "Journal of Dynamic Systems, Measurement, and Control",
+   "note": "PD control with gravity compensation is globally stable for robot arms.",
+   "doi": "10.1115/1.3139651",
+   "url": "https://doi.org/10.1115/1.3139651"
+  },
+  {
+   "key": "sontag1989iss",
+   "cat": "02-robust-nonlinear",
+   "title": "Smooth Stabilization Implies Coprime Factorization",
+   "authors": "E. D. Sontag",
+   "year": 1989,
+   "venue": "IEEE Transactions on Automatic Control",
+   "note": "Introduces input-to-state stability (ISS).",
+   "doi": "10.1109/9.28018",
+   "url": "https://doi.org/10.1109/9.28018"
+  },
+  {
+   "key": "megretski1997iqc",
+   "cat": "02-robust-nonlinear",
+   "title": "System Analysis via Integral Quadratic Constraints",
+   "authors": "A. Megretski, A. Rantzer",
+   "year": 1997,
+   "venue": "IEEE Transactions on Automatic Control",
+   "note": "Unified robustness analysis with integral quadratic constraints.",
+   "doi": "10.1109/9.587335",
+   "url": "https://doi.org/10.1109/9.587335"
+  },
+  {
+   "key": "branicky1998multiple",
+   "cat": "02-robust-nonlinear",
+   "title": "Multiple Lyapunov Functions and Other Analysis Tools for Switched and Hybrid Systems",
+   "authors": "M. S. Branicky",
+   "year": 1998,
+   "venue": "IEEE Transactions on Automatic Control",
+   "note": "Stability of switched and hybrid systems with multiple Lyapunov functions.",
+   "doi": "10.1109/9.664150",
+   "url": "https://doi.org/10.1109/9.664150"
+  },
+  {
+   "key": "lohmiller1998contraction",
+   "cat": "02-robust-nonlinear",
+   "title": "On Contraction Analysis for Non-linear Systems",
+   "authors": "W. Lohmiller, J.-J. E. Slotine",
+   "year": 1998,
+   "venue": "Automatica",
+   "note": "Contraction: incremental stability via a metric on the Jacobian.",
+   "doi": "10.1016/S0005-1098(98)00019-3",
+   "url": "https://doi.org/10.1016/S0005-1098(98)00019-3"
+  },
+  {
+   "key": "fridman2014delay",
+   "cat": "02-robust-nonlinear",
+   "title": "Tutorial on Lyapunov-based Methods for Time-Delay Systems",
+   "authors": "E. Fridman",
+   "year": 2014,
+   "venue": "European Journal of Control",
+   "note": "Lyapunov–Krasovskii functionals and LMIs for delay systems.",
+   "doi": "10.1016/j.ejcon.2014.10.001",
+   "url": "https://doi.org/10.1016/j.ejcon.2014.10.001"
+  },
+  {
+   "key": "artstein1983clf",
+   "cat": "03-computation-design",
+   "title": "Stabilization with Relaxed Controls",
+   "authors": "Z. Artstein",
+   "year": 1983,
+   "venue": "Nonlinear Analysis: Theory, Methods & Applications",
+   "note": "A control Lyapunov function implies stabilizability.",
+   "doi": "10.1016/0362-546X(83)90049-4",
+   "url": "https://doi.org/10.1016/0362-546X(83)90049-4"
+  },
+  {
+   "key": "sontag1989universal",
+   "cat": "03-computation-design",
+   "title": "A 'Universal' Construction of Artstein's Theorem on Nonlinear Stabilization",
+   "authors": "E. D. Sontag",
+   "year": 1989,
+   "venue": "Systems & Control Letters",
+   "note": "Sontag's formula: a feedback law from any control Lyapunov function.",
+   "doi": "10.1016/0167-6911(89)90028-5",
+   "url": "https://doi.org/10.1016/0167-6911(89)90028-5"
+  },
+  {
+   "key": "papachristodoulou2002sos",
+   "cat": "03-computation-design",
+   "title": "On the Construction of Lyapunov Functions using the Sum of Squares Decomposition",
+   "authors": "A. Papachristodoulou, S. Prajna",
+   "year": 2002,
+   "venue": "IEEE CDC",
+   "note": "Polynomial Lyapunov functions by sum-of-squares programming.",
+   "doi": "10.1109/CDC.2002.1184414",
+   "url": "https://doi.org/10.1109/CDC.2002.1184414"
+  },
+  {
+   "key": "parrilo2003sos",
+   "cat": "03-computation-design",
+   "title": "Semidefinite Programming Relaxations for Semialgebraic Problems",
+   "authors": "P. A. Parrilo",
+   "year": 2003,
+   "venue": "Mathematical Programming",
+   "note": "Sum-of-squares relaxations, following Parrilo's 2000 Caltech thesis.",
+   "doi": "10.1007/s10107-003-0387-5",
+   "url": "https://doi.org/10.1007/s10107-003-0387-5"
+  },
+  {
+   "key": "tedrake2010lqrtrees",
+   "cat": "03-computation-design",
+   "title": "LQR-trees: Feedback Motion Planning via Sums-of-Squares Verification",
+   "authors": "R. Tedrake, I. R. Manchester, M. Tobenkin, J. W. Roberts",
+   "year": 2010,
+   "venue": "International Journal of Robotics Research",
+   "note": "Verified regions of attraction stitched into a feedback motion plan.",
+   "doi": "10.1177/0278364910369189",
+   "url": "https://doi.org/10.1177/0278364910369189"
+  },
+  {
+   "key": "westervelt2003hzd",
+   "cat": "03-computation-design",
+   "title": "Hybrid Zero Dynamics of Planar Biped Walkers",
+   "authors": "E. R. Westervelt, J. W. Grizzle, D. E. Koditschek",
+   "year": 2003,
+   "venue": "IEEE Transactions on Automatic Control",
+   "note": "Stability of underactuated bipedal walking via hybrid zero dynamics and Poincaré maps.",
+   "doi": "10.1109/TAC.2002.806653",
+   "url": "https://doi.org/10.1109/TAC.2002.806653"
+  },
+  {
+   "key": "ames2014resclf",
+   "cat": "03-computation-design",
+   "title": "Rapidly Exponentially Stabilizing Control Lyapunov Functions and Hybrid Zero Dynamics",
+   "authors": "A. D. Ames, K. Galloway, K. Sreenath, J. W. Grizzle",
+   "year": 2014,
+   "venue": "IEEE Transactions on Automatic Control",
+   "note": "CLF-QPs for bipedal walking.",
+   "doi": "10.1109/TAC.2014.2299335",
+   "url": "https://doi.org/10.1109/TAC.2014.2299335"
+  },
+  {
+   "key": "ames2017cbfqp",
+   "cat": "03-computation-design",
+   "title": "Control Barrier Function Based Quadratic Programs for Safety Critical Systems",
+   "authors": "A. D. Ames, X. Xu, J. W. Grizzle, P. Tabuada",
+   "year": 2017,
+   "venue": "IEEE Transactions on Automatic Control",
+   "note": "Control barrier functions unified with CLFs in real-time quadratic programs.",
+   "arxiv": "1609.06408"
+  },
+  {
+   "key": "perkins2002lyapunov",
+   "cat": "04-learning-with-guarantees",
+   "title": "Lyapunov Design for Safe Reinforcement Learning",
+   "authors": "T. J. Perkins, A. G. Barto",
+   "year": 2002,
+   "venue": "Journal of Machine Learning Research",
+   "note": "First Lyapunov-constrained RL: actions restricted so that a Lyapunov function decreases.",
+   "url": "https://www.jmlr.org/papers/v3/perkins02a.html"
+  },
+  {
+   "key": "berkenkamp2017safe",
+   "cat": "04-learning-with-guarantees",
+   "title": "Safe Model-based Reinforcement Learning with Stability Guarantees",
+   "authors": "F. Berkenkamp, M. Turchetta, A. P. Schoellig, A. Krause",
+   "year": 2017,
+   "venue": "NeurIPS",
+   "note": "Safe model-based RL: statistical models certify and expand a region of attraction during learning.",
+   "arxiv": "1705.08551",
+   "pdf": true
+  },
+  {
+   "key": "richards2018lyapunovnn",
+   "cat": "04-learning-with-guarantees",
+   "title": "The Lyapunov Neural Network: Adaptive Stability Certification for Safe Learning of Dynamical Systems",
+   "authors": "S. M. Richards, F. Berkenkamp, A. Krause",
+   "year": 2018,
+   "venue": "CoRL",
+   "note": "Lyapunov neural network that learns a safety certificate for a closed loop.",
+   "arxiv": "1808.00924",
+   "pdf": true
+  },
+  {
+   "key": "chow2018lyapunov",
+   "cat": "04-learning-with-guarantees",
+   "title": "A Lyapunov-based Approach to Safe Reinforcement Learning",
+   "authors": "Y. Chow, O. Nachum, E. Duenez-Guzman, M. Ghavamzadeh",
+   "year": 2018,
+   "venue": "NeurIPS",
+   "note": "Lyapunov-based safe RL in constrained MDPs.",
+   "arxiv": "1805.07708",
+   "pdf": true
+  },
+  {
+   "key": "chang2019neurallyap",
+   "cat": "04-learning-with-guarantees",
+   "title": "Neural Lyapunov Control",
+   "authors": "Y.-C. Chang, N. Roohi, S. Gao",
+   "year": 2019,
+   "venue": "NeurIPS",
+   "note": "Learns controller and neural Lyapunov function with a falsifier; larger regions of attraction than LQR and SOS.",
+   "arxiv": "2005.00611",
+   "pdf": true
+  },
+  {
+   "key": "manek2019stable",
+   "cat": "04-learning-with-guarantees",
+   "title": "Learning Stable Deep Dynamics Models",
+   "authors": "G. Manek, J. Z. Kolter",
+   "year": 2019,
+   "venue": "NeurIPS",
+   "note": "Deep dynamics models stable by construction via a jointly learned Lyapunov function.",
+   "arxiv": "2001.06116"
+  },
+  {
+   "key": "han2020actorcritic",
+   "cat": "04-learning-with-guarantees",
+   "title": "Actor-Critic Reinforcement Learning for Control with Stability Guarantee",
+   "authors": "M. Han, L. Zhang, J. Wang, W. Pan",
+   "year": 2020,
+   "venue": "IEEE Robotics and Automation Letters",
+   "note": "Actor-critic RL with a Lyapunov critic for closed-loop stability guarantees.",
+   "arxiv": "2004.14288"
+  },
+  {
+   "key": "cheng2019rlcbf",
+   "cat": "04-learning-with-guarantees",
+   "title": "End-to-End Safe Reinforcement Learning through Barrier Functions for Safety-Critical Continuous Control Tasks",
+   "authors": "R. Cheng, G. Orosz, R. M. Murray, J. W. Burdick",
+   "year": 2019,
+   "venue": "AAAI",
+   "note": "Model-free RL combined with CBF controllers to stay safe during learning.",
+   "arxiv": "1903.08792"
+  },
+  {
+   "key": "taylor2020learningcbf",
+   "cat": "04-learning-with-guarantees",
+   "title": "Learning for Safety-Critical Control with Control Barrier Functions",
+   "authors": "A. Taylor, A. Singletary, Y. Yue, A. Ames",
+   "year": 2020,
+   "venue": "L4DC",
+   "note": "Learning to reduce model uncertainty in CBF safety constraints.",
+   "arxiv": "1912.10099"
+  },
+  {
+   "key": "robey2020learningcbf",
+   "cat": "04-learning-with-guarantees",
+   "title": "Learning Control Barrier Functions from Expert Demonstrations",
+   "authors": "A. Robey, H. Hu, L. Lindemann, H. Zhang, D. V. Dimarogonas et al.",
+   "year": 2020,
+   "venue": "IEEE CDC",
+   "note": "Learning control barrier functions from expert demonstrations.",
+   "arxiv": "2004.03315"
+  },
+  {
+   "key": "tsukamoto2020ncm",
+   "cat": "04-learning-with-guarantees",
+   "title": "Neural Contraction Metrics for Robust Estimation and Control: A Convex Optimization Approach",
+   "authors": "H. Tsukamoto, S.-J. Chung",
+   "year": 2020,
+   "venue": "IEEE Control Systems Letters",
+   "note": "Neural contraction metrics for robust estimation and control.",
+   "arxiv": "2006.04361"
+  },
+  {
+   "key": "zhou2022unknown",
+   "cat": "04-learning-with-guarantees",
+   "title": "Neural Lyapunov Control of Unknown Nonlinear Systems with Stability Guarantees",
+   "authors": "R. Zhou, T. Quartz, H. De Sterck, J. Liu",
+   "year": 2022,
+   "venue": "NeurIPS",
+   "note": "Neural Lyapunov control of unknown nonlinear systems, with an SMT-verified region of attraction.",
+   "arxiv": "2206.01913"
+  },
+  {
+   "key": "wu2023discrete",
+   "cat": "04-learning-with-guarantees",
+   "title": "Neural Lyapunov Control for Discrete-Time Systems",
+   "authors": "J. Wu, A. Clark, Y. Kantaros, Y. Vorobeychik",
+   "year": 2023,
+   "venue": "NeurIPS",
+   "note": "Neural Lyapunov control for discrete-time systems.",
+   "arxiv": "2305.06547"
+  },
+  {
+   "key": "liu2026maximal",
+   "cat": "04-learning-with-guarantees",
+   "title": "Universal Approximation of Maximal Lyapunov Functions with Anchored Neural Networks",
+   "authors": "J. Liu",
+   "year": 2026,
+   "venue": "arXiv",
+   "note": "Universal approximation of maximal Lyapunov functions by anchored neural networks.",
+   "arxiv": "2608.17290"
+  },
+  {
+   "key": "huang2026switched",
+   "cat": "04-learning-with-guarantees",
+   "title": "Stability Verification for Switched Systems using Neural Multiple Lyapunov Functions",
+   "authors": "J. Huang, S. Li, X. Yin",
+   "year": 2026,
+   "venue": "arXiv",
+   "note": "Neural multiple Lyapunov functions with counterexample-guided synthesis for switched systems.",
+   "arxiv": "2601.00587"
+  },
+  {
+   "key": "katz2017reluplex",
+   "cat": "05-nn-verification",
+   "title": "Reluplex: An Efficient SMT Solver for Verifying Deep Neural Networks",
+   "authors": "G. Katz, C. Barrett, D. Dill, K. Julian, M. Kochenderfer",
+   "year": 2017,
+   "venue": "CAV",
+   "note": "Reluplex: exact SMT verification of ReLU networks; shows the problem is NP-complete.",
+   "arxiv": "1702.01135",
+   "pdf": true
+  },
+  {
+   "key": "zhang2018crown",
+   "cat": "05-nn-verification",
+   "title": "Efficient Neural Network Robustness Certification with General Activation Functions",
+   "authors": "H. Zhang, T.-W. Weng, P.-Y. Chen, C.-J. Hsieh, L. Daniel",
+   "year": 2018,
+   "venue": "NeurIPS",
+   "note": "CROWN: linear-relaxation bounds for networks with general activations.",
+   "arxiv": "1811.00866"
+  },
+  {
+   "key": "gowal2018ibp",
+   "cat": "05-nn-verification",
+   "title": "On the Effectiveness of Interval Bound Propagation for Training Verifiably Robust Models",
+   "authors": "S. Gowal, K. Dvijotham, R. Stanforth, R. Bunel, C. Qin et al.",
+   "year": 2019,
+   "venue": "ICCV",
+   "note": "Interval bound propagation for training verifiably robust networks.",
+   "arxiv": "1810.12715"
+  },
+  {
+   "key": "fazlyab2019lipsdp",
+   "cat": "05-nn-verification",
+   "title": "Efficient and Accurate Estimation of Lipschitz Constants for Deep Neural Networks",
+   "authors": "M. Fazlyab, A. Robey, H. Hassani, M. Morari, G. J. Pappas",
+   "year": 2019,
+   "venue": "NeurIPS",
+   "note": "LipSDP: tight Lipschitz-constant upper bounds by semidefinite programming.",
+   "arxiv": "1906.04893",
+   "pdf": true
+  },
+  {
+   "key": "wang2021betacrown",
+   "cat": "05-nn-verification",
+   "title": "Beta-CROWN: Efficient Bound Propagation with Per-neuron Split Constraints for Complete and Incomplete Neural Network Robustness Verification",
+   "authors": "S. Wang, H. Zhang, K. Xu, X. Lin, S. Jana et al.",
+   "year": 2021,
+   "venue": "NeurIPS",
+   "note": "β-CROWN: bound propagation with neuron-split constraints for complete verification.",
+   "arxiv": "2103.06624"
+  },
+  {
+   "key": "yin2022iqc",
+   "cat": "05-nn-verification",
+   "title": "Stability Analysis using Quadratic Constraints for Systems with Neural Network Controllers",
+   "authors": "H. Yin, P. Seiler, M. Arcak",
+   "year": 2022,
+   "venue": "IEEE Transactions on Automatic Control",
+   "note": "Stability and region-of-attraction ellipsoids for NN-controlled loops via quadratic constraints.",
+   "arxiv": "2006.07579",
+   "pdf": true
+  },
+  {
+   "key": "everett2021reachability",
+   "cat": "05-nn-verification",
+   "title": "Reachability Analysis of Neural Feedback Loops",
+   "authors": "M. Everett, G. Habibi, C. Sun, J. P. How",
+   "year": 2021,
+   "venue": "IEEE Access",
+   "note": "Forward reachable sets of neural feedback loops.",
+   "arxiv": "2108.04140"
+  },
+  {
+   "key": "dai2021lyapunovnn",
+   "cat": "05-nn-verification",
+   "title": "Lyapunov-stable neural-network control",
+   "authors": "H. Dai, B. Landry, L. Yang, M. Pavone, R. Tedrake",
+   "year": 2021,
+   "venue": "RSS",
+   "note": "Lyapunov-stable neural-network control verified by mixed-integer programs; pendulum and 2D/3D quadrotors.",
+   "arxiv": "2109.14152",
+   "pdf": true
+  },
+  {
+   "key": "yang2024lyapunovstable",
+   "cat": "05-nn-verification",
+   "title": "Lyapunov-stable Neural Control for State and Output Feedback: A Novel Formulation",
+   "authors": "L. Yang, H. Dai, Z. Shi, C.-J. Hsieh, R. Tedrake, H. Zhang",
+   "year": 2024,
+   "venue": "ICML",
+   "note": "Lyapunov-stable neural state and output feedback verified with GPU bound propagation, no SOS/MIP/SMT.",
+   "arxiv": "2404.07956",
+   "pdf": true
+  },
+  {
+   "key": "yang2022safelegged",
+   "cat": "06-robot-deployment",
+   "title": "Safe Reinforcement Learning for Legged Locomotion",
+   "authors": "T.-Y. Yang, T. Zhang, L. Luu, S. Ha, J. Tan, W. Yu",
+   "year": 2022,
+   "venue": "IROS",
+   "note": "Safe RL for legged locomotion: a recovery policy takes over before unsafe states.",
+   "arxiv": "2203.02638"
+  },
+  {
+   "key": "olkin2026clfrl",
+   "cat": "06-robot-deployment",
+   "title": "Stability of Control Lyapunov Function Guided Reinforcement Learning",
+   "authors": "Z. Olkin, W. D. Compton, A. D. Ames",
+   "year": 2026,
+   "venue": "arXiv",
+   "note": "Exponential stability of optimal policies under CLF-guided RL rewards; humanoid walking orbits.",
+   "arxiv": "2605.01978",
+   "pdf": true
+  },
+  {
+   "key": "muraccioli2026acccbf",
+   "cat": "06-robot-deployment",
+   "title": "Safe Execution of RL Policies Via Acceleration-Based CBF-QP Constraint Enforcement for Real-World Robotic Deployments",
+   "authors": "B. Muraccioli, A. Cariou, P.-A. Leziart, M. Celerier, A. Demont et al.",
+   "year": 2026,
+   "venue": "arXiv",
+   "note": "Acceleration-based CBF-QP filter for RL policies; 92% fewer violations on a real Unitree H1.",
+   "arxiv": "2607.14488",
+   "pdf": true
+  },
+  {
+   "key": "lee2026issfcbf",
+   "cat": "06-robot-deployment",
+   "title": "Safety-Critical Whole-Body Control for Humanoid Robots via Input-to-State Safe Control Barrier Functions",
+   "authors": "K. Lee, S. Park, G. Park, M.-J. Kim, J. Park",
+   "year": 2026,
+   "venue": "arXiv",
+   "note": "Input-to-state safe CBFs for humanoid whole-body control under bounded disturbances.",
+   "arxiv": "2605.25546"
+  }
+ ]
+}

@@ -37,3 +37,7 @@ To rebuild: `python3 tools/build_catalog.py --download`, then `python3 tools/ren
 - **PID share:** "about 90% of loops are PID" comes from Åström & Hägglund (2001). The often-quoted "more than 95% in process control" comes from their later book. In the IFAC industry survey, 91% of respondents rated PID's current impact as high.
 - **X-15 accident:** the account is summarized from NASA history pages. The authoritative analysis is NASA/TM-2014-218538, which I did not retrieve.
 - **Synthesis:** fit ratings and the application map are a synthesis of the surveys, not measurements.
+
+## See also
+
+- [stability-analysis/](../stability-analysis/): Lyapunov, robust and learned stability certificates, from classical control to neural-network controllers.
