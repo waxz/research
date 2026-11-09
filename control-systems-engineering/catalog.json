@@ -1,0 +1,602 @@
+{
+ "categories": [
+  {
+   "id": "00-books-courses-docs",
+   "name": "Free books, courses and documentation",
+   "about": "Open textbooks, university courses and the documentation of the software and bus standards used in control systems."
+  },
+  {
+   "id": "01-physics-foundations",
+   "name": "Physics and signal foundations",
+   "about": "Electromagnetism, the dq transform and the sampling theorem."
+  },
+  {
+   "id": "02-mechanics-actuators",
+   "name": "Mechanics, transmissions and actuators",
+   "about": "Friction, backlash, series elastic and quasi-direct-drive actuators for robots."
+  },
+  {
+   "id": "03-electrical-drives",
+   "name": "Electrical drives, power electronics and sensing",
+   "about": "PWM, space vectors, direct torque control, motion control and velocity estimation."
+  },
+  {
+   "id": "04-embedded-realtime",
+   "name": "Embedded real-time control and communication",
+   "about": "Scheduling, control timing, anti-windup, CAN, EtherCAT, real-time ROS 2 and embedded optimization."
+  },
+  {
+   "id": "05-software-engineering",
+   "name": "Software engineering for control systems",
+   "about": "Modularity, statecharts, safety-critical coding, cyber-physical design, HIL testing, ROS and ros_control."
+  },
+  {
+   "id": "06-safety-standards",
+   "name": "Functional safety and standards",
+   "about": "Accident analyses, systems safety and the main functional-safety and PLC standards."
+  }
+ ],
+ "papers": [
+  {
+   "key": "lynch2017modern",
+   "cat": "00-books-courses-docs",
+   "title": "Modern Robotics: Mechanics, Planning, and Control",
+   "authors": "K. M. Lynch, F. C. Park",
+   "year": 2017,
+   "venue": "Cambridge University Press (free online)",
+   "note": "Rigid-body dynamics, actuation and transmissions, with videos.",
+   "url": "https://modernrobotics.northwestern.edu/"
+  },
+  {
+   "key": "astrom2008feedback",
+   "cat": "00-books-courses-docs",
+   "title": "Feedback Systems: An Introduction for Scientists and Engineers",
+   "authors": "K. J. Åström, R. M. Murray",
+   "year": 2008,
+   "venue": "Princeton University Press (free online)",
+   "note": "Loop design, margins and sampling basics.",
+   "url": "https://fbswiki.org/"
+  },
+  {
+   "key": "mit6685machines",
+   "cat": "00-books-courses-docs",
+   "title": "6.685 Electric Machines (Fall 2013)",
+   "authors": "J. L. Kirtley Jr.",
+   "year": 2013,
+   "venue": "MIT OpenCourseWare",
+   "note": "Free course on motor physics and dq models.",
+   "url": "https://ocw.mit.edu/courses/6-685-electric-machines-fall-2013/"
+  },
+  {
+   "key": "mit6334power",
+   "cat": "00-books-courses-docs",
+   "title": "6.334 Power Electronics (Spring 2007)",
+   "authors": "D. J. Perreault",
+   "year": 2007,
+   "venue": "MIT OpenCourseWare",
+   "note": "Free course on converters, PWM and switching.",
+   "url": "https://ocw.mit.edu/courses/6-334-power-electronics-spring-2007/"
+  },
+  {
+   "key": "ros2controldocs",
+   "cat": "00-books-courses-docs",
+   "title": "ros2_control documentation",
+   "authors": "ros2_control maintainers",
+   "year": 2026,
+   "venue": "Documentation",
+   "note": "Hardware interfaces, controller manager and real-time loop for ROS 2.",
+   "url": "https://control.ros.org/"
+  },
+  {
+   "key": "ros2docs",
+   "cat": "00-books-courses-docs",
+   "title": "ROS 2 documentation",
+   "authors": "Open Robotics and contributors",
+   "year": 2026,
+   "venue": "Documentation",
+   "note": "Nodes, executors, DDS quality of service, real-time guidance.",
+   "url": "https://docs.ros.org/en/rolling/"
+  },
+  {
+   "key": "freertos",
+   "cat": "00-books-courses-docs",
+   "title": "FreeRTOS",
+   "authors": "FreeRTOS project",
+   "year": 2026,
+   "venue": "Documentation",
+   "note": "Small real-time kernel for microcontrollers.",
+   "url": "https://www.freertos.org/"
+  },
+  {
+   "key": "zephyr",
+   "cat": "00-books-courses-docs",
+   "title": "Zephyr Project",
+   "authors": "Linux Foundation Zephyr Project",
+   "year": 2026,
+   "venue": "Documentation",
+   "note": "Real-time operating system for embedded devices.",
+   "url": "https://www.zephyrproject.org/"
+  },
+  {
+   "key": "cia",
+   "cat": "00-books-courses-docs",
+   "title": "CAN in Automation (CiA): CAN FD, CANopen and the CiA 402 drive profile",
+   "authors": "CAN in Automation",
+   "year": 2026,
+   "venue": "Organization",
+   "note": "Specifications for CAN-based drive communication and state machines.",
+   "url": "https://www.can-cia.org/"
+  },
+  {
+   "key": "maxwell1865field",
+   "cat": "01-physics-foundations",
+   "title": "A Dynamical Theory of the Electromagnetic Field",
+   "authors": "J. C. Maxwell",
+   "year": 1865,
+   "venue": "Philosophical Transactions of the Royal Society of London",
+   "note": "Maxwell's equations: the physics behind motors, generators and EMC.",
+   "url": "https://doi.org/10.1098/rstl.1865.0008"
+  },
+  {
+   "key": "nyquist1928telegraph",
+   "cat": "01-physics-foundations",
+   "title": "Certain Topics in Telegraph Transmission Theory",
+   "authors": "H. Nyquist",
+   "year": 1928,
+   "venue": "Transactions of the American Institute of Electrical Engineers",
+   "note": "Sampling and bandwidth limits that later became the sampling theorem.",
+   "url": "https://doi.org/10.1109/T-AIEE.1928.5055024"
+  },
+  {
+   "key": "shannon1949noise",
+   "cat": "01-physics-foundations",
+   "title": "Communication in the Presence of Noise",
+   "authors": "C. E. Shannon",
+   "year": 1949,
+   "venue": "Proceedings of the IRE",
+   "note": "Sampling theorem and channel capacity.",
+   "url": "https://doi.org/10.1109/JRPROC.1949.232969"
+  },
+  {
+   "key": "park1929tworeaction",
+   "cat": "01-physics-foundations",
+   "title": "Two-Reaction Theory of Synchronous Machines: Generalized Method of Analysis, Part I",
+   "authors": "R. H. Park",
+   "year": 1929,
+   "venue": "Transactions of the American Institute of Electrical Engineers",
+   "note": "The dq transform that turns AC machines into DC-like systems.",
+   "url": "https://doi.org/10.1109/T-AIEE.1929.5055275"
+  },
+  {
+   "key": "armstrong1994friction",
+   "cat": "02-mechanics-actuators",
+   "title": "A Survey of Models, Analysis Tools and Compensation Methods for the Control of Machines with Friction",
+   "authors": "B. Armstrong-Hélouvry, P. Dupont, C. Canudas de Wit",
+   "year": 1994,
+   "venue": "Automatica",
+   "note": "Survey of friction models, analysis tools and compensation.",
+   "url": "https://doi.org/10.1016/0005-1098(94)90209-7"
+  },
+  {
+   "key": "canudas1995lugre",
+   "cat": "02-mechanics-actuators",
+   "title": "A New Model for Control of Systems with Friction",
+   "authors": "C. Canudas de Wit, H. Olsson, K. J. Åström, P. Lischinsky",
+   "year": 1995,
+   "venue": "IEEE Transactions on Automatic Control",
+   "note": "LuGre dynamic friction model.",
+   "url": "https://doi.org/10.1109/9.376053"
+  },
+  {
+   "key": "nordin2002backlash",
+   "cat": "02-mechanics-actuators",
+   "title": "Controlling Mechanical Systems with Backlash: A Survey",
+   "authors": "M. Nordin, P.-O. Gutman",
+   "year": 2002,
+   "venue": "Automatica",
+   "note": "Survey of backlash models and compensation.",
+   "url": "https://doi.org/10.1016/S0005-1098(02)00047-X"
+  },
+  {
+   "key": "pratt1995sea",
+   "cat": "02-mechanics-actuators",
+   "title": "Series Elastic Actuators",
+   "authors": "G. A. Pratt, M. M. Williamson",
+   "year": 1995,
+   "venue": "IEEE/RSJ IROS",
+   "note": "Series elastic actuators: a spring for force control and shock tolerance.",
+   "url": "https://doi.org/10.1109/IROS.1995.525827"
+  },
+  {
+   "key": "seok2015cheetah",
+   "cat": "02-mechanics-actuators",
+   "title": "Design Principles for Energy-Efficient Legged Locomotion and Implementation on the MIT Cheetah Robot",
+   "authors": "S. Seok, A. Wang, M. Y. Chuah, D. J. Hyun, J. Lee et al.",
+   "year": 2015,
+   "venue": "IEEE/ASME Transactions on Mechatronics",
+   "note": "Energy-efficient legged locomotion and the MIT Cheetah's actuator design.",
+   "url": "https://doi.org/10.1109/TMECH.2014.2339013"
+  },
+  {
+   "key": "kenneally2016minitaur",
+   "cat": "02-mechanics-actuators",
+   "title": "Design Principles for a Family of Direct-Drive Legged Robots",
+   "authors": "G. Kenneally, A. De, D. E. Koditschek",
+   "year": 2016,
+   "venue": "IEEE Robotics and Automation Letters",
+   "note": "Direct-drive legged robots: transparency over torque density.",
+   "url": "https://doi.org/10.1109/LRA.2016.2528294"
+  },
+  {
+   "key": "wensing2017proprioceptive",
+   "cat": "02-mechanics-actuators",
+   "title": "Proprioceptive Actuator Design in the MIT Cheetah: Impact Mitigation and High-Bandwidth Physical Interaction for Dynamic Legged Robots",
+   "authors": "P. M. Wensing, A. Wang, S. Seok, D. Otten, J. Lang, S. Kim",
+   "year": 2017,
+   "venue": "IEEE Transactions on Robotics",
+   "note": "Proprioceptive actuators: low gear ratio for impact mitigation and force control.",
+   "url": "https://doi.org/10.1109/TRO.2016.2640183"
+  },
+  {
+   "key": "katz2019minicheetah",
+   "cat": "02-mechanics-actuators",
+   "title": "Mini Cheetah: A Platform for Pushing the Limits of Dynamic Quadruped Control",
+   "authors": "B. Katz, J. Di Carlo, S. Kim",
+   "year": 2019,
+   "venue": "ICRA",
+   "note": "Low-cost quasi-direct-drive quadruped platform.",
+   "url": "https://doi.org/10.1109/ICRA.2019.8793865"
+  },
+  {
+   "key": "kau2019doggo",
+   "cat": "02-mechanics-actuators",
+   "title": "Stanford Doggo: An Open-Source, Quasi-Direct-Drive Quadruped",
+   "authors": "N. Kau, A. Schultz, N. Ferrante, P. Slade",
+   "year": 2019,
+   "venue": "ICRA",
+   "note": "Open-source quasi-direct-drive quadruped for under $3000.",
+   "arxiv": "1905.04254",
+   "pdf": true
+  },
+  {
+   "key": "gealy2019blue",
+   "cat": "02-mechanics-actuators",
+   "title": "Quasi-Direct Drive for Low-Cost Compliant Robotic Manipulation",
+   "authors": "D. V. Gealy, S. McKinley, B. Yi, P. Wu, P. R. Downey et al.",
+   "year": 2019,
+   "venue": "ICRA",
+   "note": "Quasi-direct-drive 7-DoF arm for low-cost force-controlled manipulation.",
+   "arxiv": "1904.03815",
+   "pdf": true
+  },
+  {
+   "key": "grimminger2020odri",
+   "cat": "02-mechanics-actuators",
+   "title": "An Open Torque-Controlled Modular Robot Architecture for Legged Locomotion Research",
+   "authors": "F. Grimminger, A. Meduri, M. Khadiv, J. Viereck, M. Wüthrich et al.",
+   "year": 2020,
+   "venue": "IEEE Robotics and Automation Letters",
+   "note": "Open torque-controlled actuator modules and electronics for legged robots (ODRI).",
+   "url": "https://doi.org/10.1109/LRA.2020.2976639",
+   "arxiv": "1910.00093",
+   "pdf": true
+  },
+  {
+   "key": "urs2022motor",
+   "cat": "02-mechanics-actuators",
+   "title": "Alternative Metrics to Select Motors for Quasi-Direct Drive Actuators",
+   "authors": "K. Urs, C. E. Adu, E. J. Rouse, T. Y. Moore",
+   "year": 2022,
+   "venue": "arXiv",
+   "note": "Motor-selection metrics for quasi-direct-drive actuators, invariant to gear ratio.",
+   "arxiv": "2202.12365",
+   "pdf": true
+  },
+  {
+   "key": "zhu2024cycloidal",
+   "cat": "02-mechanics-actuators",
+   "title": "Cycloidal Quasi-Direct Drive Actuator Designs with Learning-based Torque Estimation for Legged Robotics",
+   "authors": "A. Zhu, Y. Tanaka, F. Rafeedi, D. Hong",
+   "year": 2024,
+   "venue": "arXiv",
+   "note": "Cycloidal quasi-direct-drive actuators with actuator-network torque estimation.",
+   "arxiv": "2410.16591",
+   "pdf": true
+  },
+  {
+   "key": "takahashi1986dtc",
+   "cat": "03-electrical-drives",
+   "title": "A New Quick-Response and High-Efficiency Control Strategy of an Induction Motor",
+   "authors": "I. Takahashi, T. Noguchi",
+   "year": 1986,
+   "venue": "IEEE Transactions on Industry Applications",
+   "note": "Direct torque control of induction motors.",
+   "url": "https://doi.org/10.1109/TIA.1986.4504799"
+  },
+  {
+   "key": "vanderbroeck1988svm",
+   "cat": "03-electrical-drives",
+   "title": "Analysis and Realization of a Pulsewidth Modulator Based on Voltage Space Vectors",
+   "authors": "H. W. van der Broeck, H.-C. Skudelny, G. V. Stanke",
+   "year": 1988,
+   "venue": "IEEE Transactions on Industry Applications",
+   "note": "Space-vector pulse-width modulation.",
+   "url": "https://doi.org/10.1109/28.87265"
+  },
+  {
+   "key": "holtz1992pwm",
+   "cat": "03-electrical-drives",
+   "title": "Pulsewidth Modulation: A Survey",
+   "authors": "J. Holtz",
+   "year": 1992,
+   "venue": "IEEE Transactions on Industrial Electronics",
+   "note": "Survey of pulse-width modulation methods.",
+   "url": "https://doi.org/10.1109/41.161472"
+  },
+  {
+   "key": "ohnishi1996motion",
+   "cat": "03-electrical-drives",
+   "title": "Motion Control for Advanced Mechatronics",
+   "authors": "K. Ohnishi, M. Shibata, T. Murakami",
+   "year": 1996,
+   "venue": "IEEE/ASME Transactions on Mechatronics",
+   "note": "Disturbance observers for robust motion control.",
+   "url": "https://doi.org/10.1109/3516.491410"
+  },
+  {
+   "key": "brown1992velocity",
+   "cat": "03-electrical-drives",
+   "title": "Analysis of Algorithms for Velocity Estimation from Discrete Position versus Time Data",
+   "authors": "R. Brown, S. Schneider, M. Mulligan",
+   "year": 1992,
+   "venue": "IEEE Transactions on Industrial Electronics",
+   "note": "Comparison of velocity estimation from encoder data.",
+   "url": "https://doi.org/10.1109/41.121906"
+  },
+  {
+   "key": "liu1973scheduling",
+   "cat": "04-embedded-realtime",
+   "title": "Scheduling Algorithms for Multiprogramming in a Hard-Real-Time Environment",
+   "authors": "C. L. Liu, J. W. Layland",
+   "year": 1973,
+   "venue": "Journal of the ACM",
+   "note": "Rate-monotonic scheduling and its utilization bound.",
+   "url": "https://doi.org/10.1145/321738.321743"
+  },
+  {
+   "key": "cervin2003timing",
+   "cat": "04-embedded-realtime",
+   "title": "How Does Control Timing Affect Performance? Analysis and Simulation of Timing Using Jitterbug and TrueTime",
+   "authors": "A. Cervin, D. Henriksson, B. Lincoln, J. Eker, K.-E. Årzén",
+   "year": 2003,
+   "venue": "IEEE Control Systems Magazine",
+   "note": "How delay and jitter degrade control, with analysis tools.",
+   "url": "https://doi.org/10.1109/MCS.2003.1200240"
+  },
+  {
+   "key": "astrom1989windup",
+   "cat": "04-embedded-realtime",
+   "title": "Integrator Windup and How to Avoid It",
+   "authors": "K. J. Åström, L. Rundqwist",
+   "year": 1989,
+   "venue": "1989 American Control Conference",
+   "note": "Integrator windup and anti-windup schemes.",
+   "url": "https://doi.org/10.23919/ACC.1989.4790464"
+  },
+  {
+   "key": "davis2007can",
+   "cat": "04-embedded-realtime",
+   "title": "Controller Area Network (CAN) Schedulability Analysis: Refuted, Revisited and Revised",
+   "authors": "R. I. Davis, A. Burns, R. J. Bril, J. J. Lukkien",
+   "year": 2007,
+   "venue": "Real-Time Systems",
+   "note": "Correct worst-case response-time analysis for CAN.",
+   "url": "https://doi.org/10.1007/s11241-007-9012-7"
+  },
+  {
+   "key": "jansen2004ethercat",
+   "cat": "04-embedded-realtime",
+   "title": "Real-Time Ethernet: The EtherCAT Solution",
+   "authors": "D. Jansen, H. Büttner",
+   "year": 2004,
+   "venue": "Computing and Control Engineering",
+   "note": "EtherCAT: on-the-fly processing and distributed clocks.",
+   "url": "https://doi.org/10.1049/cce:20040104"
+  },
+  {
+   "key": "staschulat2021microros",
+   "cat": "04-embedded-realtime",
+   "title": "Budget-based real-time Executor for Micro-ROS",
+   "authors": "J. Staschulat, R. Lange, D. N. Dasari",
+   "year": 2021,
+   "venue": "arXiv",
+   "note": "Budget-based real-time executor for micro-ROS on microcontrollers.",
+   "arxiv": "2105.05590",
+   "pdf": true
+  },
+  {
+   "key": "teper2024ros2",
+   "cat": "04-embedded-realtime",
+   "title": "Bridging the Gap between ROS~2 and Classical Real-Time Scheduling for Periodic Tasks",
+   "authors": "H. Teper, O. Bell, M. Günzel, C. Gill, J.-J. Chen",
+   "year": 2024,
+   "venue": "arXiv",
+   "note": "Classical real-time scheduling theory applied to ROS 2 via the events executor.",
+   "arxiv": "2408.03696",
+   "pdf": true
+  },
+  {
+   "key": "casini2025ros2survey",
+   "cat": "04-embedded-realtime",
+   "title": "A Survey of Real-Time Support, Analysis, and Advancements in ROS 2",
+   "authors": "D. Casini, J.-J. Chen, J. Li, F. Reghenzani, H. Teper",
+   "year": 2025,
+   "venue": "arXiv",
+   "note": "Survey of real-time support, analysis and advances in ROS 2.",
+   "arxiv": "2601.10722",
+   "pdf": true
+  },
+  {
+   "key": "sopasakis2020open",
+   "cat": "04-embedded-realtime",
+   "title": "OpEn: Code Generation for Embedded Nonconvex Optimization",
+   "authors": "P. Sopasakis, E. Fresk, P. Patrinos",
+   "year": 2020,
+   "venue": "arXiv",
+   "note": "OpEn: Rust code generation for embedded nonconvex optimization.",
+   "arxiv": "2003.00292",
+   "pdf": true
+  },
+  {
+   "key": "parnas1972modules",
+   "cat": "05-software-engineering",
+   "title": "On the Criteria to Be Used in Decomposing Systems into Modules",
+   "authors": "D. L. Parnas",
+   "year": 1972,
+   "venue": "Communications of the ACM",
+   "note": "Information hiding: the basis of layered, replaceable software modules.",
+   "url": "https://doi.org/10.1145/361598.361623"
+  },
+  {
+   "key": "harel1987statecharts",
+   "cat": "05-software-engineering",
+   "title": "Statecharts: A Visual Formalism for Complex Systems",
+   "authors": "D. Harel",
+   "year": 1987,
+   "venue": "Science of Computer Programming",
+   "note": "Statecharts: hierarchical state machines for reactive systems.",
+   "url": "https://doi.org/10.1016/0167-6423(87)90035-9"
+  },
+  {
+   "key": "brooks1987silver",
+   "cat": "05-software-engineering",
+   "title": "No Silver Bullet: Essence and Accidents of Software Engineering",
+   "authors": "F. P. Brooks",
+   "year": 1987,
+   "venue": "Computer",
+   "note": "Essential versus accidental complexity in software.",
+   "url": "https://doi.org/10.1109/MC.1987.1663532"
+  },
+  {
+   "key": "holzmann2006power10",
+   "cat": "05-software-engineering",
+   "title": "The Power of 10: Rules for Developing Safety-Critical Code",
+   "authors": "G. J. Holzmann",
+   "year": 2006,
+   "venue": "Computer",
+   "note": "Ten rules for analysable safety-critical code.",
+   "url": "https://doi.org/10.1109/MC.2006.212"
+  },
+  {
+   "key": "lee2008cps",
+   "cat": "05-software-engineering",
+   "title": "Cyber Physical Systems: Design Challenges",
+   "authors": "E. A. Lee",
+   "year": 2008,
+   "venue": "2008 11th IEEE International Symposium on Object and Component-Oriented Real-Time Distributed Computing (ISORC)",
+   "note": "Cyber-physical systems: timing and physics as first-class design concerns.",
+   "url": "https://doi.org/10.1109/ISORC.2008.25"
+  },
+  {
+   "key": "bacic2005hil",
+   "cat": "05-software-engineering",
+   "title": "On Hardware-in-the-Loop Simulation",
+   "authors": "M. Bacic",
+   "year": 2005,
+   "venue": "IEEE CDC",
+   "note": "Hardware-in-the-loop simulation for control.",
+   "url": "https://doi.org/10.1109/CDC.2005.1582653"
+  },
+  {
+   "key": "chitta2017roscontrol",
+   "cat": "05-software-engineering",
+   "title": "ros_control: A Generic and Simple Control Framework for ROS",
+   "authors": "S. Chitta, E. Marder-Eppstein, W. Meeussen, V. Pradeep, A. R. Tsouroukdissian et al.",
+   "year": 2017,
+   "venue": "The Journal of Open Source Software",
+   "note": "ros_control: hardware abstraction and controller management for ROS.",
+   "url": "https://doi.org/10.21105/joss.00456"
+  },
+  {
+   "key": "macenski2022ros2",
+   "cat": "05-software-engineering",
+   "title": "Robot Operating System 2: Design, architecture, and uses in the wild",
+   "authors": "S. Macenski, T. Foote, B. Gerkey, C. Lalancette, W. Woodall",
+   "year": 2022,
+   "venue": "Science Robotics",
+   "note": "ROS 2 design, architecture and production use. Linked, not stored (17 MB).",
+   "url": "https://doi.org/10.1126/scirobotics.abm6074",
+   "arxiv": "2211.07752"
+  },
+  {
+   "key": "leveson1993therac",
+   "cat": "06-safety-standards",
+   "title": "An Investigation of the Therac-25 Accidents",
+   "authors": "N. G. Leveson, C. S. Turner",
+   "year": 1993,
+   "venue": "Computer",
+   "note": "Therac-25 overdoses: software race conditions after hardware interlocks were removed.",
+   "url": "https://doi.org/10.1109/MC.1993.274940"
+  },
+  {
+   "key": "leveson2004stamp",
+   "cat": "06-safety-standards",
+   "title": "A New Accident Model for Engineering Safer Systems",
+   "authors": "N. Leveson",
+   "year": 2004,
+   "venue": "Safety Science",
+   "note": "STAMP: accidents as failures of control, not only of components.",
+   "url": "https://doi.org/10.1016/S0925-7535(03)00047-X"
+  },
+  {
+   "key": "iec61508",
+   "cat": "06-safety-standards",
+   "title": "IEC 61508-1:2010 Functional safety of electrical/electronic/programmable electronic safety-related systems, Part 1",
+   "authors": "IEC",
+   "year": 2010,
+   "venue": "International standard",
+   "note": "SIL 1–4 and the safety life cycle.",
+   "url": "https://webstore.iec.ch/en/publication/5515"
+  },
+  {
+   "key": "iso13849",
+   "cat": "06-safety-standards",
+   "title": "ISO 13849-1:2023 Safety of machinery: Safety-related parts of control systems, Part 1",
+   "authors": "ISO",
+   "year": 2023,
+   "venue": "International standard",
+   "note": "Performance levels a–e, categories, MTTFd, DC and common-cause failures.",
+   "url": "https://www.iso.org/standard/73481.html"
+  },
+  {
+   "key": "iso26262",
+   "cat": "06-safety-standards",
+   "title": "ISO 26262-1:2018 Road vehicles: Functional safety, Part 1",
+   "authors": "ISO",
+   "year": 2018,
+   "venue": "International standard",
+   "note": "ASIL A–D and the automotive safety life cycle.",
+   "url": "https://www.iso.org/standard/68383.html"
+  },
+  {
+   "key": "iec61131",
+   "cat": "06-safety-standards",
+   "title": "IEC 61131-3:2025 Programmable controllers, Part 3: Programming languages",
+   "authors": "IEC",
+   "year": 2025,
+   "venue": "International standard",
+   "note": "PLC languages, 4th edition.",
+   "url": "https://webstore.iec.ch/en/publication/68533"
+  },
+  {
+   "key": "misra",
+   "cat": "06-safety-standards",
+   "title": "MISRA C and MISRA C++ guidelines",
+   "authors": "MISRA",
+   "year": 2026,
+   "venue": "Coding standard",
+   "note": "Safe subsets of C and C++ for embedded and safety-related code.",
+   "url": "https://misra.org.uk/"
+  }
+ ]
+}

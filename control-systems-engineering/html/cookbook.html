@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Control Systems Engineering Cookbook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500;75..125,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a two-column reference book. A sticky recipe index on wide screens, one 72ch reading column;
+   recipe headings carry a mono "R" number tab, worked examples and pitfalls are set apart by colour. */
+:root {
+  --bg: #f5f5f1; --paper: #ffffff; --ink: #1c1f1d; --muted: #5f6662; --rule: #d9ddd7;
+  --accent: #3d4fb0; --accent-soft: #e8ebf8; --warm: #a85d0c; --warm-soft: #f7ecdc; --code-bg: #eef0ec;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Literata", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111412; --paper: #181c1a; --ink: #e3e8e4; --muted: #98a19c; --rule: #2d3430;
+    --accent: #95a4f3; --accent-soft: #1f2545; --warm: #efa652; --warm-soft: #3a2a16; --code-bg: #202623;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111412; --paper: #181c1a; --ink: #e3e8e4; --muted: #98a19c; --rule: #2d3430;
+  --accent: #95a4f3; --accent-soft: #1f2545; --warm: #efa652; --warm-soft: #3a2a16; --code-bg: #202623;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.62;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px; }
+.layout { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; }
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; max-height: 100vh; overflow-y: auto; padding: 32px 0 24px; font-family: var(--mono); font-size: .74rem; line-height: 1.45; }
+nav.toc .p { color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin: 14px 0 4px; font-size: .68rem; }
+nav.toc a { display: block; color: var(--ink); text-decoration: none; padding: 2px 6px; border-radius: 3px; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+main { min-width: 0; max-width: 74ch; padding-top: 36px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } nav.toc { display: none; } main { margin: 0 auto; } }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; }
+main > h1:first-child { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; font-stretch: 85%; margin: 0 0 .4rem; }
+main h1 { font-size: 1.9rem; font-weight: 800; font-stretch: 88%; margin: 3.4rem 0 .6rem; padding-top: .8rem; border-top: 3px solid var(--ink); }
+main h2 { font-size: 1.35rem; font-weight: 800; font-stretch: 92%; margin: 2.6rem 0 .5rem; scroll-margin-top: 12px; }
+main h2 .rno { font-family: var(--mono); font-size: .8rem; font-weight: 500; color: var(--paper); background: var(--accent); padding: 2px 7px; border-radius: 3px; margin-right: 10px; vertical-align: 3px; }
+main h3 { font-size: 1.05rem; }
+p { margin: .7rem 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+strong { font-weight: 600; }
+main > p:nth-of-type(1) em { color: var(--muted); }
+ul, ol { padding-left: 1.4em; } li { margin: .25rem 0; }
+li > p { margin: .3rem 0; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+code { font-family: var(--mono); font-size: .86em; background: var(--code-bg); padding: 1px 4px; border-radius: 3px; }
+pre { background: var(--code-bg); padding: 12px 14px; border-radius: 4px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+.tbl { overflow-x: auto; margin: 1rem 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; line-height: 1.42; }
+th, td { text-align: left; padding: 7px 11px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+p.we { background: var(--warm-soft); border-left: 3px solid var(--warm); padding: 8px 14px; border-radius: 0 4px 4px 0; }
+p.pit { color: var(--muted); font-size: .94rem; }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 4px 0; }
+.mermaid { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 12px; overflow-x: auto; text-align: center; }
+.loading { color: var(--muted); font-family: var(--mono); font-size: .85rem; }
+</style>
+<script>
+  window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'local' }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Recipes"></nav>
+  <main id="book"><p class="loading">Rendering the cookbook…</p></main>
+</div>
+<script type="text/markdown" id="src">
+# The Control Systems Engineering Cookbook
+
+*The mechanical, electrical, embedded and software engineering underneath an automatic control loop. A companion to [REPORT.md](../REPORT.md). The control theory is in the [control cookbook](../../control-estimation-theory/cookbook/COOKBOOK.md). Stability tools are in the [stability cookbook](../../stability-analysis/cookbook/COOKBOOK.md), and actuator models for simulation in the [sim-to-real cookbook](../../sim2real/cookbook/COOKBOOK.md).*
+
+Each recipe has the same parts: **Problem**, **Recipe**, **Worked example**, **Used in** and **Pitfalls**. The worked examples come from [`examples.py`](examples.py): `python3 examples.py h09` runs recipe H9. Only NumPy is needed. The numbers come from small illustrative systems with plausible values, not from a specific product's data sheet.
+
+```mermaid
+flowchart LR
+  P["I. Physics and mechanics<br/>H1–H5: torque sizing, gears,<br/>resonance, friction, backlash"] --> E["II. Electrical<br/>H6–H11: motor, thermal, PWM,<br/>FOC, current loop"]
+  E --> S["III. Sensing and signals<br/>H12–H14: encoders, aliasing,<br/>ADCs, filters"]
+  S --> R["IV. Embedded real time<br/>H15–H20: discretization, fixed point,<br/>cascades, windup, scheduling, buses"]
+  R --> W["V. Software and safety<br/>H21–H23: state machines,<br/>safety integrity, testing"]
+```
+
+## Contents
+
+- **I. Physics and mechanics:** [H1 Torque sizing](#h1-from-a-motion-profile-to-torque-sizing-a-joint) · [H2 Gear ratio](#h2-gear-ratio-reflected-inertia-and-linear-axes) · [H3 Resonance](#h3-compliance-and-two-mass-resonance) · [H4 Friction](#h4-friction-and-stick-slip) · [H5 Backlash](#h5-backlash-and-hunting)
+- **II. Electrical machines and power electronics:** [H6 Time constants](#h6-the-dc-motor-electrical-and-mechanical-time-constants) · [H7 Torque–speed](#h7-torquespeed-curve-power-and-efficiency) · [H8 Thermal](#h8-thermal-limits-and-derating) · [H9 PWM](#h9-pwm-h-bridges-and-current-ripple) · [H10 FOC](#h10-brushless-motors-and-field-oriented-control) · [H11 Current loop](#h11-designing-the-current-loop)
+- **III. Sensing and signal processing:** [H12 Encoders](#h12-encoders-and-velocity-estimation) · [H13 Aliasing and ADCs](#h13-sampling-aliasing-and-adc-resolution) · [H14 Filters](#h14-filtering-noise-against-delay)
+- **IV. Embedded real-time implementation:** [H15 Discretization](#h15-discretizing-controllers) · [H16 Fixed point](#h16-fixed-point-arithmetic) · [H17 Cascades](#h17-cascaded-current-velocity-and-position-loops) · [H18 Anti-windup](#h18-integrator-windup) · [H19 Scheduling](#h19-real-time-scheduling) · [H20 Buses](#h20-communication-budgets-can-can-fd-ethercat)
+- **V. Software engineering and safety:** [H21 State machines](#h21-drive-state-machines-and-property-based-testing) · [H22 Safety integrity](#h22-safety-integrity-numbers) · [H23 Back-to-back tests](#h23-back-to-back-testing-model-against-implementation)
+
+---
+
+# I. Physics and mechanics
+
+> **Quick start.** Lynch & Park, *Modern Robotics* (free online), ch. 8 (dynamics). Spong, Hutchinson & Vidyasagar, *Robot Modeling and Control*, chapters on actuator dynamics. G. Ellis, *Control System Design Guide*, chapters on resonance and backlash. Armstrong-Hélouvry, Dupont & Canudas de Wit (1994), the friction survey.
+
+## H1. From a motion profile to torque: sizing a joint
+
+**Problem.** Choose a motor and drive for a joint that must perform a given motion.
+
+**Recipe.**
+- **Equation of motion** (Newton–Euler or Lagrange, $L=T-V$): for a link of mass $m$ at radius $l$, $\tau=(J_m+ml^2)\ddot\theta+mgl\cos\theta$ (angle from horizontal).
+- **Choose a smooth motion profile.** A minimum-jerk profile is $\theta(s)=\theta_0+\Delta\theta(10s^3-15s^4+6s^5)$, with $s=t/T$.
+- **Compute peak torque, RMS torque and peak power.**
+  - The **motor's continuous rating** must cover the RMS torque and any holding torque, since heating goes as $\tau^2$ (H8).
+  - The **drive's peak current** must cover the peak torque.
+
+**Worked example (`h01`).** A 2 kg mass at 0.3 m, with 0.01 kg m² of rotor and gear inertia, swings from hanging to horizontal in 0.5 s:
+- peak torque 7.67 N m, RMS torque 4.59 N m;
+- peak speed 5.89 rad/s, peak mechanical power 34.5 W;
+- holding the arm horizontal afterwards needs 5.89 N m *continuously*.
+
+**Used in.** Motor and gearbox selection for arms, legs and axes.
+
+**Pitfalls.**
+- Sizing on peak torque alone overheats the motor in holding tasks.
+- Forgetting gearbox efficiency and the inertia of the gearbox itself.
+
+## H2. Gear ratio, reflected inertia and linear axes
+
+**Problem.** Choose a transmission ratio.
+
+**Recipe.**
+- **Through a gear ratio $N$:** motor torque is multiplied by $N$, and rotor inertia appears at the output as $N^2J_m$. The load acceleration is $\ddot\theta=N\tau_m/(J_L+N^2J_m)$.
+- **Optimum for acceleration:** $N^*=\sqrt{J_L/J_m}$, where the reflected rotor inertia equals the load inertia.
+- **Ball screw of lead $p$** (m/rev): reflected inertia $m(p/2\pi)^2$; thrust $F=2\pi\eta\tau/p$.
+- **Trade-offs.**
+  - A low ratio (quasi-direct drive) keeps the actuator backdrivable and transparent, and makes current a good torque estimate.
+  - A high ratio gives torque density but adds friction, backlash and reflected inertia (Wensing et al. 2017).
+
+**Worked example (`h02`).** Rotor 6×10⁻⁵ kg m², load 0.05 kg m², motor torque 0.5 N m:
+
+| Ratio | 5 | 10 | **28.9** (optimum) | 50 | 100 |
+|---|---:|---:|---:|---:|---:|
+| Load acceleration (rad/s²) | 48.5 | 89.3 | **144.3** | 125.0 | 76.9 |
+
+A 10 mm-lead ball screw reflects a 20 kg table as only 5.1×10⁻⁵ kg m², and turns 1 N m into 565 N of thrust (90% efficiency).
+
+**Used in.** Legged-robot actuators (MIT Cheetah, Minitaur, ODRI, Stanford Doggo); machine-tool axes.
+
+**Pitfalls.**
+- The optimum for acceleration is not the optimum for efficiency, impact tolerance or speed.
+- Every stage adds backlash and friction (H4, H5).
+
+## H3. Compliance and two-mass resonance
+
+**Problem.** Belts, shafts, harmonic drives and series springs make the drive a two-mass system. How fast can the loop be?
+
+**Recipe.**
+- **Motor inertia $J_m$, load inertia $J_L$, stiffness $k$:**
+  - **anti-resonance** (load-side zero) $\omega_{ar}=\sqrt{k/J_L}$;
+  - **resonance** $\omega_r=\sqrt{k(J_m+J_L)/(J_mJ_L)}$.
+- **Collocated control** (motor encoder) stays stable at high gain, but the load can overshoot and ring.
+- **Non-collocated control** (load encoder) can go unstable near or below $\omega_{ar}$.
+- **Typical remedies:**
+  - keep the bandwidth well below $\omega_{ar}$;
+  - use dual-loop control (velocity from the motor encoder, position from the load encoder);
+  - add notch filters, stiffer mechanics, or active damping.
+
+**Worked example (`h03`).** $J_m=2\times10^{-4}$, $J_L=2\times10^{-3}$, $k=50$ N m/rad, 5% structural damping. Anti-resonance 25.2 Hz, resonance 83.5 Hz.
+
+| Velocity-loop bandwidth | 5.0 Hz (0.2×) | 12.6 Hz (0.5×) | 25.2 Hz (1.0×) |
+|---|---:|---:|---:|
+| Motor encoder (collocated): load overshoot | 12% | 14% | 35% |
+| Load encoder (non-collocated) | 13% | **unstable** | **unstable** |
+
+**Used in.** Belt-driven axes, harmonic-drive arms, series elastic actuators (Pratt & Williamson 1995), humanoid joints.
+
+**Pitfalls.** Tuning on a rigid model and discovering the resonance on hardware. A notch filter tuned at one load inertia detunes when the load changes.
+
+## H4. Friction and stick-slip
+
+**Problem.** Low-speed motion jerks, and positioning stalls short of the target.
+
+**Recipe.**
+- **Friction model:** static (breakaway) $F_s$, Coulomb $F_c$, viscous $bv$, and the Stribeck drop between them: $F(v)=[F_c+(F_s-F_c)e^{-(v/v_s)^2}]\,\mathrm{sign}(v)+bv$. LuGre (Canudas de Wit et al. 1995) adds dynamics (pre-sliding).
+- **Stick-slip** appears when friction falls with speed (Stribeck) and the drive is compliant. The mass sticks, the spring winds up, the mass breaks loose and overshoots, then sticks again.
+- **Remedies:**
+  - stiffer transmissions;
+  - higher speed;
+  - friction feedforward;
+  - dither;
+  - low-friction bearings and guides.
+
+**Worked example (`h04`).** A 1 kg block on a spring (100 N/m), static friction 6 N, Coulomb 4 N:
+- **pulled at 0.05 m/s:** it sticks 72% of the time, and its speed swings by 0.262 m/s;
+- **pulled at 2 m/s:** it slides smoothly (stuck 0% of the time).
+
+**Used in.** Machine tools, telescopes, robot joints at low speed; friction terms in actuator models ([sim-to-real G3](../../sim2real/cookbook/COOKBOOK.md#g3-friction-stiction-and-dead-bands)).
+
+**Pitfalls.** Friction depends on temperature, lubrication, load and wear. A model fitted in one condition drifts.
+
+## H5. Backlash and hunting
+
+**Problem.** Gear backlash leaves a dead zone between motor and load.
+
+**Recipe.**
+- **Inside the gap, the load is disconnected.**
+  - Without integral action, the load stops anywhere within the gap plus friction.
+  - With integral action, the loop can limit-cycle ("hunt") back and forth across the gap. The describing function predicts this ([stability S7](../../stability-analysis/cookbook/COOKBOOK.md#s7-describing-functions-and-limit-cycles)).
+- **Remedies:**
+  - preloaded or anti-backlash gears, or harmonic drives;
+  - dual-loop control (damping from the motor encoder, position from the load encoder);
+  - a small integral gain;
+  - backlash inverse compensation (Nordin & Gutman 2002).
+
+**Worked example (`h05`).** Backlash 20 mrad, load Coulomb friction 0.05 N m, position from a load encoder, damping from the motor encoder:
+
+| Controller | Error in the last 4 s | Oscillation |
+|---|---:|---:|
+| PD | 20.1 mrad | 0.4 mrad |
+| PID, light damping | 3.2 mrad | 2.8 mrad (hunting) |
+| PID, more damping | 0.4 mrad | 0.4 mrad |
+
+**Used in.** Gearmotor servo tuning; why legged robots favour low-backlash quasi-direct-drive actuators.
+
+**Pitfalls.**
+- Backlash grows with wear.
+- Damping taken from the *load* side across the gap is non-collocated and can destabilize the loop.
+
+---
+
+# II. Electrical machines and power electronics
+
+> **Quick start.** MIT OpenCourseWare 6.685 *Electric Machines* and 6.334 *Power Electronics* (free). Mohan, Undeland & Robbins, *Power Electronics*. R. Krishnan, *Electric Motor Drives*. Holtz (1992), "Pulsewidth modulation — a survey".
+
+## H6. The DC motor: electrical and mechanical time constants
+
+**Problem.** Model the motor that the controller drives.
+
+**Recipe.**
+- **Equations:**
+  - electrical: $V=Ri+L\,di/dt+k_e\omega$;
+  - mechanical: $J\dot\omega=k_ti-b\omega-\tau_{\text{load}}$.
+- **In SI units, $k_t=k_e$:** the same constant links current to torque and speed to back-EMF.
+- **Electrical time constant** $\tau_e=L/R$; **mechanical time constant** $\tau_m=JR/k_t^2$. Usually $\tau_m\gg\tau_e$, which justifies a fast inner current loop (H11, H17).
+
+**Worked example (`h06`).** $R=0.5\,\Omega$, $L=0.2$ mH, $k_t=0.05$ N m/A, $J=2\times10^{-5}$ kg m², 24 V:
+- $\tau_e=0.40$ ms, $\tau_m=4.0$ ms;
+- a 24 V step drives the current to 40.1 A (stall current would be 48 A);
+- the speed reaches 63% of its 480 rad/s no-load value after 4.0 ms.
+
+**Used in.** Every electric servo drive; the "DC motor" level of actuator models ([sim-to-real G1](../../sim2real/cookbook/COOKBOOK.md#g1-motor-torquespeed-limits)).
+
+**Pitfalls.** The inrush current at a voltage step. Drives limit current for exactly this reason.
+
+## H7. Torque–speed curve, power and efficiency
+
+**Problem.** What can the motor deliver at each speed?
+
+**Recipe.**
+- At fixed voltage, torque falls linearly with speed: from the stall torque $k_tV/R$ to zero at the no-load speed $V/k_e$.
+- Mechanical power $\tau\omega$ peaks at half the no-load speed.
+- Current limits flatten the curve at low speed, and the supply voltage caps it at high speed.
+
+**Worked example (`h07`).**
+- **The curve:** stall torque 2.40 N m, no-load speed 480 rad/s.
+- **Peak power:** 288 W at 1.20 N m (half stall), where efficiency is 50%.
+- **Efficiency in practice:** an ideal model's efficiency keeps rising toward light load, but there friction (not modelled here) takes over. Motors are run near their efficiency peak, not their power peak.
+
+**Used in.** Gear-ratio and voltage selection; the torque–speed limits in simulators.
+
+**Pitfalls.** Battery voltage sag lowers the whole curve under load.
+
+## H8. Thermal limits and derating
+
+**Problem.** How long can a motor deliver more than its continuous torque?
+
+**Recipe.**
+- **Winding temperature** follows a thermal RC: $C_{th}\dot T=I^2R(T)-(T-T_a)/R_{th}$.
+- **Copper resistance rises** by 0.393%/K, which adds heat as the winding warms.
+- **Continuous current** is the value that settles at $T_{\max}$. Above it, the time to $T_{\max}$ shrinks roughly as $1/I^2$.
+- **Drives derate** (cut the current limit) or trip at $T_{\max}$. This is the "thermal derating" pattern that simulation models usually miss ([sim-to-real review](../../sim2real/reports/01-learned-actuator-contact-models.md)).
+
+**Worked example (`h08`).** $R_{th}=4$ K/W, $C_{th}=60$ J/K, ambient 25 °C, limit 120 °C:
+- thermal time constant 240 s;
+- continuous current 5.88 A, with the hot winding at 0.687 Ω (+37%);
+- the winding reaches 120 °C after 167 s at 1.5× that current, 81 s at 2×, and 33 s at 3×.
+
+**Used in.** Drive firmware (I²t protection); duty-cycle planning for legged robots and exoskeletons.
+
+**Pitfalls.**
+- A single-node model hides the fast winding-to-case path.
+- Without a temperature sensor the drive must estimate the temperature.
+- Policies trained without derating fail after minutes on hardware.
+
+## H9. PWM, H-bridges and current ripple
+
+**Problem.** A drive switches transistors to make an average voltage. How fast must it switch?
+
+**Recipe.**
+- **Output voltage:** an H-bridge (DC motor) or three-phase inverter (brushless) applies the full supply voltage $V$ or zero. Duty cycle $D$ gives an average $DV$.
+- **Current ripple** in the winding inductance: $\Delta I\approx VD(1-D)/(Lf)$, largest at $D=0.5$.
+- **Choosing $f$:**
+  - higher frequency means less ripple and quieter operation;
+  - switching losses grow with $f$;
+  - silicon MOSFET and IGBT drives typically use 10–20 kHz; GaN allows 50–100 kHz.
+- **Space-vector modulation** (van der Broeck et al. 1988) uses the inverter's DC bus about 15% better than sine PWM.
+
+**Worked example (`h09`).** $V=24$ V, $L=0.2$ mH, 50% duty, stalled motor:
+
+| PWM frequency | Simulated ripple | Formula |
+|---|---:|---:|
+| 4 kHz | 7.52 A | 7.50 A |
+| 20 kHz | 1.56 A | 1.50 A |
+| 80 kHz | 0.39 A | 0.38 A |
+
+**Used in.** Every motor drive; current sensing is timed to the PWM centre to avoid switching noise.
+
+**Pitfalls.** Dead time (both switches off to avoid shoot-through) distorts the voltage at low current. Ripple heats the motor without making torque.
+
+## H10. Brushless motors and field-oriented control
+
+**Problem.** Control the torque of a three-phase permanent-magnet motor (BLDC or PMSM), as in most robot actuators.
+
+**Recipe.**
+- **Clarke transform:** three phase currents → two stationary axes $(\alpha,\beta)$.
+- **Park transform** (Park 1929): rotate by the *electrical* angle $\theta_e=p\,\theta_m$ ($p$ pole pairs) into rotor axes $(d,q)$. The currents become DC quantities.
+- **Torque** $\tau=\tfrac32p\lambda i_q$. Keep $i_d=0$ below base speed; use negative $i_d$ for field weakening.
+- **Two PI loops** regulate $i_d$ and $i_q$ (H11). The inverse transforms and space-vector PWM apply the voltages. This is field-oriented control (Blaschke 1972); direct torque control (Takahashi & Noguchi 1986) is an alternative.
+
+**Worked example (`h10`).** 14 pole pairs, $\lambda=0.008$ Wb. With 10 A of $i_q$, the transforms recover $i_d=0.000$ and $i_q=10.000$ A exactly, giving 1.68 N m. An encoder offset is multiplied by the pole-pair count:
+
+| Encoder offset (mechanical) | 0.5° | 1.0° | 3.0° |
+|---|---:|---:|---:|
+| Electrical error | 7° | 14° | 42° |
+| Torque-producing current | 99.3% | 97.0% | 74.3% |
+| Stray $i_d$ | 1.22 A | 2.42 A | 6.69 A |
+
+**Used in.** Robot joints (MIT Cheetah and Mini Cheetah, ODRI, commercial quasi-direct-drive modules), drones, electric vehicles.
+
+**Pitfalls.**
+- Encoder offset calibration is mandatory.
+- Current-sensor gain mismatch creates torque ripple.
+- Sensorless control fails at low speed.
+
+## H11. Designing the current loop
+
+**Problem.** Tune the innermost loop, which turns current commands into torque.
+
+**Recipe.**
+- **Plant:** $1/(Ls+R)$. **PI tuning:** $K_p=L\omega_c$, $K_i=R\omega_c$ puts the PI zero on the electrical pole, giving a first-order loop with bandwidth $\omega_c$.
+- **Digital delay:** one sample of computation plus half a sample of PWM, about $1.5T_s$. Phase margin $\approx90^\circ-\omega_c\cdot1.5T_s$ (in degrees).
+- **Rule of thumb:** keep the bandwidth below about a tenth to a twentieth of the sampling frequency.
+
+**Worked example (`h11`).** 20 kHz sampling:
+
+| Bandwidth | Phase margin | Step response |
+|---|---:|---|
+| 1000 Hz | 63.0° | 2.2% overshoot |
+| 2500 Hz | 22.5° | 78.8% overshoot |
+| 4500 Hz | −31.5° | unstable |
+
+**Used in.** Every FOC drive; torque bandwidth sets how fast the outer loops can be (H17).
+
+**Pitfalls.**
+- $L$ falls with current (magnetic saturation).
+- $R$ rises with temperature (H8).
+- Retune or add margin.
+
+---
+
+# III. Sensing and signal processing
+
+> **Quick start.** Åström & Wittenmark, *Computer-Controlled Systems*. Franklin, Powell & Workman, *Digital Control of Dynamic Systems*. Brown, Schneider & Mulligan (1992) on velocity estimation. Shannon (1949) on sampling.
+
+## H12. Encoders and velocity estimation
+
+**Problem.** Estimate speed from a position encoder, especially at low speed.
+
+**Recipe.**
+- Differencing at rate $f_s$ quantizes speed in steps of $2\pi f_s/\text{CPR}$.
+- **Options:**
+  - average over a window, which adds delay;
+  - the 1/T method: time between counts;
+  - a tracking observer (PLL), $\hat\omega$ from a second-order filter on the position error.
+- **Absolute encoders** (magnetic, optical, 14–20 bits) and resolvers remove homing and raise resolution.
+
+**Worked example (`h12`).** A 12-bit encoder (4096 counts/rev) at 10 kHz, true speed about 2 rad/s:
+- plain differencing has a 15.3 rad/s quantum and a 5.087 rad/s RMS error;
+- a 100-sample average gets 0.062 rad/s, but adds about 5 ms of delay online;
+- a 50 Hz tracking observer gets 0.011 rad/s.
+
+**Used in.** Every servo velocity loop.
+
+**Pitfalls.** Encoder eccentricity and interpolation errors appear as periodic velocity ripple. Velocity estimated from noisy differences biases identification ([sim-to-real G17](../../sim2real/cookbook/COOKBOOK.md#g17-trajectory-matching-through-a-differentiable-simulator)).
+
+## H13. Sampling, aliasing and ADC resolution
+
+**Problem.** Measure analogue signals (current, force, voltage) without fooling the controller.
+
+**Recipe.**
+- **Sampling theorem** (Nyquist 1928, Shannon 1949): content above $f_s/2$ folds back. A 1.1 kHz disturbance sampled at 1 kHz appears at 100 Hz.
+- **Anti-alias filter** before the ADC; its phase lag costs margin (H14).
+- **ADC quantization:** an ideal $N$-bit ADC has $\mathrm{SNR}=6.02N+1.76$ dB for a full-scale sine.
+
+**Worked example (`h13`).**
+- **Aliasing:** a 1100 Hz interference sampled at 1 kHz shows up at 100 Hz.
+- **Anti-alias filters:**
+  - a first-order 300 Hz filter passes 26.3% of it (6.92% if second order), with 5.7° lag at 30 Hz;
+  - a 100 Hz filter passes 9.1% (0.82%), with 16.7° lag.
+- **ADC resolution:** measured SNR for 10, 12 and 16 bits is 61.9, 73.9 and 98.0 dB, against the rule's 62.0, 74.0 and 98.1 dB.
+
+**Used in.** Current sensing in drives; force and torque sensors; IMUs (which filter internally).
+
+**Pitfalls.** PWM switching noise aliases unless sampling is synchronized to the PWM. Sensor noise (not only quantization) usually dominates.
+
+## H14. Filtering: noise against delay
+
+**Problem.** Filter a noisy signal (such as velocity) without destabilizing the loop.
+
+**Recipe.**
+- A first-order low-pass at $f_c$ cuts white-noise RMS roughly as $\sqrt{f_c}$.
+- Its phase lag at the loop crossover $f_x$ is $\arctan(f_x/f_c)$, which comes straight out of the phase margin.
+- **Rule of thumb:** keep filters at least 5–10× above the crossover, or include them in the design model.
+
+**Worked example (`h14`).** 10 kHz loop, 30 Hz crossover:
+
+| Low-pass cutoff | Noise RMS (input 1.000) | Phase lag at 30 Hz | Equivalent delay |
+|---|---:|---:|---:|
+| 1000 Hz | 0.552 | 1.7° | 0.16 ms |
+| 200 Hz | 0.251 | 8.5° | 0.79 ms |
+| 50 Hz | 0.126 | 31.0° | 2.87 ms |
+
+**Used in.** Velocity and torque-sensor filtering; this delay is part of the latency that sim-to-real models must include.
+
+**Pitfalls.** Cascading several "harmless" filters adds up to a large delay.
+
+---
+
+# IV. Embedded real-time implementation
+
+> **Quick start.** Åström & Wittenmark, *Computer-Controlled Systems* (discretization, sampling, quantization). Liu & Layland (1973) on scheduling. Cervin et al. (2003) on control timing. Davis et al. (2007) on CAN timing. Casini et al. (2025), survey of real-time ROS 2.
+
+## H15. Discretizing controllers
+
+**Problem.** Turn a continuous-time design into code that runs every $T_s$.
+
+**Recipe.**
+- **Substitutions for $s$:**
+  - forward Euler $s\to(z-1)/T_s$, simple but can be unstable;
+  - backward Euler $s\to(z-1)/(zT_s)$;
+  - Tustin $s\to\frac2{T_s}\frac{z-1}{z+1}$, the most accurate in frequency;
+  - zero-order-hold equivalent: exact for a plant behind a DAC.
+- **The ZOH adds $T_s/2$ of delay:** a phase loss of $\omega_cT_s/2$ at crossover.
+- **Rule of thumb:** sample 10–30× faster than the closed-loop bandwidth.
+
+**Worked example (`h15`).** At a 50 Hz crossover, the hold costs 9.0° at $T_s=1$ ms and 0.9° at 0.1 ms. A 200 Hz low-pass discretized at 1 kHz, evaluated at 100 Hz:
+
+| Method | Gain error | Phase error |
+|---|---:|---:|
+| Forward Euler | +15.4% | −2.3° |
+| Backward Euler | −10.1% | +4.5° |
+| Tustin | −0.7% | −0.8° |
+| ZOH equivalent | +1.5% | −21.7° (the real hold delay) |
+
+Forward Euler of a 400 Hz filter at 1 kHz puts the pole at −1.513, so it is unstable.
+
+**Used in.** Every embedded controller, PLC function block and auto-generated controller.
+
+**Pitfalls.** Discretizing the controller but not accounting for computation delay. Changing $T_s$ without re-discretizing.
+
+## H16. Fixed-point arithmetic
+
+**Problem.** Run filters and controllers on processors without a floating-point unit, or on FPGAs.
+
+**Recipe.**
+- **Q$n$ format:** a number $x$ is stored as $\mathrm{round}(x\,2^n)$. A multiply is followed by a shift right by $n$.
+- **Hazards:**
+  - coefficient quantization moves poles;
+  - truncation loses small increments, which makes dead zones and limit cycles;
+  - overflow wraps around unless saturating arithmetic is used.
+- **Remedies:** wider accumulators (Q31 or 64-bit), rounding, error feedback, or a floating-point unit.
+
+**Worked example (`h16`).** A slow low-pass $y\mathrel{+}=a(x-y)$ with $a=0.001$, target 0.5, after 20,000 steps:
+
+| Arithmetic | Stored coefficient | Output | Error |
+|---|---:|---:|---:|
+| Float | 0.001000 | 0.500000 | 1.0×10⁻⁹ |
+| Q15 | 0.001007 | 0.469727 | 3.0×10⁻² (stalls) |
+| Q31 | 0.001000 | 0.500000 | 4.7×10⁻⁷ |
+
+**Used in.** Motor-drive DSPs, FPGA current loops, safety controllers, low-cost microcontrollers.
+
+**Pitfalls.** A test on large signals hides small-signal dead zones. Test near zero and near full scale (H23).
+
+## H17. Cascaded current, velocity and position loops
+
+**Problem.** Structure the servo controller.
+
+**Recipe.**
+- **Nested loops:** current (torque), then velocity, then position.
+- **Each inner loop is several times faster than the next.** It then looks like a unity gain to the outer loop, so each loop can be tuned on its own. Typical rates are 10–40 kHz, 1–10 kHz and 0.25–2 kHz.
+- **Add feedforward** of velocity and acceleration (torque) from the trajectory, to track without large feedback gains.
+
+**Worked example (`h17`).** Position bandwidth 5 Hz, with each inner loop 8×, 4× or 2× faster than the one outside it:
+
+| Separation per loop | Position overshoot | Time to 98% |
+|---|---:|---:|
+| 8× | 0.0% | 129 ms |
+| 4× | 0.0% | 139 ms |
+| 2× | 17.9% | 50 ms |
+
+With too little separation, the loops interact and overshoot appears.
+
+**Used in.** Practically every industrial servo drive and robot joint controller.
+
+**Pitfalls.** Sensor filtering in the inner loops (H14) eats the separation.
+
+## H18. Integrator windup
+
+**Problem.** When an actuator saturates, the integral term keeps growing and causes large overshoot.
+
+**Recipe.**
+- **Clamping** (conditional integration): stop integrating while the output is saturated and the error would push it further.
+- **Back-calculation** (Åström & Rundqwist 1989): feed $u_{\text{sat}}-u$ back into the integrator with gain $1/T_t$.
+- **Apply the same saturation in simulation as on hardware.**
+
+**Worked example (`h18`).** A 100 rad/s velocity step with torque limited to 0.2 N m. The overshoot is 95.1 rad/s without anti-windup, 1.1 rad/s with clamping and 1.3 rad/s with back-calculation.
+
+**Used in.** Every PI or PID loop with saturating actuators: current limits, voltage limits, valve end-stops.
+
+**Pitfalls.** Anti-windup in the inner loop but not the outer. Learned policies that saturate actuators cause the same effect in their own state.
+
+## H19. Real-time scheduling
+
+**Problem.** Several periodic tasks share one processor. Do they all meet their deadlines?
+
+**Recipe.**
+- **Rate-monotonic priorities** (shorter period means higher priority). Liu & Layland (1973): schedulable if utilization $U\le n(2^{1/n}-1)$. The bound is sufficient, not necessary.
+- **Exact response-time analysis:** $R_i=C_i+\sum_{j<i}\lceil R_i/T_j\rceil C_j$, iterated to a fixed point. Deadline met if $R_i\le T_i$.
+- **Measure worst-case execution times** on the target, including cache and interrupt effects.
+- **Platforms:** RTOSes (FreeRTOS, Zephyr) on microcontrollers; PREEMPT_RT Linux, merged into the mainline kernel in 6.12 (2024), for application processors.
+
+**Worked example (`h19`).** Five tasks: current loop 50 µs/15 µs, velocity 250/40 µs, position 1000/120 µs, communication 1000/200 µs, logging 10 ms/0.9 ms.
+- Utilization is 0.870, above the 5-task bound of 0.743, so the bound is inconclusive.
+- Exact analysis shows every task meets its deadline. Worst-case responses are 15, 70, 235, 635 and 4670 µs.
+
+**Used in.** Drive firmware; robot controllers; ROS 2 real-time executors (Teper et al. 2024, Staschulat et al. 2021).
+
+**Pitfalls.**
+- Priority inversion: use priority inheritance.
+- Unbounded interrupts, memory allocation or logging in the control path.
+
+## H20. Communication budgets: CAN, CAN FD, EtherCAT
+
+**Problem.** Can the bus carry commands and feedback for all joints at the control rate?
+
+**Recipe.**
+- **CAN 2.0 at 1 Mbit/s:** a worst-case standard frame with 8 data bytes is about 135 bits including bit stuffing (Davis et al. 2007), so about 7,400 frames/s per bus. Keep load below about 70%.
+- **CAN FD:** up to 64 bytes per frame, with a faster data phase (commonly 2–5 Mbit/s).
+- **EtherCAT** (Jansen & Büttner 2004): one Ethernet frame passes through all slaves "on the fly", with distributed clocks for synchronization. Cycles of 100–250 µs are routine.
+- **Profiles:** CANopen CiA 402 and the EtherCAT CoE drive profile define standard drive state machines (H21).
+
+**Worked example (`h20`).** 12 joints at 1 kHz, one command and one feedback frame each:
+
+| Option | Result |
+|---|---|
+| CAN 1 Mbit/s, one bus | 24,000 frames/s = 324% load (infeasible) |
+| CAN, two buses | 162% load each |
+| CAN, four buses | 81% load each |
+| CAN FD, 64 bytes at 5 Mbit/s | about 171 µs per frame, carrying all 12 joints' commands |
+| EtherCAT 100 Mbit/s | about 47 µs per cycle (assuming 1 µs forwarding per slave) |
+
+**Used in.** Quadrupeds and humanoids (often several CAN buses per robot); industrial arms and machine tools (EtherCAT).
+
+**Pitfalls.** Bus latency and jitter add delay to the control loop (sim-to-real latency, [stability S5](../../stability-analysis/cookbook/COOKBOOK.md#s5-gain-phase-and-delay-margins)). Error frames and retransmissions break naive budgets.
+
+---
+
+# V. Software engineering and safety
+
+> **Quick start.** Harel (1987) on statecharts. Leveson, *Engineering a Safer World* (MIT Press 2011, open access) and the Therac-25 investigation (Leveson & Turner 1993). Holzmann (2006), "The Power of 10". IEC 61508 and ISO 13849-1 (functional safety). Parnas (1972) on modular design.
+
+## H21. Drive state machines and property-based testing
+
+**Problem.** Power stages must never apply torque unexpectedly: not on start-up, not after a fault, not when communication is lost.
+
+**Recipe.**
+- **Write the drive logic as an explicit state machine** with guarded transitions, following the CiA 402 pattern:
+  - not ready → switch-on disabled → ready → switched on → operation enabled;
+  - quick stop and fault states;
+  - a fault reset is required to leave the fault state.
+- **Watchdog:** missing commands for more than $n$ cycles leads to a quick stop (or safe torque off).
+- **Test invariants with random event sequences** (property-based testing), not only scripted cases.
+
+**Worked example (`h21`).** A scripted run passes through the normal enable sequence. Losing communication causes a quick stop, an over-temperature event latches a fault that ignores "enable", and a fault reset recovers. In 10,000 random sequences of 40 events:
+- torque was enabled during a fault event 0 times;
+- the drive went from fault to operation without a reset 0 times.
+
+**Used in.** CANopen and EtherCAT servo drives; ros2_control hardware interfaces; robot safety controllers.
+
+**Pitfalls.**
+- Hidden states in flags spread across the code.
+- Transitions taken in interrupt context without locking.
+- Ignoring what happens on reboot mid-motion.
+
+## H22. Safety integrity numbers
+
+**Problem.** How reliable must a safety function be (for example, safe stop on a person entering a robot cell), and does a design meet it?
+
+**Recipe.**
+- **Target ratings:**
+  - **ISO 13849-1** performance levels by probability of dangerous failure per hour: PL d $10^{-7}$–$10^{-6}$, PL e $10^{-8}$–$10^{-7}$;
+  - **IEC 61508** safety integrity levels (high-demand or continuous mode): SIL 2 $10^{-7}$–$10^{-6}$, SIL 3 $10^{-8}$–$10^{-7}$, SIL 4 $10^{-9}$–$10^{-8}$.
+- **Single channel:** $\mathrm{PFH}\approx\lambda_D(1-DC)$, from the dangerous failure rate $\lambda_D$ and the diagnostic coverage $DC$.
+- **Two channels (1oo2), simplified:** $\mathrm{PFH}\approx[(1-\beta)\lambda_{DU}]^2T+\beta\lambda_{DU}$. Here $\beta$ is the common-cause fraction and $T$ the proof-test interval.
+- **Ratings also need more than PFH:** architecture categories, systematic capability, software processes and validation.
+
+**Worked example (`h22`).**
+- **One channel:** a part with MTTFd of 57 years and 90% diagnostic coverage gives $2.0\times10^{-7}$/h, which is PL d (SIL 2 band).
+- **Two channels:** with 2% common cause, the pair reaches $4.3\times10^{-9}$/h, which is PL e (SIL 4 band by PFH).
+- **Common cause dominates:** it is 92% of that figure. Without common cause the pair would be $3.5\times10^{-10}$/h. Diversity and separation matter more than adding channels.
+
+**Used in.** Robot safety controllers; safe torque off (IEC 61800-5-2); automotive (ISO 26262 uses ASILs instead).
+
+**Pitfalls.**
+- These are simplified formulas.
+- Software contributes systematic, not random, failures; no failure rate covers them.
+- Learned controllers sit outside these frameworks today. Keep them behind a certified safety layer.
+
+## H23. Back-to-back testing: model against implementation
+
+**Problem.** Show that the code running on the target behaves like the model you designed and verified.
+
+**Recipe.**
+- **Back-to-back testing:** run the reference model (floating point, model-in-the-loop) and the implementation (fixed point, software-in-the-loop) on the same test vectors, and compare outputs within a tolerance.
+- **Test vectors:** random, plus edge cases such as saturation, zero crossings and full scale.
+- **Run it in continuous integration;** any change that breaks equivalence fails the build.
+- **The test ladder:**
+  - unit tests;
+  - model-in-the-loop (MIL), software-in-the-loop (SIL);
+  - processor-in-the-loop (PIL), hardware-in-the-loop (HIL);
+  - then the real machine.
+
+**Worked example (`h23`).** A PI controller with clamping anti-windup, compared on 200 random sequences of 500 samples:
+- the correct Q24 implementation matches the float model within $1.25\times10^{-6}$ and passes (tolerance $10^{-3}$);
+- a build with the anti-windup accidentally removed deviates by 2.00 and fails.
+
+**Used in.** Automotive and aerospace model-based design (ISO 26262 and DO-178C workflows); robot firmware CI; ros2_control controller tests.
+
+**Pitfalls.**
+- Tolerances set so loose that real bugs pass, or so tight that rounding fails.
+- Testing only nominal signals, which misses saturation logic.
+
+---
+
+# Appendix · Quick reference
+
+| Idea | Formula or rule |
+|---|---|
+| Joint torque | $\tau=J\ddot\theta+mgl\cos\theta$; size on RMS and peak |
+| Optimal gear ratio | $N^*=\sqrt{J_L/J_m}$; reflected inertia $N^2J_m$ |
+| Ball screw | $J=m(p/2\pi)^2$, $F=2\pi\eta\tau/p$ |
+| Two-mass resonance | $\omega_{ar}=\sqrt{k/J_L}$, $\omega_r=\sqrt{k(J_m+J_L)/(J_mJ_L)}$ |
+| Stribeck friction | $F=[F_c+(F_s-F_c)e^{-(v/v_s)^2}]\mathrm{sign}\,v+bv$ |
+| DC motor | $V=Ri+L\dot i+k_e\omega$, $\tau=k_ti$, $\tau_e=L/R$, $\tau_m=JR/k_t^2$ |
+| Thermal | $C_{th}\dot T=I^2R(T)-(T-T_a)/R_{th}$ |
+| PWM ripple | $\Delta I=VD(1-D)/(Lf)$ |
+| PMSM torque | $\tau=\tfrac32p\lambda i_q$, $\theta_e=p\theta_m$ |
+| Current-loop PI | $K_p=L\omega_c$, $K_i=R\omega_c$; margin $90^\circ-\omega_c\,1.5T_s$ |
+| Encoder speed quantum | $2\pi f_s/\text{CPR}$ |
+| ADC SNR | $6.02N+1.76$ dB |
+| Filter lag | $\arctan(f_x/f_c)$ |
+| Hold delay | $T_s/2$, phase $\omega_cT_s/2$ |
+| Tustin | $s\to\frac2{T_s}\frac{z-1}{z+1}$ |
+| Rate-monotonic bound | $U\le n(2^{1/n}-1)$; response time $R_i=C_i+\sum\lceil R_i/T_j\rceil C_j$ |
+| CAN frame | about 135 bits worst case (8 bytes, standard ID) |
+| 1oo2 PFH | $[(1-\beta)\lambda_{DU}]^2T+\beta\lambda_{DU}$ |
+
+</script>
+<script>
+(function () {
+  var src = document.getElementById('src').textContent;
+  var store = [];
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  // protect math from the Markdown parser
+  src = src.replace(/\$\$([\s\S]+?)\$\$/g, function (_, m) { store.push('\\[' + esc(m) + '\\]'); return '@@M' + (store.length - 1) + '@@'; });
+  src = src.replace(/\$([^\n$]+?)\$/g, function (_, m) { store.push('\\(' + esc(m) + '\\)'); return '@@M' + (store.length - 1) + '@@'; });
+  var html = marked.parse(src, { gfm: true });
+  html = html.replace(/@@M(\d+)@@/g, function (_, i) { return store[+i]; });
+  var book = document.getElementById('book');
+  book.innerHTML = html;
+  function slug(t) { return t.trim().toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-'); }
+  var toc = document.getElementById('toc');
+  book.querySelectorAll('h1, h2').forEach(function (h) {
+    h.id = slug(h.textContent);
+    if (h.tagName === 'H1' && h !== book.firstElementChild) {
+      var p = document.createElement('div'); p.className = 'p'; p.textContent = h.textContent; toc.appendChild(p);
+    }
+    if (h.tagName === 'H2') {
+      var m = h.textContent.match(/^([A-Z]\d+)\.\s*(.*)$/);
+      if (m) { h.innerHTML = '<span class="rno">' + m[1] + '</span>' + h.innerHTML.replace(/^[A-Z]\d+\.\s*/, ''); }
+      var a = document.createElement('a'); a.href = '#' + h.id; a.textContent = m ? m[1] + ' · ' + m[2] : h.textContent; toc.appendChild(a);
+    }
+  });
+  book.querySelectorAll('table').forEach(function (t) { var w = document.createElement('div'); w.className = 'tbl'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
+  book.querySelectorAll('p').forEach(function (p) {
+    var s = p.firstElementChild;
+    if (s && s.tagName === 'STRONG' && p.firstChild === s) {
+      if (/^Worked example/.test(s.textContent)) p.className = 'we';
+      if (/^Pitfalls/.test(s.textContent)) p.className = 'pit';
+    }
+  });
+  book.querySelectorAll('pre code.language-mermaid').forEach(function (c) { var d = document.createElement('div'); d.className = 'mermaid'; d.textContent = c.textContent; c.parentNode.replaceWith(d); });
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark' || (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  try { mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'neutral' }); mermaid.run({ querySelector: '.mermaid' }); } catch (e) {}
+  if (location.hash) { var t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); }
+  MathJax.startup.promise.then(function () { return MathJax.typesetPromise([book]); });
+})();
+</script>
+</body>
+</html>

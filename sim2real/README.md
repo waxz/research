@@ -44,3 +44,4 @@ To rebuild: `python3 tools/build_catalog.py --download --check`, then `python3 t
 ## See also
 
 - [stability-analysis/](../stability-analysis/): Lyapunov, robust and learned stability certificates, from classical control to neural-network controllers.
+- [control-systems-engineering/](../control-systems-engineering/): the mechanical, electrical, embedded and software layers under the control loop, from physics to safety and testing.
