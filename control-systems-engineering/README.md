@@ -32,6 +32,7 @@ To rebuild: `python3 tools/build_catalog.py --download --check`, then `python3 t
 
 ## Related collections
 
+- [servo-motion-control/](../servo-motion-control/): FOC, cascaded PID, precision servos and industrial robot-arm control, with runnable recipes.
 - [control-estimation-theory/](../control-estimation-theory/): the control and estimation laws these layers implement.
 - [stability-analysis/](../stability-analysis/): delay margins, describing functions, anti-windup and bounded-residual arguments used here.
 - [sim2real/](../sim2real/): which of these hardware effects a simulation actuator model must reproduce.

@@ -32,6 +32,7 @@ To rebuild: `python3 tools/build_catalog.py --download --check`, then `python3 t
 
 ## Related collections
 
+- [servo-motion-control/](../servo-motion-control/): FOC, cascaded PID, precision servos and industrial robot-arm control, with runnable recipes.
 - [control-systems-engineering/](../control-systems-engineering/): the mechanical, electrical, embedded and software layers under the control loop, from physics to safety and testing.
 - [control-estimation-theory/](../control-estimation-theory/): PID to optimal, robust, adaptive and learning-based control and estimation.
 - [sim2real/](../sim2real/): actuator models and the sim-to-real gap; recipe S9 gives the stability argument for bounded learned residuals.

@@ -1,0 +1,445 @@
+{
+ "categories": [
+  {
+   "id": "00-surveys-tutorials",
+   "name": "Surveys and tutorials",
+   "about": "Overviews of precision motion control, learning control, lithography stages and robot collision handling."
+  },
+  {
+   "id": "01-foc-drives",
+   "name": "Field-oriented control and drives",
+   "about": "The dq transform, interior-magnet motors, field weakening, PWM, dead time, sensorless and predictive current control."
+  },
+  {
+   "id": "02-servo-loops",
+   "name": "Single-axis servo loops",
+   "about": "Disturbance observers, feedforward, shaped commands and automatic cascade tuning."
+  },
+  {
+   "id": "03-precision-motion",
+   "name": "High-precision motion control",
+   "about": "ZPETC, iterative and repetitive learning control, cross-coupled contouring and learned feedforward."
+  },
+  {
+   "id": "04-robot-arms",
+   "name": "Multi-axis robot arm control",
+   "about": "Robot dynamics, gravity compensation, adaptive control, flexible joints, identification, impedance, collision detection and time-optimal paths."
+  },
+  {
+   "id": "05-standards-docs",
+   "name": "Standards and documentation",
+   "about": "Drive profiles and motion-control programming standards."
+  }
+ ],
+ "papers": [
+  {
+   "key": "oomen2018advanced",
+   "cat": "00-surveys-tutorials",
+   "title": "Advanced Motion Control for Precision Mechatronics: Control, Identification, and Learning of Complex Systems",
+   "authors": "T. Oomen",
+   "year": 2018,
+   "venue": "IEEJ Journal of Industry Applications",
+   "note": "Open-access overview of precision motion control: feedforward, identification and learning for complex mechatronics.",
+   "url": "https://doi.org/10.1541/ieejjia.7.127"
+  },
+  {
+   "key": "bristow2006ilc",
+   "cat": "00-surveys-tutorials",
+   "title": "A Survey of Iterative Learning Control",
+   "authors": "D. A. Bristow, M. Tharayil, A. G. Alleyne",
+   "year": 2006,
+   "venue": "IEEE Control Systems Magazine",
+   "note": "Design and analysis of ILC: learning and robustness filters, convergence.",
+   "url": "https://doi.org/10.1109/MCS.2006.1636313"
+  },
+  {
+   "key": "butler2011litho",
+   "cat": "00-surveys-tutorials",
+   "title": "Position Control in Lithographic Equipment",
+   "authors": "H. Butler",
+   "year": 2011,
+   "venue": "IEEE Control Systems Magazine",
+   "note": "How wafer and reticle stages reach nanometre precision: feedforward, MIMO control, learning.",
+   "url": "https://doi.org/10.1109/MCS.2011.941882"
+  },
+  {
+   "key": "haddadin2017collisions",
+   "cat": "00-surveys-tutorials",
+   "title": "Robot Collisions: A Survey on Detection, Isolation, and Identification",
+   "authors": "S. Haddadin, A. De Luca, A. Albu-Schäffer",
+   "year": 2017,
+   "venue": "IEEE Transactions on Robotics",
+   "note": "Survey of robot collision detection, isolation, identification and reaction.",
+   "url": "https://doi.org/10.1109/TRO.2017.2723903"
+  },
+  {
+   "key": "park1929tworeaction",
+   "cat": "01-foc-drives",
+   "title": "Two-Reaction Theory of Synchronous Machines: Generalized Method of Analysis, Part I",
+   "authors": "R. H. Park",
+   "year": 1929,
+   "venue": "Transactions of the American Institute of Electrical Engineers",
+   "note": "The dq transform at the heart of field-oriented control.",
+   "url": "https://doi.org/10.1109/T-AIEE.1929.5055275"
+  },
+  {
+   "key": "jahns1986ipm",
+   "cat": "01-foc-drives",
+   "title": "Interior Permanent-Magnet Synchronous Motors for Adjustable-Speed Drives",
+   "authors": "T. M. Jahns, G. B. Kliman, T. W. Neumann",
+   "year": 1986,
+   "venue": "IEEE Transactions on Industry Applications",
+   "note": "Interior permanent-magnet motors: reluctance torque, MTPA and wide speed range.",
+   "url": "https://doi.org/10.1109/TIA.1986.4504786"
+  },
+  {
+   "key": "morimoto1990fw",
+   "cat": "01-foc-drives",
+   "title": "Expansion of Operating Limits for Permanent Magnet Motor by Current Vector Control Considering Inverter Capacity",
+   "authors": "S. Morimoto, Y. Takeda, T. Hirasa, K. Taniguchi",
+   "year": 1990,
+   "venue": "IEEE Transactions on Industry Applications",
+   "note": "Current-vector control for field weakening within inverter voltage and current limits.",
+   "url": "https://doi.org/10.1109/28.60058"
+  },
+  {
+   "key": "vanderbroeck1988svm",
+   "cat": "01-foc-drives",
+   "title": "Analysis and Realization of a Pulsewidth Modulator Based on Voltage Space Vectors",
+   "authors": "H. W. van der Broeck, H.-C. Skudelny, G. V. Stanke",
+   "year": 1988,
+   "venue": "IEEE Transactions on Industry Applications",
+   "note": "Space-vector PWM: 15% more usable voltage than sine PWM.",
+   "url": "https://doi.org/10.1109/28.87265"
+  },
+  {
+   "key": "choi1994deadtime",
+   "cat": "01-foc-drives",
+   "title": "Inverter Output Voltage Synthesis Using Novel Dead Time Compensation",
+   "authors": "J.-W. Choi, S.-I. Yong, S.-K. Sul",
+   "year": 1994,
+   "venue": "IEEE APEC",
+   "note": "Dead-time compensation for accurate low-voltage synthesis.",
+   "url": "https://doi.org/10.1109/APEC.1994.316413"
+  },
+  {
+   "key": "matsui1996sensorless",
+   "cat": "01-foc-drives",
+   "title": "Sensorless PM Brushless DC Motor Drives",
+   "authors": "N. Matsui",
+   "year": 1996,
+   "venue": "IEEE Transactions on Industrial Electronics",
+   "note": "Back-EMF based position estimation and its limits.",
+   "url": "https://doi.org/10.1109/41.491354"
+  },
+  {
+   "key": "takahashi1986dtc",
+   "cat": "01-foc-drives",
+   "title": "A New Quick-Response and High-Efficiency Control Strategy of an Induction Motor",
+   "authors": "I. Takahashi, T. Noguchi",
+   "year": 1986,
+   "venue": "IEEE Transactions on Industry Applications",
+   "note": "Direct torque control, the main alternative to FOC.",
+   "url": "https://doi.org/10.1109/TIA.1986.4504799"
+  },
+  {
+   "key": "brosch2019mpccurrent",
+   "cat": "01-foc-drives",
+   "title": "Data-Driven Recursive Least Squares Estimation for Model Predictive Current Control of Permanent Magnet Synchronous Motors",
+   "authors": "A. Brosch, S. Hanke, O. Wallscheid, J. Böcker",
+   "year": 2019,
+   "venue": "arXiv",
+   "note": "Model predictive current control of PMSMs with recursive least-squares model correction.",
+   "arxiv": "1911.12065",
+   "pdf": true
+  },
+  {
+   "key": "ohnishi1996dob",
+   "cat": "02-servo-loops",
+   "title": "Motion Control for Advanced Mechatronics",
+   "authors": "K. Ohnishi, M. Shibata, T. Murakami",
+   "year": 1996,
+   "venue": "IEEE/ASME Transactions on Mechatronics",
+   "note": "Disturbance observers for robust motion control.",
+   "url": "https://doi.org/10.1109/3516.491410"
+  },
+  {
+   "key": "kempf1999dob",
+   "cat": "02-servo-loops",
+   "title": "Disturbance Observer and Feedforward Design for a High-Speed Direct-Drive Positioning Table",
+   "authors": "C. J. Kempf, S. Kobayashi",
+   "year": 1999,
+   "venue": "IEEE Transactions on Control Systems Technology",
+   "note": "DOB and feedforward for a direct-drive positioning table.",
+   "url": "https://doi.org/10.1109/87.784416"
+  },
+  {
+   "key": "singer1990shaping",
+   "cat": "02-servo-loops",
+   "title": "Preshaping Command Inputs to Reduce System Vibration",
+   "authors": "N. C. Singer, W. P. Seering",
+   "year": 1990,
+   "venue": "Journal of Dynamic Systems, Measurement, and Control",
+   "note": "Input shaping: commands that cancel their own vibration.",
+   "url": "https://doi.org/10.1115/1.2894142"
+  },
+  {
+   "key": "khosravi2020bocascade",
+   "cat": "02-servo-loops",
+   "title": "Performance-Driven Cascade Controller Tuning with Bayesian Optimization",
+   "authors": "M. Khosravi, V. Behrunani, P. Myszkorowski, R. S. Smith, A. Rupenyan, J. Lygeros",
+   "year": 2020,
+   "venue": "arXiv",
+   "note": "Bayesian optimization tunes a linear-axis cascade (position and speed loops) jointly on hardware.",
+   "arxiv": "2007.12536",
+   "pdf": true
+  },
+  {
+   "key": "tomizuka1987zpetc",
+   "cat": "03-precision-motion",
+   "title": "Zero Phase Error Tracking Algorithm for Digital Control",
+   "authors": "M. Tomizuka",
+   "year": 1987,
+   "venue": "Journal of Dynamic Systems, Measurement, and Control",
+   "note": "ZPETC: feedforward through non-minimum-phase zeros.",
+   "url": "https://doi.org/10.1115/1.3143822"
+  },
+  {
+   "key": "arimoto1984ilc",
+   "cat": "03-precision-motion",
+   "title": "Bettering Operation of Robots by Learning",
+   "authors": "S. Arimoto, S. Kawamura, F. Miyazaki",
+   "year": 1984,
+   "venue": "Journal of Robotic Systems",
+   "note": "Origin of iterative learning control for repeated robot motion.",
+   "url": "https://doi.org/10.1002/rob.4620010203"
+  },
+  {
+   "key": "hara1988repetitive",
+   "cat": "03-precision-motion",
+   "title": "Repetitive Control System: A New Type Servo System for Periodic Exogenous Signals",
+   "authors": "S. Hara, Y. Yamamoto, T. Omata, M. Nakano",
+   "year": 1988,
+   "venue": "IEEE Transactions on Automatic Control",
+   "note": "Repetitive control for periodic disturbances.",
+   "url": "https://doi.org/10.1109/9.1274"
+  },
+  {
+   "key": "koren1980ccc",
+   "cat": "03-precision-motion",
+   "title": "Cross-Coupled Biaxial Computer Control for Manufacturing Systems",
+   "authors": "Y. Koren",
+   "year": 1980,
+   "venue": "Journal of Dynamic Systems, Measurement, and Control",
+   "note": "Cross-coupled control of contour error in multi-axis machines.",
+   "url": "https://doi.org/10.1115/1.3149612"
+  },
+  {
+   "key": "degroote2019nnap",
+   "cat": "03-precision-motion",
+   "title": "Neural Network Augmented Physics Models for Systems with Partially Unknown Dynamics: Application to Slider-Crank Mechanism",
+   "authors": "W. De Groote, E. Kikken, E. Hostens, S. Van Hoecke, G. Crevecoeur",
+   "year": 2019,
+   "venue": "arXiv",
+   "note": "Neural-network-augmented physics models for servo systems with partly unknown dynamics.",
+   "arxiv": "1910.12212",
+   "pdf": true
+  },
+  {
+   "key": "kon2022pgnn",
+   "cat": "03-precision-motion",
+   "title": "Physics-Guided Neural Networks for Feedforward Control: An Orthogonal Projection-Based Approach",
+   "authors": "J. Kon, D. Bruijnen, J. van de Wijdeven, M. Heertjes, T. Oomen",
+   "year": 2022,
+   "venue": "arXiv",
+   "note": "Physics-guided neural feedforward with orthogonal projection for identifiable physical parameters.",
+   "arxiv": "2201.03308",
+   "pdf": true
+  },
+  {
+   "key": "bolderman2023pgnn",
+   "cat": "03-precision-motion",
+   "title": "Physics-guided neural networks for feedforward control with input-to-state stability guarantees",
+   "authors": "M. Bolderman, H. Butler, S. Koekebakker, E. van Horssen, R. Kamidi et al.",
+   "year": 2023,
+   "venue": "Control Engineering Practice",
+   "note": "Physics-guided neural feedforward with input-to-state stability guarantees for precision mechatronics.",
+   "arxiv": "2301.08568",
+   "pdf": true
+  },
+  {
+   "key": "fujimoto2026shaping",
+   "cat": "03-precision-motion",
+   "title": "Optimal shaping filter design for data-driven feedforward controller tuning",
+   "authors": "Y. Fujimoto",
+   "year": 2026,
+   "venue": "arXiv",
+   "note": "Optimal shaping filter for data-driven feedforward tuning in two-degree-of-freedom control.",
+   "arxiv": "2607.29480",
+   "pdf": true
+  },
+  {
+   "key": "luh1980rne",
+   "cat": "04-robot-arms",
+   "title": "On-Line Computational Scheme for Mechanical Manipulators",
+   "authors": "J. Y. S. Luh, M. W. Walker, R. P. C. Paul",
+   "year": 1980,
+   "venue": "Journal of Dynamic Systems, Measurement, and Control",
+   "note": "Recursive Newton-Euler: inverse dynamics in O(n) for computed torque.",
+   "url": "https://doi.org/10.1115/1.3149599"
+  },
+  {
+   "key": "takegaki1981pd",
+   "cat": "04-robot-arms",
+   "title": "A New Feedback Method for Dynamic Control of Manipulators",
+   "authors": "M. Takegaki, S. Arimoto",
+   "year": 1981,
+   "venue": "Journal of Dynamic Systems, Measurement, and Control",
+   "note": "PD with gravity compensation is globally stable for robot arms.",
+   "url": "https://doi.org/10.1115/1.3139651"
+  },
+  {
+   "key": "craig1987adaptive",
+   "cat": "04-robot-arms",
+   "title": "Adaptive Control of Mechanical Manipulators",
+   "authors": "J. J. Craig, P. Hsu, S. S. Sastry",
+   "year": 1987,
+   "venue": "The International Journal of Robotics Research",
+   "note": "Adaptive computed-torque control of manipulators.",
+   "url": "https://doi.org/10.1177/027836498700600202"
+  },
+  {
+   "key": "slotine1987adaptive",
+   "cat": "04-robot-arms",
+   "title": "On the Adaptive Control of Robot Manipulators",
+   "authors": "J.-J. E. Slotine, W. Li",
+   "year": 1987,
+   "venue": "The International Journal of Robotics Research",
+   "note": "Slotine-Li adaptive controller: passivity-based adaptation without acceleration measurement.",
+   "url": "https://doi.org/10.1177/027836498700600303"
+  },
+  {
+   "key": "spong1987elastic",
+   "cat": "04-robot-arms",
+   "title": "Modeling and Control of Elastic Joint Robots",
+   "authors": "M. W. Spong",
+   "year": 1987,
+   "venue": "Journal of Dynamic Systems, Measurement, and Control",
+   "note": "Flexible-joint robot model and control (harmonic drives).",
+   "url": "https://doi.org/10.1115/1.3143860"
+  },
+  {
+   "key": "gautier1990minimal",
+   "cat": "04-robot-arms",
+   "title": "Direct Calculation of Minimum Set of Inertial Parameters of Serial Robots",
+   "authors": "M. Gautier, W. Khalil",
+   "year": 1990,
+   "venue": "IEEE Transactions on Robotics and Automation",
+   "note": "Base inertial parameters: robot dynamics linear in identifiable parameters.",
+   "url": "https://doi.org/10.1109/70.56655"
+  },
+  {
+   "key": "swevers1997excitation",
+   "cat": "04-robot-arms",
+   "title": "Optimal Robot Excitation and Identification",
+   "authors": "J. Swevers, C. Ganseman, D. Tukel, J. de Schutter, H. Van Brussel",
+   "year": 1997,
+   "venue": "IEEE Transactions on Robotics and Automation",
+   "note": "Optimal excitation trajectories (Fourier series) for robot identification.",
+   "url": "https://doi.org/10.1109/70.631234"
+  },
+  {
+   "key": "hogan1985impedance",
+   "cat": "04-robot-arms",
+   "title": "Impedance Control: An Approach to Manipulation, Part I: Theory",
+   "authors": "N. Hogan",
+   "year": 1985,
+   "venue": "Journal of Dynamic Systems, Measurement, and Control",
+   "note": "Impedance control for manipulation in contact.",
+   "url": "https://doi.org/10.1115/1.3140702"
+  },
+  {
+   "key": "raibert1981hybrid",
+   "cat": "04-robot-arms",
+   "title": "Hybrid Position/Force Control of Manipulators",
+   "authors": "M. H. Raibert, J. J. Craig",
+   "year": 1981,
+   "venue": "Journal of Dynamic Systems, Measurement, and Control",
+   "note": "Hybrid position/force control.",
+   "url": "https://doi.org/10.1115/1.3139652"
+  },
+  {
+   "key": "deluca2006collision",
+   "cat": "04-robot-arms",
+   "title": "Collision Detection and Safe Reaction with the DLR-III Lightweight Manipulator Arm",
+   "authors": "A. De Luca, A. Albu-Schäffer, S. Haddadin, G. Hirzinger",
+   "year": 2006,
+   "venue": "IEEE/RSJ IROS",
+   "note": "Momentum-observer collision detection and safe reaction on the DLR-III arm.",
+   "url": "https://doi.org/10.1109/IROS.2006.282053"
+  },
+  {
+   "key": "albu2007dlr",
+   "cat": "04-robot-arms",
+   "title": "The DLR Lightweight Robot: Design and Control Concepts for Robots in Human Environments",
+   "authors": "A. Albu-Schäffer, S. Haddadin, Ch. Ott, A. Stemmer, T. Wimböck, G. Hirzinger",
+   "year": 2007,
+   "venue": "Industrial Robot: An International Journal",
+   "note": "Torque-controlled lightweight robot design and control (basis of the KUKA LBR).",
+   "url": "https://doi.org/10.1108/01439910710774386"
+  },
+  {
+   "key": "bobrow1985timeopt",
+   "cat": "04-robot-arms",
+   "title": "Time-Optimal Control of Robotic Manipulators Along Specified Paths",
+   "authors": "J. E. Bobrow, S. Dubowsky, J. S. Gibson",
+   "year": 1985,
+   "venue": "The International Journal of Robotics Research",
+   "note": "Time-optimal motion along a specified path under torque limits.",
+   "url": "https://doi.org/10.1177/027836498500400301"
+  },
+  {
+   "key": "pham2018toppra",
+   "cat": "04-robot-arms",
+   "title": "A New Approach to Time-Optimal Path Parameterization Based on Reachability Analysis",
+   "authors": "H. Pham, Q.-C. Pham",
+   "year": 2018,
+   "venue": "IEEE Transactions on Robotics",
+   "note": "TOPP-RA: fast, robust time-optimal path parameterization by reachability analysis.",
+   "url": "https://doi.org/10.1109/TRO.2018.2819195",
+   "arxiv": "1707.07239",
+   "pdf": true
+  },
+  {
+   "key": "chen2019robotilc",
+   "cat": "04-robot-arms",
+   "title": "Industrial Robot Trajectory Tracking Using Multi-Layer Neural Networks Trained by Iterative Learning Control",
+   "authors": "S. Chen, J. T. Wen",
+   "year": 2019,
+   "venue": "arXiv",
+   "note": "Industrial-robot trajectory tracking with neural networks trained by ILC through the vendor controller.",
+   "arxiv": "1903.00082",
+   "pdf": true
+  },
+  {
+   "key": "cia402",
+   "cat": "05-standards-docs",
+   "title": "CiA 402: CANopen device profile for drives and motion control",
+   "authors": "CAN in Automation",
+   "year": 2026,
+   "venue": "Specification (organization page)",
+   "note": "Drive state machine and cyclic synchronous position, velocity and torque modes; also used over EtherCAT (CoE).",
+   "url": "https://www.can-cia.org/"
+  },
+  {
+   "key": "plcopen",
+   "cat": "05-standards-docs",
+   "title": "PLCopen Motion Control: function blocks for IEC 61131-3",
+   "authors": "PLCopen",
+   "year": 2026,
+   "venue": "Specification (organization page)",
+   "note": "Standard motion blocks (MC_MoveAbsolute and others) and jerk-limited profiles for PLC-based motion control.",
+   "url": "https://plcopen.org/"
+  }
+ ]
+}
